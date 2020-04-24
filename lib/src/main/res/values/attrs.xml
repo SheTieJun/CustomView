@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="AlbumImageView">
+        <attr name="src" format="reference" />            <!-- 用于缩放旋转的图标 -->
+        <attr name="editable" format="boolean"/>          <!-- 是否处于可编辑状态 -->
+        <attr name="frameColor" format="color" />         <!-- 边框颜色 -->
+        <attr name="frameWidth" format="dimension" />     <!-- 边框线宽度 -->
+        <attr name="framePadding" format="dimension" />   <!-- 边框与图片的间距 -->
+        <attr name="degree" format="float" />             <!-- 旋转角度 -->
+        <attr name="scale" format="float" />              <!-- 缩放比例 -->
+        <attr name="controlDrawable" format="reference"/> <!-- 控制图标 -->
+
+        <attr name="controlLocation">                     <!-- 控制图标的位置 -->
+            <enum name="left_top" value="0" />
+            <enum name="right_top" value="1" />
+            <enum name="right_bottom" value="2" />
+            <enum name="left_bottom" value="3" />
+        </attr>
+
+        <attr name="deleteDrawable" format="reference"/> <!--删除-->
+
+        <attr name="deleteLocation">                     <!-- 控制图标的位置 -->
+            <enum name="left_top" value="0" />
+            <enum name="right_top" value="1" />
+            <enum name="right_bottom" value="2" />
+            <enum name="left_bottom" value="3" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="LineWaveVoiceView">
+        <attr name="voiceLineColor" format="color" />
+        <attr name="voiceLineWith" format="dimension"/>
+        <attr name="voiceTextSize" format="dimension"/>
+        <attr name="voiceTextColor" format="color"/>
+        <attr name="updateSpeed" format="integer"/>
+    </declare-styleable>
+
+    <declare-styleable name="RadarView">
+        <!--圆圈和交叉线的颜色-->
+        <attr name="circleColor" format="color" />
+        <!--圆圈的数量-->
+        <attr name="circleNum" format="integer" />
+        <!--扫描的颜色 RadarView会对这个颜色做渐变透明处理-->
+        <attr name="sweepColor" format="color" />
+        <!--水滴的颜色-->
+        <attr name="raindropColor" format="color" />
+        <!--水滴的数量 这里表示的是水滴最多能同时出现的数量。因为水滴是随机产生的，数量是不确定的-->
+        <attr name="raindropNum" format="integer" />
+        <!--是否显示交叉线-->
+        <attr name="showCross" format="boolean" />
+        <!--是否显示水滴-->
+        <attr name="showRaindrop" format="boolean" />
+        <!--扫描的转速，表示几秒转一圈-->
+        <attr name="speed" format="float" />
+        <!--水滴显示和消失的速度-->
+        <attr name="flicker" format="float" />
+    </declare-styleable>
+
+    <declare-styleable name="HaloImageView">
+        <attr name="haloSize" format="dimension" />
+        <attr name="haloColor" format="color" />
+        <attr name="haloBackgroundColor" format="color"/>
+    </declare-styleable>
+
+
+    <declare-styleable name="CircleProgressView">
+        <attr name="backProgressColor" format="color"/>
+        <attr name="progressColor" format="color"/>
+        <attr name="backProgressWith" format="dimension"/>
+        <attr name="progressWith" format="dimension"/>
+        <attr name="progressSize" format="integer"/>
+        <attr name="max" format="integer"/>
+    </declare-styleable>
+</resources>

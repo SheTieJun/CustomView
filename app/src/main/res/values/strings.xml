@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">CustomView</string>
+    <string name="level_des">今日学习：今日听课花费的时间\n坚持学习：连续听课的天数（当天听课时长超过1分钟，则视为当天已学习）\n累计学习：累计听课的天数</string>
+    <string name="level_des_img">学习等级由连续学习天数决定，目前共有8个等级，它们对应的连续学习天数为：</string>
+</resources>
