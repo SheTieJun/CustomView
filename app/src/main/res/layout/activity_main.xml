@@ -16,4 +16,65 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <Button
+        android:id="@+id/btn_halo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="HaloView"
+        app:layout_constraintTop_toBottomOf="@id/btn_cir"
+        app:layout_constraintStart_toStartOf="parent"
+        android:textAllCaps="false"/>
+
+    <Button
+        android:id="@+id/btn_medal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Medal"
+        app:layout_constraintTop_toBottomOf="@id/btn_halo"
+        app:layout_constraintStart_toStartOf="parent"
+        android:textAllCaps="false"/>
+
+    <Button
+        android:id="@+id/btn_fish"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="阴阳鱼"
+        app:layout_constraintTop_toBottomOf="@id/btn_medal"
+        app:layout_constraintStart_toStartOf="parent"
+        android:textAllCaps="false"/>
+
+    <Button
+        android:id="@+id/btn_LineWaveVoice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="LineWaveVoice"
+        app:layout_constraintTop_toBottomOf="@id/btn_fish"
+        app:layout_constraintStart_toStartOf="parent"
+        android:textAllCaps="false"/>
+
+    <Button
+        android:id="@+id/btn_AngleSeekBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="AngleSeekBar"
+        app:layout_constraintTop_toBottomOf="@id/btn_LineWaveVoice"
+        app:layout_constraintStart_toStartOf="parent"
+        android:textAllCaps="false"/>
+
+    <Button
+        android:id="@+id/btn_Path"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="PathAnimator"
+        app:layout_constraintTop_toBottomOf="@id/btn_AngleSeekBar"
+        app:layout_constraintStart_toStartOf="parent"
+        android:textAllCaps="false"/>
+    <Button
+        android:id="@+id/btn_floatView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="FloatView"
+        app:layout_constraintTop_toBottomOf="@id/btn_Path"
+        app:layout_constraintStart_toStartOf="parent"
+        android:textAllCaps="false"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

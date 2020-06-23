@@ -4,7 +4,6 @@ import android.app.ActivityManager
 import android.app.ActivityManager.RunningAppProcessInfo
 import android.app.Application
 import android.content.Context
-import android.content.Intent
 import androidx.multidex.MultiDex
 import me.shetj.base.s
 
@@ -21,7 +20,7 @@ class APP : Application()   {
 
     override fun onCreate() {
         super.onCreate()
-        s.init(this,BuildConfig.DEBUG )
+        s.init(this, true,null)
     }
 
     override fun attachBaseContext(base: Context?) {

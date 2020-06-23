@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/iv_move"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@color/md_teal_600" />
+
+    <ImageView
+        android:id="@+id/iv1"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="140dp"
+        android:src="@color/md_teal_600" />
+
+    <ImageView
+        android:id="@+id/iv2"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="100dp"
+        android:layout_marginTop="75dp"
+        android:src="@color/md_teal_600" />
+
+
+    <ImageView
+        android:id="@+id/iv3"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="140dp"
+        android:layout_marginTop="180dp"
+        android:src="@color/md_teal_600" />
+
+    <ImageView
+        android:id="@+id/iv4"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="180dp"
+        android:layout_marginTop="230dp"
+        android:src="@color/md_teal_600" />
+
+    <ImageView
+        android:id="@+id/iv5"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="230dp"
+        android:layout_marginTop="100dp"
+        android:src="@color/md_teal_600" />
+
+
+    <ImageView
+        android:id="@+id/iv6"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_gravity="end"
+        android:src="@color/md_teal_600" />
+
+    <Button
+        android:id="@+id/btn_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:layout_marginTop="300dp"
+        android:padding="10dp"
+        android:text="开始" />
+</FrameLayout>

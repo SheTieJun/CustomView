@@ -27,12 +27,13 @@
         </attr>
     </declare-styleable>
 
-    <declare-styleable name="LineWaveVoiceView">
+    <declare-styleable name="LineWaveView">
         <attr name="voiceLineColor" format="color" />
         <attr name="voiceLineWith" format="dimension"/>
         <attr name="voiceTextSize" format="dimension"/>
         <attr name="voiceTextColor" format="color"/>
         <attr name="updateSpeed" format="integer"/>
+        <attr name="text" format="string"/>
     </declare-styleable>
 
     <declare-styleable name="RadarView">
@@ -56,7 +57,7 @@
         <attr name="flicker" format="float" />
     </declare-styleable>
 
-    <declare-styleable name="HaloImageView">
+    <declare-styleable name="HaloView">
         <attr name="haloSize" format="dimension" />
         <attr name="haloColor" format="color" />
         <attr name="haloBackgroundColor" format="color"/>
@@ -71,4 +72,15 @@
         <attr name="progressSize" format="integer"/>
         <attr name="max" format="integer"/>
     </declare-styleable>
+
+    <declare-styleable name="AngleSeekBar">
+        <attr name="android:max"/>
+        <attr name="android:progress"/>
+        <attr name="progressColor"/>
+        <attr name="android:strokeWidth"/>
+        <attr name="android:strokeColor"/>
+        <attr name="thumbColor" format="color"/>
+        <attr name="backProgressColor"/>
+    </declare-styleable>
+
 </resources>

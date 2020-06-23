@@ -16,7 +16,7 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) :
     private val defColor = Color.YELLOW
     private var defWith: Float = dip2px(10f).toFloat()
     private val defaultSize = dip2px(88f)
-    private var valueAnimator: ValueAnimator ?=null
+    private var valueAnimator: ValueAnimator? = null
     private var progressColor: Int = defColor
     private var backProgressWith: Float = defWith
     private var backProgressColor: Int = defColor
@@ -26,7 +26,7 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) :
 
     private val mProgressPaint = Paint().apply {
         isAntiAlias = true
-        color = Color.YELLOW
+        color = progressColor
         strokeWidth = progressWith
         style = Paint.Style.STROKE
         strokeCap = Paint.Cap.ROUND //
@@ -34,6 +34,9 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) :
 //        上右：外发光(SOLID)
 //        下左：内外发光(NORMAL)
 //        下右：仅显示发光效果(OUTER),该模式下仅会显示发光效果，会把原图像中除了发光部分，全部变为透明
+
+        //radius表示阴影的扩散半径；dx和dy表示阴影平面上的偏移值；shadowColor就不说了阴影颜色。
+//        setShadowLayer(2f,2f,2f,progressColor)
     }
 
     private val mBgProgressPaint = Paint().apply {
@@ -46,12 +49,14 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) :
     init {
         if (attrs != null) {
             context.obtainStyledAttributes(attrs, R.styleable.CircleProgressView).apply {
-                backProgressColor = getColor(R.styleable.CircleProgressView_backProgressColor, Color.DKGRAY)
-                backProgressWith =  getDimension(R.styleable.CircleProgressView_backProgressWith, defWith)
+                backProgressColor =
+                    getColor(R.styleable.CircleProgressView_backProgressColor, Color.DKGRAY)
+                backProgressWith =
+                    getDimension(R.styleable.CircleProgressView_backProgressWith, defWith)
                 progressColor = getColor(R.styleable.CircleProgressView_progressColor, Color.YELLOW)
-                progressWith =  getDimension(R.styleable.CircleProgressView_progressWith, defWith)
-                max = getInt(R.styleable.CircleProgressView_max,100)
-                progress = getInt(R.styleable.CircleProgressView_progressSize,0)
+                progressWith = getDimension(R.styleable.CircleProgressView_progressWith, defWith)
+                max = getInt(R.styleable.CircleProgressView_max, 100)
+                progress = getInt(R.styleable.CircleProgressView_progressSize, 0)
                 initConfig()
             }.recycle()
         }
@@ -76,12 +81,12 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) :
         if (valueAnimator?.isRunning == true) {
             valueAnimator?.cancel()
         }
-        startProgressAnim(this.progress,progress)
+        startProgressAnim(this.progress, progress)
     }
 
     private fun startProgressAnim(start: Int, end: Int) {
         post {
-            valueAnimator =  ValueAnimator.ofInt(start, end)?.apply {
+            valueAnimator = ValueAnimator.ofInt(start, end)?.apply {
                 addUpdateListener {
                     progress = it.animatedValue as Int
                     postInvalidate()
@@ -95,22 +100,42 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) :
 
     //测量
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val width = measureWidth(widthMeasureSpec,defaultSize)
-        val height = measureHeight(heightMeasureSpec,defaultSize)
+        val width = measureWidth(widthMeasureSpec, defaultSize)
+        val height = measureHeight(heightMeasureSpec, defaultSize)
         setMeasuredDimension(width, height)
     }
 
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        val fl = progressWith / 2 +5f
+        val fl = progressWith / 2 + 5f
+
+        val w = width - paddingStart - paddingEnd
+
+        val halfWidth = w / 2f
+
+        val halfHeight = (height - paddingBottom - paddingTop) / 2f
+
         //首先画背景圆
-        canvas?.drawCircle(width/2f,height/2f,(width)/2f- fl,mBgProgressPaint)
+        canvas?.drawCircle(
+            halfWidth + paddingStart,
+            halfHeight + paddingTop,
+            halfWidth - fl,
+            mBgProgressPaint
+        )
         //再画上层
-        val oval = RectF(fl, fl, width - fl, height-fl)
-        val sweepGradient = LinearGradient(fl, fl,width - fl, height-fl, Color.parseColor("#FEDE47"), Color.parseColor("#FEBB22"),Shader.TileMode.REPEAT)
+        val oval = RectF(fl, fl, w - fl, w - fl)
+        val sweepGradient = LinearGradient(
+            fl,
+            fl,
+            w - fl,
+            w - fl,
+            Color.parseColor("#FEDE47"),
+            Color.parseColor("#FEBB22"),
+            Shader.TileMode.REPEAT
+        )
 //        val sweepGradient = SweepGradient(width/2f,height/2f,Color.parseColor("#FEDE47"), Color.parseColor("#FEBB22"))
         mProgressPaint.shader = sweepGradient
-        canvas?.drawArc(oval,-90f,progress/max.toFloat()*360,false,mProgressPaint)
+        canvas?.drawArc(oval, -90f, progress / max.toFloat() * 360, false, mProgressPaint)
     }
 }

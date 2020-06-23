@@ -12,6 +12,6 @@ fun getNextLevelData(level :Int):Int{
         6 -> 243
         7 -> 729
         8 -> 2189
-        else -> 10000
+        else -> 2189*3
     }
 }
