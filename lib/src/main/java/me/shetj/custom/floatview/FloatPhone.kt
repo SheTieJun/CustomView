@@ -94,9 +94,9 @@ internal class FloatPhone(private val mContext: Context) : FloatView() {
     }
 
     override val x: Int
-        get() =  mX
+        get() =  mLayoutParams.x
 
     override val y: Int
-        get() = mY
+        get() = mLayoutParams.y
 
 }

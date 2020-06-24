@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         btn_cir.setOnClickListener {
-            val test = "{\"consecutive_days\":3," +
+            val test = "{\"consecutiveDays\":3," +
                     "\"level\":2}"
             val level = GsonKit.jsonToBean(test, LevelInfo::class.java)
             testCircleProgressView(levelInfo = level)
