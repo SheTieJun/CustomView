@@ -13,6 +13,7 @@ import me.shetj.customviewdemo.anim.PathAnim
 import me.shetj.customviewdemo.floatvideo.destroyFloat
 import me.shetj.customviewdemo.floatvideo.showDialogFloat
 import me.shetj.customviewdemo.model.LevelInfo
+import me.shetj.customviewdemo.recycle.showDialogRecycle
 import me.shetj.customviewdemo.utils.MedalDialog
 import me.shetj.customviewdemo.utils.MedalDialog.showDialog
 import me.shetj.customviewdemo.utils.createDialog
@@ -40,6 +41,7 @@ class MainActivity : AppCompatActivity() {
         btn_AngleSeekBar.setOnClickListener { createDialog(this, R.layout.layout_angle_seekbar) }
         btn_Path.setOnClickListener { PathAnim.showPathAnim(this) }
         btn_floatView.setOnClickListener { showDialogFloat(this) }
+        btn_recycle.setOnClickListener { showDialogRecycle(this) }
     }
 
     private fun testAnim() {

@@ -17,6 +17,14 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
+        android:id="@+id/btn_recycle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        app:layout_constraintStart_toEndOf="@id/btn_cir"
+        android:text="recycleView"/>
+
+    <Button
         android:id="@+id/btn_halo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -77,4 +85,15 @@
         app:layout_constraintTop_toBottomOf="@id/btn_Path"
         app:layout_constraintStart_toStartOf="parent"
         android:textAllCaps="false"/>
+
+    <Button
+        android:id="@+id/btn_PictureInPicture"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="PictureInPicture"
+        app:layout_constraintTop_toBottomOf="@id/btn_floatView"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"
+        android:textAllCaps="false"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
