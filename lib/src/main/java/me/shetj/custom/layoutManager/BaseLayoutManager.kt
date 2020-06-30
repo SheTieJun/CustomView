@@ -18,7 +18,6 @@ abstract class BaseLayoutManager : RecyclerView.LayoutManager() {
     //region 计算每个ItemView的位置
 
     override fun onLayoutChildren(recycler: RecyclerView.Recycler, state: RecyclerView.State) {
-        super.onLayoutChildren(recycler, state)
         if (state.itemCount == 0) {
             removeAndRecycleAllViews(recycler)//这个view是被回收了。
             return
@@ -33,7 +32,6 @@ abstract class BaseLayoutManager : RecyclerView.LayoutManager() {
          */
         detachAndScrapAttachedViews(recycler)
         calculateChildrenSite(recycler)
-        recycleAndFillView(recycler, state)
     }
 
     /**
@@ -41,10 +39,6 @@ abstract class BaseLayoutManager : RecyclerView.LayoutManager() {
      */
     abstract fun calculateChildrenSite(recycler: RecyclerView.Recycler)
 
-    /**
-     * 回收和填充，布局
-     */
-    abstract fun recycleAndFillView(recycler: RecyclerView.Recycler, state: RecyclerView.State)
     //endregion
 
     //region 处理滑动事件

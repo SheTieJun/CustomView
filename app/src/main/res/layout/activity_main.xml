@@ -6,23 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/btn_cir"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="CircleProgressView"
-        android:textAllCaps="false"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/btn_recycle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAllCaps="false"
-        app:layout_constraintStart_toEndOf="@id/btn_cir"
-        android:text="recycleView"/>
+    <include layout="@layout/item_1" />
 
     <Button
         android:id="@+id/btn_halo"
@@ -93,7 +77,6 @@
         android:text="PictureInPicture"
         app:layout_constraintTop_toBottomOf="@id/btn_floatView"
         app:layout_constraintStart_toStartOf="parent"
-        android:visibility="gone"
         android:textAllCaps="false"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

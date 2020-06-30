@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.item_1.*
 import me.shetj.base.tools.json.GsonKit
 import me.shetj.base.tools.json.HighStringFormatUtil
 import me.shetj.custom.CircleProgressView

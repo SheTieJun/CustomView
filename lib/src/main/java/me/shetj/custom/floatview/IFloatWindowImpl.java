@@ -125,6 +125,7 @@ public class IFloatWindowImpl extends IFloatWindow {
 
     @Override
     public void updateWh(int width, int height) {
+        if (!isShow) return;
         mB.setWidth(width);
         mB.setHeight(height);
         mFloatView.updateWH(mB.mWidth,mB.mHeight);

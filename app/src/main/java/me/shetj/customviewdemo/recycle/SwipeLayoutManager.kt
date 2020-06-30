@@ -14,11 +14,12 @@ class SwipeLayoutManager(
 ) : BaseLayoutManager() {
 
     protected val MAX_COUNT: Int
-        get() = min(3, itemCount)
+        get() = min(4, itemCount)
     protected val DEFAULT_SCALE: Float
         get() = 0.1f
     protected val DEFAULT_TRANSLATE_Y: Float
         get() = 50f
+
 
     override fun calculateChildrenSite(recycler: RecyclerView.Recycler) {
         for (i in (0 until MAX_COUNT).reversed()) {
@@ -26,18 +27,12 @@ class SwipeLayoutManager(
         }
     }
 
-    override fun recycleAndFillView(recycler: RecyclerView.Recycler, state: RecyclerView.State) {
-
-    }
-
-
     private fun addView(recycler: RecyclerView.Recycler, position: Int): View {
         return recycler.getViewForPosition(position).also {
             addView(it)
             measureChildWithMargins(it, 0, 0)
             layoutView(recycler,it, position)
         }
-
     }
 
     //居中显示view
@@ -61,21 +56,29 @@ class SwipeLayoutManager(
             height + heightSpace / 2
         )
         //根据position 缩小平移
-        if (position == MAX_COUNT) {
-            view.scaleX = 1 - (position - 1) * DEFAULT_SCALE
-            view.scaleY = 1 - (position - 1) * DEFAULT_SCALE
-            view.translationY = (position - 1) * DEFAULT_TRANSLATE_Y
-        }else if (position > 0 ){
-            val scale = 1 - position * DEFAULT_SCALE
-            view.scaleX = scale
-            view.scaleY = scale
-            view.translationY = position * DEFAULT_TRANSLATE_Y
-        }else{
-            view.setOnTouchListener { _, event ->
-                if (event.action == MotionEvent.ACTION_DOWN) {
-                    itemTouchHelper.startSwipe(recyclerView.getChildViewHolder(view))
+        when {
+            position == MAX_COUNT -> {
+                view.scaleX = 1 - (position - 1) * DEFAULT_SCALE
+                view.scaleY = 1 - (position - 1) * DEFAULT_SCALE
+                view.translationY = (position - 1) * DEFAULT_TRANSLATE_Y
+            }
+            position > 0 -> {
+                val scale = 1 - position * DEFAULT_SCALE
+                view.scaleX = scale
+                view.scaleY = scale
+                view.translationY = position * DEFAULT_TRANSLATE_Y
+            }
+            else -> {
+                view.setOnTouchListener { _, event ->
+                    if (event.action == MotionEvent.ACTION_DOWN) {
+                        val childViewHolder = recyclerView.getChildViewHolder(view)
+                        //只让第一个滑动
+                        if (childViewHolder.adapterPosition == 0) {
+                            itemTouchHelper.startSwipe(childViewHolder)
+                        }
+                    }
+                    return@setOnTouchListener true
                 }
-                return@setOnTouchListener true
             }
         }
     }

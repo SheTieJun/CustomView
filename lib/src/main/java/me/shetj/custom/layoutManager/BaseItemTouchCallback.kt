@@ -1,32 +1,28 @@
 package me.shetj.custom.layoutManager
 
 import android.graphics.Canvas
+import android.view.animation.AccelerateInterpolator
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.abs
 import kotlin.math.min
 
 
-class BaseItemTouchCallback(private val touchListener: ItemTouchListener) : ItemTouchHelper.Callback() {
-
-    protected val DEF_SCALE :Float
-        get() = 0.9f
-    protected val DEF_ALPHA :Float
-        get() = 0.8f
+open class BaseItemTouchCallback(private val touchListener: ItemTouchListener?) : ItemTouchHelper.Callback() {
 
     override fun getMovementFlags(
         recyclerView: RecyclerView,
         viewHolder: RecyclerView.ViewHolder
     ): Int {
-        return touchListener.getMovementFlags(recyclerView, viewHolder)
+        return touchListener?.getMovementFlags(recyclerView, viewHolder)?: makeMovementFlags(0, 0)
     }
 
     override fun isItemViewSwipeEnabled(): Boolean {
-        return touchListener.isItemViewSwipeEnabled()
+        return touchListener?.isItemViewSwipeEnabled()?:false
     }
 
     override fun isLongPressDragEnabled(): Boolean {
-        return touchListener.isLongPressDragEnabled()
+        return touchListener?.isLongPressDragEnabled()?:false
     }
 
     override fun onMove(
@@ -34,7 +30,7 @@ class BaseItemTouchCallback(private val touchListener: ItemTouchListener) : Item
         viewHolder: RecyclerView.ViewHolder,
         target: RecyclerView.ViewHolder
     ): Boolean {
-        return touchListener.onMove(recyclerView, viewHolder, target)
+        return touchListener?.onMove(recyclerView, viewHolder, target)?:false
     }
 
     override fun onChildDraw(
@@ -47,36 +43,20 @@ class BaseItemTouchCallback(private val touchListener: ItemTouchListener) : Item
         isCurrentlyActive: Boolean
     ) {
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
-        when (actionState) {
-            ItemTouchHelper.ACTION_STATE_SWIPE -> {
-                viewHolder.itemView.apply {
-                    val alpha = min( 1 - abs(dX) / width.toFloat(),1 - abs(dY/2) / height.toFloat())
-                    rotation = ( dX / width.toFloat()) * 15
-                    setAlpha(alpha)
-                    translationX = dX;
-                }
-            }
-            ItemTouchHelper.ACTION_STATE_DRAG -> {
-                viewHolder.itemView.apply {
-                    viewHolder.itemView.animate().alpha(DEF_ALPHA).scaleX(DEF_SCALE).scaleY(DEF_SCALE).apply {
-                        duration = 200
-                    }.start()
-                }
-            }
-        }
+        touchListener?.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
     }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-        touchListener.onSwiped(viewHolder,direction)
+        touchListener?.onSwiped(viewHolder,direction)
     }
 
     override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
         super.clearView(recyclerView, viewHolder)
-
         viewHolder.itemView.post { //必须post 否则部分属性无效
             viewHolder.itemView.rotation = 0f
             viewHolder.itemView.animate().alpha(1f).scaleX(1.0f).scaleY(1.0f).apply {
-                duration = 200
+                duration = 100
+                interpolator = AccelerateInterpolator()
             }.start()
         }
     }
