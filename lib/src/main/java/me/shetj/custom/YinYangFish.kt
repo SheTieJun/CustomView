@@ -46,6 +46,27 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) :
         repeatCount = -1
         duration = 5000
     }
+    @Synchronized
+    fun pause(){
+        valueAnimator?.takeIf {
+            it.isRunning
+        }?.apply {
+            valueAnimator.pause()
+        }
+    }
+
+    @Synchronized
+    fun resume(){
+        valueAnimator?.takeIf {
+            !it.isRunning
+        }?.apply {
+            if (isStarted) {
+                valueAnimator.resume()
+            }else{
+                valueAnimator.start()
+            }
+        }
+    }
 
     private fun updateRotation(rotation: Float) {
         this.rotation = rotation
