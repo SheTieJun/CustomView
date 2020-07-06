@@ -5,6 +5,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item_1.*
+import me.shetj.base.ktx.start
 import me.shetj.base.tools.json.GsonKit
 import me.shetj.base.tools.json.HighStringFormatUtil
 import me.shetj.custom.CircleProgressView
@@ -14,6 +15,7 @@ import me.shetj.customviewdemo.anim.PathAnim
 import me.shetj.customviewdemo.floatvideo.destroyFloat
 import me.shetj.customviewdemo.floatvideo.showDialogFloat
 import me.shetj.customviewdemo.model.LevelInfo
+import me.shetj.customviewdemo.pic.PictureInPictureActivity
 import me.shetj.customviewdemo.recycle.showDialogRecycle
 import me.shetj.customviewdemo.utils.MedalDialog
 import me.shetj.customviewdemo.utils.MedalDialog.showDialog
@@ -43,6 +45,7 @@ class MainActivity : AppCompatActivity() {
         btn_Path.setOnClickListener { PathAnim.showPathAnim(this) }
         btn_floatView.setOnClickListener { showDialogFloat(this) }
         btn_recycle.setOnClickListener { showDialogRecycle(this) }
+        btn_PictureInPicture.setOnClickListener { start(PictureInPictureActivity::class.java) }
     }
 
     private fun testAnim() {
