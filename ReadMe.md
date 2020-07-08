@@ -9,3 +9,4 @@
 | path动画 | [PathAnim](https://github.com/SheTieJun/CustomView/tree/master/app/src/main/java/me/shetj/customviewdemo/anim/PathAnim.kt) | |
 | 滑动卡片和拖拽 |[layoutManager](https://github.com/SheTieJun/CustomView/blob/master/lib/src/main/java/me/shetj/custom/layoutManager) 和 [recycle](https://github.com/SheTieJun/CustomView/tree/master/app/src/main/java/me/shetj/customviewdemo/recycle)| |
 | Android O 画中画|[PictureInPicture](https://github.com/SheTieJun/CustomView/tree/master/app/src/main/java/me/shetj/customviewdemo/pic) | |
+| Transition (view 切换效果)|[Transition](https://github.com/SheTieJun/CustomView/tree/master/app/src/main/java/me/shetj/customviewdemo/tansition)||
