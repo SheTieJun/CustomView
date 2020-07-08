@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<transitionSet xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <changeBounds>
+
+    </changeBounds>
+    <arcMotion
+        android:maximumAngle="0"
+        android:minimumHorizontalAngle="60"
+        android:minimumVerticalAngle="90" >
+        <targets >
+            <target android:targetId="@id/btn_register"/>
+        </targets>
+    </arcMotion>
+</transitionSet>

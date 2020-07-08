@@ -5,6 +5,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item_1.*
+import kotlinx.android.synthetic.main.item_2.*
 import me.shetj.base.ktx.start
 import me.shetj.base.tools.json.GsonKit
 import me.shetj.base.tools.json.HighStringFormatUtil
@@ -14,6 +15,7 @@ import me.shetj.custom.LineWaveView
 import me.shetj.customviewdemo.anim.PathAnim
 import me.shetj.customviewdemo.floatvideo.destroyFloat
 import me.shetj.customviewdemo.floatvideo.showDialogFloat
+import me.shetj.customviewdemo.login.showDialogLogin
 import me.shetj.customviewdemo.model.LevelInfo
 import me.shetj.customviewdemo.pic.PictureInPictureActivity
 import me.shetj.customviewdemo.recycle.showDialogRecycle
@@ -46,6 +48,7 @@ class MainActivity : AppCompatActivity() {
         btn_floatView.setOnClickListener { showDialogFloat(this) }
         btn_recycle.setOnClickListener { showDialogRecycle(this) }
         btn_PictureInPicture.setOnClickListener { start(PictureInPictureActivity::class.java) }
+        btn_transition.setOnClickListener { showDialogLogin(this) }
     }
 
     private fun testAnim() {
