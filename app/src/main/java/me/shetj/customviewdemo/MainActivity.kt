@@ -15,10 +15,10 @@ import me.shetj.custom.LineWaveView
 import me.shetj.customviewdemo.anim.PathAnim
 import me.shetj.customviewdemo.floatvideo.destroyFloat
 import me.shetj.customviewdemo.floatvideo.showDialogFloat
-import me.shetj.customviewdemo.login.showDialogLogin
 import me.shetj.customviewdemo.model.LevelInfo
 import me.shetj.customviewdemo.pic.PictureInPictureActivity
 import me.shetj.customviewdemo.recycle.showDialogRecycle
+import me.shetj.customviewdemo.tansition.showDialogLogin
 import me.shetj.customviewdemo.utils.MedalDialog
 import me.shetj.customviewdemo.utils.MedalDialog.showDialog
 import me.shetj.customviewdemo.utils.createDialog

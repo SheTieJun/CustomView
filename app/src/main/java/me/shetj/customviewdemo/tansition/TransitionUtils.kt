@@ -13,8 +13,10 @@ import android.view.animation.AccelerateInterpolator
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.animation.doOnEnd
 import androidx.core.transition.doOnEnd
+import androidx.core.transition.doOnStart
 import androidx.core.view.isVisible
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import me.shetj.base.tools.app.ArmsUtils
 import me.shetj.customviewdemo.R
 import me.shetj.customviewdemo.utils.createDialog
 
@@ -35,10 +37,20 @@ private fun goLogin(
     root: ConstraintLayout,
     registerScene: Scene
 ) {
-    TransitionManager.go(loginScene, context.getTransition(R.transition.go_login_triansition))
+    TransitionManager.go(loginScene, context.getTransition(R.transition.go_login_triansition)?.apply {
+        doOnStart {
+            val card = root.findViewById<View>(R.id.card)
+            getExpansionAnimation(card,true).start()
+        }
+    })
     val btnRegister = root.findViewById<FloatingActionButton>(R.id.btn_register).apply {
         setOnClickListener {
-            goRegister(context, registerScene, root, loginScene)
+            val card = root.findViewById<View>(R.id.card)
+            getGoLoginAnimation(card, true).apply {
+                doOnEnd {
+                    goRegister(context, registerScene, root, loginScene)
+                }
+            }.start()
         }
     }
 }
@@ -49,18 +61,20 @@ private fun goRegister(
     root: ConstraintLayout,
     loginScene: Scene
 ) {
+
     TransitionManager.go(
         registerScene,
         context.getTransition(R.transition.go_register_triansition).apply {
+            //移动成功后展开视图
             this?.doOnEnd {
                 val card = root.findViewById<View>(R.id.card)
-                getGoRegisterAnimation(card).start()
+                getExpansionAnimation(card, false).start()
             }
         })
     val btnRegisterClose = root.findViewById<FloatingActionButton>(R.id.btn_register).apply {
         setOnClickListener {
             val card = root.findViewById<View>(R.id.card)
-            getGoLoginAnimation(card).apply {
+            getGoLoginAnimation(card,false).apply {
                 this.doOnEnd {
                     goLogin(context, loginScene, root, registerScene)
                 }
@@ -69,12 +83,19 @@ private fun goRegister(
     }
 }
 
-private fun getGoRegisterAnimation(card: View): Animator {
+//展开
+private fun getExpansionAnimation(card: View, isLogin: Boolean = false): Animator {
     card.isVisible = true
     return ViewAnimationUtils.createCircularReveal(
         card,
-        card.width / 2,
-        0,
+        when(isLogin) {
+            true -> card.width
+            false -> card.width / 2
+        },
+        when(isLogin) {
+            true -> ArmsUtils.dip2px(50f)
+            false -> 0
+        },
         0f,
         card.height.toFloat()
     ).apply {
@@ -83,11 +104,18 @@ private fun getGoRegisterAnimation(card: View): Animator {
     }
 }
 
-private fun getGoLoginAnimation(card: View): Animator {
+//收起
+private fun getGoLoginAnimation(card: View, isLogin: Boolean = false): Animator {
     return ViewAnimationUtils.createCircularReveal(
         card,
-        card.width / 2,
-        0,
+        when(isLogin) {
+            true -> card.width
+            false -> card.width / 2
+        },
+        when(isLogin) {
+            true -> ArmsUtils.dip2px(50f)
+            false -> 0
+        },
         card.height.toFloat(),
         0f
     ).apply {
