@@ -22,6 +22,7 @@ import me.shetj.customviewdemo.tansition.showDialogLogin
 import me.shetj.customviewdemo.utils.MedalDialog
 import me.shetj.customviewdemo.utils.MedalDialog.showDialog
 import me.shetj.customviewdemo.utils.createDialog
+import me.shetj.customviewdemo.utils.showStickyViewDialog
 
 
 class MainActivity : AppCompatActivity() {
@@ -47,8 +48,9 @@ class MainActivity : AppCompatActivity() {
         btn_Path.setOnClickListener { PathAnim.showPathAnim(this) }
         btn_floatView.setOnClickListener { showDialogFloat(this) }
         btn_recycle.setOnClickListener { showDialogRecycle(this) }
-        btn_PictureInPicture.setOnClickListener { start(PictureInPictureActivity::class.java) }
+        btn_PictureInPicture.setOnClickListener { start<PictureInPictureActivity>() }
         btn_transition.setOnClickListener { showDialogLogin(this) }
+        btn_StickyFinallyView.setOnClickListener { showStickyViewDialog(this) }
     }
 
     private fun testAnim() {

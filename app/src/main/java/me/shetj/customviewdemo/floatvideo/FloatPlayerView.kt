@@ -17,6 +17,7 @@ class FloatPlayerView : FrameLayout {
     private var videoPlayer: FloatingVideo? = null
     private var mPath: Path? = null
     private val rd = ArmsUtils.dip2px(5f).toFloat()
+
     constructor(context: Context?) : super(context!!) {
         init()
     }
@@ -77,7 +78,9 @@ class FloatPlayerView : FrameLayout {
         super.onSizeChanged(w, h, oldw, oldh)
         mPath?.reset()
         mRect?.set(0f, 0f, w.toFloat(), h.toFloat())
-        mPath?.addRoundRect(mRect, rd, rd, Path.Direction.CW)
+        mRect?.let {
+            mPath?.addRoundRect(mRect, rd, rd, Path.Direction.CW)
+        }
     }
 
     override fun dispatchDraw(canvas: Canvas) {

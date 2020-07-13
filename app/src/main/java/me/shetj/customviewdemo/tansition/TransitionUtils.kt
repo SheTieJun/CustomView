@@ -43,7 +43,7 @@ private fun goLogin(
             getExpansionAnimation(card,true).start()
         }
     })
-    val btnRegister = root.findViewById<FloatingActionButton>(R.id.btn_register).apply {
+    root.findViewById<FloatingActionButton>(R.id.btn_register).apply {
         setOnClickListener {
             val card = root.findViewById<View>(R.id.card)
             getGoLoginAnimation(card, true).apply {
@@ -71,7 +71,7 @@ private fun goRegister(
                 getExpansionAnimation(card, false).start()
             }
         })
-    val btnRegisterClose = root.findViewById<FloatingActionButton>(R.id.btn_register).apply {
+    root.findViewById<FloatingActionButton>(R.id.btn_register).apply {
         setOnClickListener {
             val card = root.findViewById<View>(R.id.card)
             getGoLoginAnimation(card,false).apply {

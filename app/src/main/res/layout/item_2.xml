@@ -22,4 +22,14 @@
         app:layout_constraintStart_toEndOf="@id/btn_halo"
         app:layout_constraintTop_toTopOf="@id/btn_halo"
         android:text="transition" />
+
+
+    <Button
+        android:id="@+id/btn_StickyFinallyView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        app:layout_constraintStart_toEndOf="@id/btn_transition"
+        app:layout_constraintTop_toTopOf="@id/btn_halo"
+        android:text="StickyFinallyView" />
 </merge>

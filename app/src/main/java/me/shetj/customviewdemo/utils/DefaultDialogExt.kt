@@ -7,6 +7,7 @@ import android.widget.LinearLayout
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AlertDialog
 import me.shetj.base.tools.app.ArmsUtils
+import me.shetj.customviewdemo.R
 
 
 fun createDialog(
@@ -21,4 +22,12 @@ fun createDialog(
         .show()?.apply {
             window?.setLayout(ArmsUtils.dip2px(300f), LinearLayout.LayoutParams.WRAP_CONTENT);
         }
+}
+
+
+
+fun showStickyViewDialog(context: Context){
+    createDialog(context, R.layout.layou_sticky_view){
+
+    }
 }
