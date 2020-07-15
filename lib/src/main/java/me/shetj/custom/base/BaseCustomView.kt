@@ -10,11 +10,13 @@ import android.view.ViewConfiguration
  * onMeasure()会在初始化之后,调用一到多次来测量控件或其中的子控件的宽高；
  * onLayout() 会在onMeasure()方法之后,被调用一次，将控件或其子控件进行布局；
  * onDraw()   会在onLayout()方法之后,调用一次，也会在用户手指触摸屏幕时被调用多次，来绘制控件。
-*/
+ */
 open class BaseCustomView
 @JvmOverloads
 constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) :
-        View(context, attrs, defStyle){
+    View(context, attrs, defStyle) {
+
+    protected val TAG = this.javaClass.simpleName
 
     //最新滑动距离
     private val mScaledTouchSlop = ViewConfiguration.get(context).scaledTouchSlop
@@ -35,8 +37,8 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) :
         if (specMode == MeasureSpec.EXACTLY) {
             result = specSize
         } else {
-            result = defaultSize +paddingTop +paddingBottom
-            if (specMode == MeasureSpec.AT_MOST){
+            result = defaultSize + paddingTop + paddingBottom
+            if (specMode == MeasureSpec.AT_MOST) {
                 result = result.coerceAtMost(specSize)
             }
         }
@@ -64,6 +66,7 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) :
     fun dip2px(dpVal: Float): Int {
         return TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP,
-            dpVal, context.resources.displayMetrics).toInt()
+            dpVal, context.resources.displayMetrics
+        ).toInt()
     }
 }

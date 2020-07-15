@@ -23,4 +23,13 @@
         app:layout_constraintStart_toEndOf="@id/btn_cir"
         app:layout_constraintTop_toTopOf="@id/btn_cir"
         android:text="recycleView" />
+
+    <Button
+        android:id="@+id/btn_water_mark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        app:layout_constraintStart_toEndOf="@id/btn_recycle"
+        app:layout_constraintTop_toTopOf="@id/btn_cir"
+        android:text="水印" />
 </merge>

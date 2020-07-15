@@ -83,4 +83,14 @@
         <attr name="backProgressColor"/>
     </declare-styleable>
 
+
+    <declare-styleable name="WaterMarkImage">
+        <attr name="android:textSize"/>
+        <attr name="android:textColor"/>
+        <attr name="android:text"/>
+        <attr name="textLineSpacing" format="float"/>
+        <attr name="textRotation" format="float"/>
+        <attr name="isShowWaterMark" format="boolean"/>
+        <attr name="textAlpha" format="float"/>
+    </declare-styleable>
 </resources>

@@ -1,5 +1,6 @@
 package me.shetj.customviewdemo
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -23,6 +24,7 @@ import me.shetj.customviewdemo.utils.MedalDialog
 import me.shetj.customviewdemo.utils.MedalDialog.showDialog
 import me.shetj.customviewdemo.utils.createDialog
 import me.shetj.customviewdemo.utils.showStickyViewDialog
+import me.shetj.customviewdemo.water_mark.showWaterMarkDialog
 
 
 class MainActivity : AppCompatActivity() {
@@ -51,6 +53,7 @@ class MainActivity : AppCompatActivity() {
         btn_PictureInPicture.setOnClickListener { start<PictureInPictureActivity>() }
         btn_transition.setOnClickListener { showDialogLogin(this) }
         btn_StickyFinallyView.setOnClickListener { showStickyViewDialog(this) }
+        btn_water_mark.setOnClickListener { showWaterMarkDialog(this) }
     }
 
     private fun testAnim() {
