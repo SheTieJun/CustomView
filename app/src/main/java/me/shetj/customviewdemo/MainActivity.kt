@@ -24,6 +24,8 @@ import me.shetj.customviewdemo.utils.MedalDialog
 import me.shetj.customviewdemo.utils.MedalDialog.showDialog
 import me.shetj.customviewdemo.utils.createDialog
 import me.shetj.customviewdemo.utils.showStickyViewDialog
+import me.shetj.customviewdemo.water_mark.onImageActivityResult
+import me.shetj.customviewdemo.water_mark.selectImage
 import me.shetj.customviewdemo.water_mark.showWaterMarkDialog
 
 
@@ -53,7 +55,7 @@ class MainActivity : AppCompatActivity() {
         btn_PictureInPicture.setOnClickListener { start<PictureInPictureActivity>() }
         btn_transition.setOnClickListener { showDialogLogin(this) }
         btn_StickyFinallyView.setOnClickListener { showStickyViewDialog(this) }
-        btn_water_mark.setOnClickListener { showWaterMarkDialog(this) }
+        btn_water_mark.setOnClickListener { selectImage(this) }
     }
 
     private fun testAnim() {
@@ -98,6 +100,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        onImageActivityResult(this,requestCode, resultCode, data)
+    }
 
     override fun onPause() {
         super.onPause()

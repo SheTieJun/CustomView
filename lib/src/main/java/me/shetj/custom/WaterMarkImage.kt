@@ -2,6 +2,7 @@ package me.shetj.custom
 
 import android.content.Context
 import android.graphics.*
+import android.net.Uri
 import android.text.TextPaint
 import android.util.AttributeSet
 import android.util.Log
@@ -82,6 +83,25 @@ class WaterMarkImage @JvmOverloads constructor(
         }
 
         mImage = BitmapFactory.decodeFile(url, BitmapFactory.Options())
+
+        if (mImage == null) {
+            Log.e(TAG, "文件错误，无法生成bitmap")
+            return
+        }
+        deal()
+    }
+
+    /**
+     * 设置图片
+     */
+    fun setImage(url: Uri) {
+
+        if (mImage != null && !mImage!!.isRecycled) {
+            setImageBitmap(null)
+            mImage!!.recycle()
+        }
+
+        mImage =  getBitmapFromUri(context,url)
 
         if (mImage == null) {
             Log.e(TAG, "文件错误，无法生成bitmap")

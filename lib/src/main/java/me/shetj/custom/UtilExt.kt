@@ -1,9 +1,14 @@
 package me.shetj.custom
 
+import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Paint
 import android.graphics.Rect
+import android.net.Uri
+import android.os.ParcelFileDescriptor
 import android.util.Log
+import java.io.FileDescriptor
 import java.io.FileOutputStream
 import java.io.IOException
 import kotlin.math.sqrt
@@ -37,4 +42,28 @@ fun Bitmap.saveImageBitmap(filename:String):Boolean{
         Log.e("save",e.message)
     }
     return false
+}
+
+// 通过uri获取bitmap
+fun getBitmapFromUri(context: Context, uri: Uri): Bitmap? {
+    var parcelFileDescriptor: ParcelFileDescriptor? = null
+    var fileDescriptor: FileDescriptor? = null;
+    var bitmap: Bitmap? = null;
+    try {
+        parcelFileDescriptor = context.contentResolver.openFileDescriptor(uri, "r")
+        if ((parcelFileDescriptor?.fileDescriptor) != null) {
+            fileDescriptor = parcelFileDescriptor.fileDescriptor
+            //转换uri为bitmap类型
+            bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor)
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+    } finally {
+        try {
+            parcelFileDescriptor?.close()
+        } catch (e: IOException) {
+
+        }
+    }
+    return bitmap
 }
