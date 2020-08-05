@@ -45,4 +45,5 @@ dependencies {
     implementation "com.github.SheTieJun:Base:$base_version"
     implementation 'com.airbnb.android:lottie:3.4.0'
     implementation 'com.shuyu:GSYVideoPlayer:7.1.4'
+    implementation "com.github.SheTieJun:OrangeDialog:0.0.2"
 }

@@ -1,8 +1,10 @@
 package me.shetj.custom.base
 
 import android.content.Context
+import android.graphics.Canvas
 import android.util.AttributeSet
 import android.util.TypedValue
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
 
@@ -68,5 +70,42 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) :
             TypedValue.COMPLEX_UNIT_DIP,
             dpVal, context.resources.displayMetrics
         ).toInt()
+    }
+
+    /**
+     * XML 加载结束
+     */
+    override fun onFinishInflate() {
+        super.onFinishInflate()
+    }
+
+    /**
+     * 视频大小变化的时候
+     */
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+    }
+
+
+    /**
+     * 位置变化
+     */
+    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+        super.onLayout(changed, left, top, right, bottom)
+    }
+
+
+    /**
+     * 触摸监听
+     */
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        return super.onTouchEvent(event)
+    }
+
+    /**
+     * 绘制
+     */
+    override fun onDraw(canvas: Canvas?) {
+        super.onDraw(canvas)
     }
 }

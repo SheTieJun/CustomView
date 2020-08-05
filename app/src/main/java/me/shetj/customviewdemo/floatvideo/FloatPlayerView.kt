@@ -3,14 +3,16 @@ package me.shetj.customviewdemo.floatvideo
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Path
-import android.graphics.Rect
 import android.graphics.RectF
 import android.util.AttributeSet
 import android.util.Log
 import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import com.shuyu.gsyvideoplayer.GSYVideoManager
+import com.shuyu.gsyvideoplayer.model.VideoOptionModel
 import me.shetj.base.tools.app.ArmsUtils
+import tv.danmaku.ijk.media.player.IjkMediaPlayer
 
 class FloatPlayerView : FrameLayout {
     private var mRect: RectF? = null
@@ -35,6 +37,16 @@ class FloatPlayerView : FrameLayout {
         defStyleAttr: Int
     ) : super(context!!, attrs, defStyleAttr) {
         init()
+    }
+
+    init {
+        GSYVideoManager.instance().optionModelList = arrayListOf(
+            VideoOptionModel(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "protocol_whitelist", "crypto,file,http,https,tcp,tls,udp,rtmp,rtsp"),
+            VideoOptionModel(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "enable-accurate-seek", 1),
+            VideoOptionModel(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "soundtouch", 1),
+            VideoOptionModel(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "dns_cache_clear", 1),
+            VideoOptionModel(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "dns_cache_timeout", -1)
+        )
     }
 
     private fun init() {
