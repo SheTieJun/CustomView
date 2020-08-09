@@ -7,16 +7,20 @@ import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
+import android.view.ViewGroup
 
 /**
- * onMeasure()会在初始化之后,调用一到多次来测量控件或其中的子控件的宽高；
- * onLayout() 会在onMeasure()方法之后,被调用一次，将控件或其子控件进行布局；
- * onDraw()   会在onLayout()方法之后,调用一次，也会在用户手指触摸屏幕时被调用多次，来绘制控件。
+ * [onMeasure]会在初始化之后,调用一到多次来测量控件或其中的子控件的宽高；
+ * [onLayout] 会在[onMeasure]方法之后,被调用一次，将控件或其子控件进行布局；
+ * [onDraw]   会在[onLayout]方法之后,调用一次，也会在用户手指触摸屏幕时被调用多次，来绘制控件。
+ *
+ * [measureChildren] 会触发子布局绘制
+ * [measureChild]是对单个view进行测量
  */
-open class BaseCustomView
+open class BaseCustomViewGroup
 @JvmOverloads
 constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) :
-    View(context, attrs, defStyle) {
+    ViewGroup(context, attrs, defStyle) {
 
     protected val TAG = this.javaClass.simpleName
 
@@ -24,15 +28,45 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) :
     private val mScaledTouchSlop = ViewConfiguration.get(context).scaledTouchSlop
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val minw = paddingLeft + paddingRight + suggestedMinimumWidth
-        val w = resolveSizeAndState(minw, widthMeasureSpec, 1)
-        val minh = paddingBottom + paddingTop + suggestedMinimumHeight
-        val h = resolveSizeAndState(minh, heightMeasureSpec, 0)
-        setMeasuredDimension(w, h)
-//        计算自己所需高度、宽度则通过重写getSuggestedMinimumWidth，getSuggestedMinimumHeight来进行计算
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        //将所有的子View进行测量，这会触发每个子View的onMeasure函数
+        //注意要与measureChild区分，measureChild是对单个view进行测量
+        measureChildren(widthMeasureSpec, heightMeasureSpec)
+
+        val measureHeight = measureHeight(heightMeasureSpec, getMaxHeight())
+        val measureWidth = measureWidth(widthMeasureSpec, getMaxWidth())
+        setMeasuredDimension(measureHeight, measureWidth)
+
     }
 
-    fun measureHeight(measureSpec: Int, defaultSize: Int = suggestedMinimumHeight): Int {
+    /***
+     * 默认：获取子View中宽度最大的值
+     */
+    open fun getMaxWidth(): Int {
+        val childCount = childCount
+        var maxWidth = 0
+        for (i in 0 until childCount) {
+            val childView = getChildAt(i)
+            if (childView.measuredWidth > maxWidth) maxWidth = childView.measuredWidth
+        }
+        return maxWidth
+    }
+
+
+    /***
+     * 默认： 将所有子View的高度相加
+     */
+    open fun getMaxHeight(): Int {
+        val childCount = childCount
+        var height = 0
+        for (i in 0 until childCount) {
+            val childView: View = getChildAt(i)
+            height += childView.measuredHeight
+        }
+        return height
+    }
+
+    open fun measureHeight(measureSpec: Int, defaultSize: Int = suggestedMinimumHeight): Int {
         var result: Int
         val specMode = MeasureSpec.getMode(measureSpec)
         val specSize = MeasureSpec.getSize(measureSpec)
@@ -48,7 +82,7 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) :
         return result
     }
 
-    fun measureWidth(measureSpec: Int, defaultSize: Int = suggestedMinimumWidth): Int {
+    open fun measureWidth(measureSpec: Int, defaultSize: Int = suggestedMinimumWidth): Int {
         var result: Int
         val specMode = MeasureSpec.getMode(measureSpec)
         val specSize = MeasureSpec.getSize(measureSpec)
@@ -91,14 +125,14 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) :
      * 位置变化
      */
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
-        super.onLayout(changed, left, top, right, bottom)
+        //需要对子布局进行layout child.layout
     }
 
 
     /**
      * 触摸监听
      */
-    override fun onTouchEvent(event: MotionEvent): Boolean {
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
         return super.onTouchEvent(event)
     }
 

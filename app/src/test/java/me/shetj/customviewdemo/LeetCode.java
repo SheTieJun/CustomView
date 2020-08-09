@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 
 import me.shetj.base.tools.json.GsonKit;
 
@@ -92,13 +93,13 @@ class LeetCode {
      * @return
      */
     @Test
-    public List<List<Integer>> generate( int numRows) {
+    public List<List<Integer>> generate(int numRows) {
         List<List<Integer>> list = new ArrayList<>();
         for (int i = 0; i < numRows; i++) {
             List<Integer> integerList = new ArrayList<>();
 
             for (int j = 0; j <= i; j++) {
-                if (i > 1 && j > 0 && i !=j) {
+                if (i > 1 && j > 0 && i != j) {
                     // f(i,j)=f(i−1,j−1)+f(i−1,j)
                     integerList.add(list.get(i - 1).get(j - 1) + list.get(i - 1).get(j));
                 } else {

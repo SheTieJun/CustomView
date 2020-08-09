@@ -10,6 +10,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import me.shetj.base.ktx.toJson
 import org.junit.Test
+import java.util.*
 
 typealias test1  = () -> Boolean
 
@@ -44,6 +45,26 @@ class KotlinTest {
 
     }
 
+    @Test
+    fun test() {
+        val fields =
+            arrayOf("name", "position", "salary")
+        val table = "employee"
+        val select = buildSelectSql(table, fields)
+        println(select)
+        println(if ("SELECT name, position, salary FROM employee" == select) "测试成功" else "测试失败")
+    }
+
+    fun buildSelectSql(
+        table: String,
+        fields: Array<String>
+    ): String {
+        val joiner = StringJoiner(",", "SELECT", " FROM $table")
+        for (name in fields) {
+            joiner.add(name)
+        }
+        return joiner.toString()
+    }
 
 
     fun testMutex() {

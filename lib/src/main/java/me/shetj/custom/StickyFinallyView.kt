@@ -42,7 +42,7 @@ class StickyFinallyView @JvmOverloads constructor(
         mFixCircle = PointF((w / 2).toFloat(), (h / 2).toFloat())
     }
 
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
+    override fun onTouchEvent(event: MotionEvent): Boolean {
             when (event?.action) {
                 MotionEvent.ACTION_DOWN -> {
                     mIsDraw = true
