@@ -58,3 +58,13 @@ fun Context.showWaveVoice(){
         it.findViewById<LineWaveView>(R.id.line_wave_view).startRecord()
     }
 }
+
+
+fun Context.showPageTextDialog(){
+
+    createDialog(this,R.layout.layout_page_text){
+
+    }
+
+
+}

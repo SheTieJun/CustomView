@@ -9,8 +9,8 @@ import androidx.annotation.RequiresApi
 import com.shuyu.gsyvideoplayer.GSYVideoManager
 import com.shuyu.gsyvideoplayer.utils.OrientationUtils
 import kotlinx.android.synthetic.main.activity_picture_in_picture.*
-import me.shetj.base.base.BaseActivity
-import me.shetj.base.base.BasePresenter
+import me.shetj.base.mvp.BaseActivity
+import me.shetj.base.mvp.BasePresenter
 import me.shetj.base.tools.app.ArmsUtils
 import me.shetj.customviewdemo.R
 

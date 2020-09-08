@@ -1,10 +1,7 @@
 package me.shetj.custom
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Paint
-import android.graphics.Rect
+import android.graphics.*
 import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.util.Log
@@ -16,6 +13,37 @@ import kotlin.math.sqrt
 
 fun z(x:Int, y :Int): Int {
     return sqrt((x * x + y * y).toDouble()).toInt()
+}
+
+
+/**
+ * 弧度换算成角度
+ *
+ * @return
+ */
+fun radianToDegree(radian: Double): Double {
+    return radian * 180 / Math.PI
+}
+
+/**
+ * 角度换算成弧度
+ * @param degree
+ * @return
+ */
+fun degreeToRadian(degree: Double): Double {
+    return degree * Math.PI / 180
+}
+
+/**
+ * 两个点之间的距离
+ * @param pf1
+ * @param pf2
+ * @return
+ */
+fun distance4PointF(pf1: PointF, pf2: PointF): Float {
+    val disX = pf2.x - pf1.x
+    val disY = pf2.y - pf1.y
+    return sqrt(disX * disX + disY * disY.toDouble()).toFloat()
 }
 
 /**

@@ -12,6 +12,7 @@ import me.shetj.customviewdemo.floatvideo.destroyFloat
 import me.shetj.customviewdemo.floatvideo.showDialogFloat
 import me.shetj.customviewdemo.pic.PictureInPictureActivity
 import me.shetj.customviewdemo.recycle.showDialogRecycle
+import me.shetj.customviewdemo.sticker.StickerActivity
 import me.shetj.customviewdemo.tansition.showDialogLogin
 import me.shetj.customviewdemo.utils.*
 import me.shetj.customviewdemo.utils.MedalDialog.showDialog
@@ -37,6 +38,7 @@ class MainActivity : AppCompatActivity() {
         btn_transition.setOnClickListener { showDialogLogin(this) }
         btn_StickyFinallyView.setOnClickListener { showStickyViewDialog(this) }
         btn_water_mark.setOnClickListener { selectImage(this) }
+        btn_sticker.setOnClickListener { start<StickerActivity>() }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

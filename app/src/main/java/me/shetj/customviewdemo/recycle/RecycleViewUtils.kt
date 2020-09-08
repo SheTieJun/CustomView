@@ -86,8 +86,8 @@ fun showDialogRecycle(context: Context) {
                 viewHolder: RecyclerView.ViewHolder,
                 targetViewHolder: RecyclerView.ViewHolder
             ): Boolean {
-                val adapterPosition = viewHolder.adapterPosition
-                val targetPosition = targetViewHolder.adapterPosition
+                val adapterPosition = viewHolder.bindingAdapterPosition
+                val targetPosition = targetViewHolder.bindingAdapterPosition
                 Collections.swap(moveAdapter.data, adapterPosition, targetPosition)
                 moveAdapter.notifyItemMoved(adapterPosition, targetPosition)
                 return true

@@ -40,7 +40,7 @@ fun showWaterMarkDialog(context: AppCompatActivity, url:Uri  = Uri.fromFile(File
 
 
 fun selectImage(context: AppCompatActivity){
-    ImageUtils.selectlocalImage(context)
+    ImageUtils.selectLocalImage(context)
 }
 
 

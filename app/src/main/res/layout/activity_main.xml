@@ -20,6 +20,15 @@
         android:textAllCaps="false"/>
 
     <Button
+        android:id="@+id/btn_sticker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="sticker"
+        android:textAllCaps="false"
+        app:layout_constraintStart_toEndOf="@id/btn_medal"
+        app:layout_constraintBottom_toBottomOf="@id/btn_medal"/>
+
+    <Button
         android:id="@+id/btn_fish"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
