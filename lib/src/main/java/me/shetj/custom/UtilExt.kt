@@ -67,7 +67,7 @@ fun Bitmap.saveImageBitmap(filename:String):Boolean{
         return true
     } catch (e: IOException) {
         e.printStackTrace()
-        Log.e("save",e.message)
+        Log.e("save",e.message.toString())
     }
     return false
 }
@@ -75,7 +75,7 @@ fun Bitmap.saveImageBitmap(filename:String):Boolean{
 // 通过uri获取bitmap
 fun getBitmapFromUri(context: Context, uri: Uri): Bitmap? {
     var parcelFileDescriptor: ParcelFileDescriptor? = null
-    var fileDescriptor: FileDescriptor? = null;
+    val fileDescriptor: FileDescriptor?
     var bitmap: Bitmap? = null;
     try {
         parcelFileDescriptor = context.contentResolver.openFileDescriptor(uri, "r")

@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item_1.*
 import kotlinx.android.synthetic.main.item_2.*
+import kotlinx.android.synthetic.main.item_3.*
 import me.shetj.base.ktx.start
 import me.shetj.customviewdemo.anim.PathAnim
 import me.shetj.customviewdemo.floatvideo.destroyFloat
@@ -39,6 +40,7 @@ class MainActivity : AppCompatActivity() {
         btn_StickyFinallyView.setOnClickListener { showStickyViewDialog(this) }
         btn_water_mark.setOnClickListener { selectImage(this) }
         btn_sticker.setOnClickListener { start<StickerActivity>() }
+        btn_popup.setOnClickListener { btn_popup.showQMUIPopup() }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

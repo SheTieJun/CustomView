@@ -1,7 +1,13 @@
 package me.shetj.customviewdemo.utils
 
 import android.content.Context
+import android.view.View
 import android.widget.TextView
+import android.widget.Toast
+import com.qmuiteam.qmui.skin.QMUISkinManager
+import com.qmuiteam.qmui.util.QMUIDisplayHelper
+import com.qmuiteam.qmui.widget.popup.QMUIPopups
+import com.qmuiteam.qmui.widget.popup.QMUIQuickAction
 import me.shetj.base.tools.json.GsonKit
 import me.shetj.base.tools.json.HighStringFormatUtil
 import me.shetj.custom.CircleProgressView
@@ -60,11 +66,52 @@ fun Context.showWaveVoice(){
 }
 
 
-fun Context.showPageTextDialog(){
+fun View.showQMUIPopup(){
 
-    createDialog(this,R.layout.layout_page_text){
-
-    }
-
+    QMUIPopups.quickAction(
+        context,
+        QMUIDisplayHelper.dp2px(context, 56),
+        QMUIDisplayHelper.dp2px(context, 56)
+    )
+        .shadow(true)
+        .bgColorAttr(R.attr.qmui_popup_new_color)
+        .skinManager(QMUISkinManager.defaultInstance(context))
+        .edgeProtection(QMUIDisplayHelper.dp2px(context, 20))
+        .addAction(QMUIQuickAction.Action().icon(R.drawable.ic_baseline_file_copy_24).text("复制")
+            .onClick { quickAction, action, position ->
+                quickAction.dismiss()
+                Toast.makeText(context, "复制成功", Toast.LENGTH_SHORT).show()
+            })
+        .addAction(QMUIQuickAction.Action().icon(R.drawable.ic_baseline_format_underlined_24).text("划线")
+            .onClick { quickAction, action, position ->
+                quickAction.dismiss()
+                Toast.makeText(context, "划线成功", Toast.LENGTH_SHORT).show()
+            })
+        .addAction(QMUIQuickAction.Action().icon(R.drawable.ic_baseline_share_24).text("分享")
+            .onClick { quickAction, action, position ->
+                quickAction.dismiss()
+                Toast.makeText(context, "分享成功", Toast.LENGTH_SHORT).show()
+            })
+        .addAction(QMUIQuickAction.Action().icon(R.drawable.ic_baseline_text_format_24)
+            .text("删除划线").onClick { quickAction, action, position ->
+                quickAction.dismiss()
+                Toast.makeText(context, "删除划线成功", Toast.LENGTH_SHORT).show()
+            })
+        .addAction(QMUIQuickAction.Action().icon(R.drawable.ic_baseline_brush_24).text("词典")
+            .onClick { quickAction, action, position ->
+                quickAction.dismiss()
+                Toast.makeText(context, "打开词典", Toast.LENGTH_SHORT).show()
+            })
+        .addAction(QMUIQuickAction.Action().icon(R.drawable.ic_baseline_blur_circular_24).text("圈圈")
+            .onClick { quickAction, action, position ->
+                quickAction.dismiss()
+                Toast.makeText(context, "查询成功", Toast.LENGTH_SHORT).show()
+            })
+        .addAction(QMUIQuickAction.Action().icon(R.drawable.ic_baseline_find_in_page_24).text("查询")
+            .onClick { quickAction, action, position ->
+                quickAction.dismiss()
+                Toast.makeText(context, "查询成功", Toast.LENGTH_SHORT).show()
+            })
+        .show(this)
 
 }

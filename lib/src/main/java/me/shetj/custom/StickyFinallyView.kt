@@ -43,7 +43,7 @@ class StickyFinallyView @JvmOverloads constructor(
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-            when (event?.action) {
+            when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
                     mIsDraw = true
                     mFlexibleCircle = PointF(event.x, event.y)
