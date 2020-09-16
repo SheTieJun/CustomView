@@ -8,6 +8,7 @@ import kotlinx.android.synthetic.main.item_1.*
 import kotlinx.android.synthetic.main.item_2.*
 import kotlinx.android.synthetic.main.item_3.*
 import me.shetj.base.ktx.start
+import me.shetj.base.tools.app.FragmentUtils
 import me.shetj.customviewdemo.anim.PathAnim
 import me.shetj.customviewdemo.floatvideo.destroyFloat
 import me.shetj.customviewdemo.floatvideo.showDialogFloat
@@ -41,6 +42,7 @@ class MainActivity : AppCompatActivity() {
         btn_water_mark.setOnClickListener { selectImage(this) }
         btn_sticker.setOnClickListener { start<StickerActivity>() }
         btn_popup.setOnClickListener { btn_popup.showQMUIPopup() }
+        btn_fragment.setOnClickListener { PathAnim.showFragmentAnim(this,fragmentManager = supportFragmentManager) }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -58,6 +60,12 @@ class MainActivity : AppCompatActivity() {
         destroyFloat(true)
     }
 
+
+    override fun onBackPressed() {
+        if (!FragmentUtils.dispatchBackPress(supportFragmentManager)) {
+            super.onBackPressed()
+        }
+    }
     override fun onDestroy() {
         super.onDestroy()
     }

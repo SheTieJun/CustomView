@@ -52,6 +52,7 @@ class PictureInPictureActivity : BaseActivity<BasePresenter<*>>(),
     override fun onBackPressed() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && iWantToBeInPipModeNow()) {
             enterPic()
+            super.onBackPressed()
         }else{
             super.onBackPressed()
         }

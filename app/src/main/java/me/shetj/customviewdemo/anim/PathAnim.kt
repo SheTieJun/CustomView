@@ -5,8 +5,12 @@ import android.content.Context
 import android.graphics.Path
 import android.view.View
 import android.widget.ImageView
+import androidx.fragment.app.FragmentManager
+import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
 import me.shetj.base.tools.app.ArmsUtils
+import me.shetj.base.tools.app.FragmentUtils
 import me.shetj.customviewdemo.R
+import me.shetj.customviewdemo.fragment.VideoFragment
 import me.shetj.customviewdemo.utils.createDialog
 
 
@@ -57,6 +61,33 @@ object PathAnim {
     fun ImageView.getPathAnimator(path: Path): ObjectAnimator {
         return ObjectAnimator.ofFloat(this, "x", "y", path).apply {
             duration = 10000
+        }
+    }
+
+
+    fun showFragmentAnim(context: Context,fragmentManager: FragmentManager){
+        var videoPlayer :StandardGSYVideoPlayer?=null
+        var touch:View?=null
+        createDialog(context = context,R.layout.layout_test_fragment_dialog){
+            videoPlayer = it.findViewById(R.id.videoPlayer)
+            val source1 =
+                "http://9890.vod.myqcloud.com/9890_4e292f9a3dd011e6b4078980237cc3d3.f20.mp4"
+            videoPlayer!!.setUp(source1, true, "测试视频")
+            videoPlayer!!.startPlayLogic()
+            touch = it.findViewById<View>(R.id.touch_outside)
+
+        }?.apply {
+            touch?.setOnClickListener {
+                FragmentUtils.add(fragmentManager,
+                    VideoFragment.newInstance(),
+                    R.id.root,
+                    sharedElements = arrayOf(videoPlayer!!)
+                )
+                this.dismiss()
+            }
+            setOnDismissListener {
+                videoPlayer?.release()
+            }
         }
     }
 }

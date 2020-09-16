@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Canvas
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.chad.library.adapter.base.BaseQuickAdapter
 import me.shetj.custom.layoutManager.BaseItemTouchCallback
@@ -22,11 +23,13 @@ fun showDialogRecycle(context: Context) {
             SwipeAdapter(IntArray(20).map { (it + Random.nextInt(2)).toString() }.toMutableList())
         val moveAdapter =
             SwipeAdapter(IntArray(30).map { (it + Random.nextInt(3)).toString() }.toMutableList())
+        val testAdapter =
+            TestAdapter(IntArray(30).map { (it + Random.nextInt(3)).toString() }.toMutableList())
         val itemTouchHelperSwipe =
             ItemTouchHelper(object : BaseItemTouchCallback(object : ItemTouchListener {
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                    val removeItem = swipeAdapter.data.removeAt(viewHolder.adapterPosition)
-                    swipeAdapter.notifyItemRemoved(viewHolder.adapterPosition)
+                    val removeItem = swipeAdapter.data.removeAt(viewHolder.bindingAdapterPosition)
+                    swipeAdapter.notifyItemRemoved(viewHolder.bindingAdapterPosition)
                     swipeAdapter.addData(swipeAdapter.itemCount,removeItem)
                 }
 
@@ -107,6 +110,11 @@ fun showDialogRecycle(context: Context) {
             adapter = moveAdapter
             layoutManager = GridLayoutManager(context, 3)
             itemTouchHelperMove.attachToRecyclerView(this)
+        }
+        it.findViewById<RecyclerView>(R.id.recycle_grid).apply {
+            adapter = testAdapter
+            layoutManager = GridLayoutManager(context, 3,GridLayoutManager.HORIZONTAL,false)
+            PagerSnapHelper().attachToRecyclerView(this)
         }
     }
 }

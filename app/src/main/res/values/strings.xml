@@ -3,4 +3,6 @@
     <string name="level_des_img">学习等级由连续学习天数决定，目前共有8个等级，它们对应的连续学习天数为：</string>
     <string name="medal_string">获得了专属勋章<font color="#FF4812">XXXX</font></string>
     <string name="medal_string_3">1.专属赠品课程已完成解锁XXXXX \n2.完成学习任务可以<font color="#FF4812">XXXXXX</font></string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

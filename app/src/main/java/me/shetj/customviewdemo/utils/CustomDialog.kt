@@ -75,6 +75,7 @@ fun View.showQMUIPopup(){
     )
         .shadow(true)
         .bgColorAttr(R.attr.qmui_popup_new_color)
+        .dismissIfOutsideTouch(false)
         .skinManager(QMUISkinManager.defaultInstance(context))
         .edgeProtection(QMUIDisplayHelper.dp2px(context, 20))
         .addAction(QMUIQuickAction.Action().icon(R.drawable.ic_baseline_file_copy_24).text("复制")
