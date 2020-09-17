@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    tools:showIn="@layout/activity_main">
+
+
+    <Button
+        android:id="@+id/btn_fish"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="阴阳鱼"
+        app:layout_constraintTop_toBottomOf="@id/btn_medal"
+        app:layout_constraintStart_toStartOf="parent"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btn_fragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fragment"
+        app:layout_constraintStart_toEndOf="@id/btn_fish"
+        app:layout_constraintBottom_toBottomOf="@id/btn_fish"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btn_change_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ChangeText"
+        app:layout_constraintStart_toEndOf="@id/btn_fragment"
+        app:layout_constraintBottom_toBottomOf="@id/btn_fish"
+        android:textAllCaps="false" />
+</merge>

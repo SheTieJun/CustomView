@@ -1,11 +1,14 @@
 package me.shetj.customviewdemo.pic
 
 import android.app.PictureInPictureParams
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.util.Rational
+import android.view.View
 import androidx.annotation.RequiresApi
+import androidx.core.view.isVisible
 import com.shuyu.gsyvideoplayer.GSYVideoManager
 import com.shuyu.gsyvideoplayer.utils.OrientationUtils
 import kotlinx.android.synthetic.main.activity_picture_in_picture.*
@@ -29,8 +32,19 @@ class PictureInPictureActivity : BaseActivity<BasePresenter<*>>(),
     private var orientationUtils: OrientationUtils? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ArmsUtils.statuInScreen2(this,false)
+        ArmsUtils.statuInScreen2(this, false)
         setContentView(R.layout.activity_picture_in_picture)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && iWantToBeInPipModeNow()) {
+            enter.setOnClickListener {
+                enterPic()
+            }
+        } else {
+            enter.visibility = View.GONE
+        }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
     }
 
     override fun initData() {
@@ -45,17 +59,14 @@ class PictureInPictureActivity : BaseActivity<BasePresenter<*>>(),
         orientationUtils = OrientationUtils(this, videoView)
         //初始化不打开外部的旋转
         orientationUtils?.isEnable = false
-        videoView?.setUp("https://vod.lycheer.net/e22cd48bvodtransgzp1253442168/d6b59e205285890789389180692/v.f20.mp4", false, null, "")
+        val source1 =
+            "http://9890.vod.myqcloud.com/9890_4e292f9a3dd011e6b4078980237cc3d3.f20.mp4"
+        videoView?.setUp(source1, true, "测试视频")
         videoView.startPlayLogic()
     }
 
     override fun onBackPressed() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && iWantToBeInPipModeNow()) {
-            enterPic()
-            super.onBackPressed()
-        }else{
-            super.onBackPressed()
-        }
+        super.onBackPressed()
     }
 
     /**
@@ -80,11 +91,13 @@ class PictureInPictureActivity : BaseActivity<BasePresenter<*>>(),
         return true
     }
 
+
     //在画中画期间处理界面
     override fun onPictureInPictureModeChanged(
         isInPictureInPictureMode: Boolean,
         newConfig: Configuration
     ) {
+        enter.isVisible = !isInPictureInPictureMode
         if (isInPictureInPictureMode) {
             mReceiver.registerReceiver(this)
         } else {

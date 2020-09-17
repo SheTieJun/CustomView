@@ -7,6 +7,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item_1.*
 import kotlinx.android.synthetic.main.item_2.*
 import kotlinx.android.synthetic.main.item_3.*
+import kotlinx.android.synthetic.main.item_4.*
 import me.shetj.base.ktx.start
 import me.shetj.base.tools.app.FragmentUtils
 import me.shetj.customviewdemo.anim.PathAnim
@@ -43,6 +44,7 @@ class MainActivity : AppCompatActivity() {
         btn_sticker.setOnClickListener { start<StickerActivity>() }
         btn_popup.setOnClickListener { btn_popup.showQMUIPopup() }
         btn_fragment.setOnClickListener { PathAnim.showFragmentAnim(this,fragmentManager = supportFragmentManager) }
+        btn_change_text.setOnClickListener {  showChangeText()}
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

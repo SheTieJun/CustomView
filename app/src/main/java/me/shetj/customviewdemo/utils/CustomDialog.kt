@@ -66,6 +66,10 @@ fun Context.showWaveVoice(){
 }
 
 
+fun Context.showChangeText(){
+    createDialog(this, R.layout.layout_change_text) {}
+}
+
 fun View.showQMUIPopup(){
 
     QMUIPopups.quickAction(

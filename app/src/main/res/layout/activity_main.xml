@@ -13,23 +13,7 @@
 
     <include layout="@layout/item_3" />
 
-    <Button
-        android:id="@+id/btn_fish"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="阴阳鱼"
-        app:layout_constraintTop_toBottomOf="@id/btn_medal"
-        app:layout_constraintStart_toStartOf="parent"
-        android:textAllCaps="false"/>
-
-    <Button
-        android:id="@+id/btn_fragment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Fragment"
-        app:layout_constraintStart_toEndOf="@id/btn_fish"
-        app:layout_constraintBottom_toBottomOf="@id/btn_fish"
-        android:textAllCaps="false"/>
+    <include layout="@layout/item_4" />
 
     <Button
         android:id="@+id/btn_LineWaveVoice"
