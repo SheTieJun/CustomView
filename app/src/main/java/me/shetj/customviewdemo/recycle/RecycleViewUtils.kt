@@ -4,12 +4,14 @@ import android.content.Context
 import android.graphics.Canvas
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.chad.library.adapter.base.BaseQuickAdapter
 import me.shetj.custom.layoutManager.BaseItemTouchCallback
 import me.shetj.custom.layoutManager.ItemTouchListener
 import me.shetj.customviewdemo.R
+import me.shetj.customviewdemo.page.MeetingPageLayoutManager
+import me.shetj.customviewdemo.page.MeetingPageLayoutManager.HORIZONTAL
+import me.shetj.customviewdemo.page.PagerSnapHelper
 import me.shetj.customviewdemo.utils.createDialog
 import java.util.*
 import kotlin.math.sqrt
@@ -113,7 +115,7 @@ fun showDialogRecycle(context: Context) {
         }
         it.findViewById<RecyclerView>(R.id.recycle_grid).apply {
             adapter = testAdapter
-            layoutManager = GridLayoutManager(context, 3,GridLayoutManager.HORIZONTAL,false)
+            layoutManager = MeetingPageLayoutManager( 2,2,HORIZONTAL)
             PagerSnapHelper().attachToRecyclerView(this)
         }
     }

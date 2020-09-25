@@ -16,18 +16,5 @@ class TestAdapter(dates: MutableList<String>) :
             R.id.iv_image,
             if (item.toInt() % 2 == 0) R.drawable.p_1 else R.drawable.p_2
         )
-        holder.getView<ImageView>(R.id.iv_image).apply {
-            if (layoutParams != null) {
-                layoutParams = layoutParams.apply {
-                    width = ArmsUtils.dip2px(100f)
-                    height = ArmsUtils.dip2px(100f)
-                }
-            } else {
-                layoutParams = ViewGroup.LayoutParams(
-                    ArmsUtils.dip2px(100f),
-                    ArmsUtils.dip2px(100f)
-                )
-            }
-        }
     }
 }
