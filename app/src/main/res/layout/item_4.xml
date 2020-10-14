@@ -31,4 +31,14 @@
         app:layout_constraintStart_toEndOf="@id/btn_fragment"
         app:layout_constraintBottom_toBottomOf="@id/btn_fish"
         android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btn_text_font"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextFont"
+        app:layout_constraintStart_toEndOf="@id/btn_change_text"
+        app:layout_constraintBottom_toBottomOf="@id/btn_fish"
+        android:textAllCaps="false" />
+
 </merge>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    tools:showIn="@layout/activity_main">
+
+
+    <Button
+        android:id="@+id/btn_LineWaveVoice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="LineWaveVoice"
+        app:layout_constraintTop_toBottomOf="@id/btn_fish"
+        app:layout_constraintStart_toStartOf="parent"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btn_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="LoadingDialog"
+        app:layout_constraintTop_toTopOf="@id/btn_LineWaveVoice"
+        app:layout_constraintStart_toEndOf="@id/btn_LineWaveVoice"
+        android:textAllCaps="false" />
+</merge>

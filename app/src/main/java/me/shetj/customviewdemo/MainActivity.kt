@@ -8,6 +8,7 @@ import kotlinx.android.synthetic.main.item_1.*
 import kotlinx.android.synthetic.main.item_2.*
 import kotlinx.android.synthetic.main.item_3.*
 import kotlinx.android.synthetic.main.item_4.*
+import kotlinx.android.synthetic.main.item_5.*
 import me.shetj.base.ktx.start
 import me.shetj.base.tools.app.FragmentUtils
 import me.shetj.customviewdemo.anim.PathAnim
@@ -17,6 +18,7 @@ import me.shetj.customviewdemo.pic.PictureInPictureActivity
 import me.shetj.customviewdemo.recycle.showDialogRecycle
 import me.shetj.customviewdemo.sticker.StickerActivity
 import me.shetj.customviewdemo.tansition.showDialogLogin
+import me.shetj.customviewdemo.text.createShowTextDialog
 import me.shetj.customviewdemo.utils.*
 import me.shetj.customviewdemo.utils.MedalDialog.showDialog
 import me.shetj.customviewdemo.water_mark.onImageActivityResult
@@ -45,6 +47,8 @@ class MainActivity : AppCompatActivity() {
         btn_popup.setOnClickListener { btn_popup.showQMUIPopup() }
         btn_fragment.setOnClickListener { PathAnim.showFragmentAnim(this,fragmentManager = supportFragmentManager) }
         btn_change_text.setOnClickListener {  showChangeText()}
+        btn_text_font.setOnClickListener { createShowTextDialog(this) }
+        btn_loading.setOnClickListener { createLoading(this) }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

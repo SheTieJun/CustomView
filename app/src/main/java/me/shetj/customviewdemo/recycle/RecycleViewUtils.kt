@@ -2,10 +2,13 @@ package me.shetj.customviewdemo.recycle
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Rect
+import android.view.View
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.chad.library.adapter.base.BaseQuickAdapter
+import me.shetj.base.ktx.dp2px
 import me.shetj.custom.layoutManager.BaseItemTouchCallback
 import me.shetj.custom.layoutManager.ItemTouchListener
 import me.shetj.customviewdemo.R
@@ -32,7 +35,7 @@ fun showDialogRecycle(context: Context) {
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                     val removeItem = swipeAdapter.data.removeAt(viewHolder.bindingAdapterPosition)
                     swipeAdapter.notifyItemRemoved(viewHolder.bindingAdapterPosition)
-                    swipeAdapter.addData(swipeAdapter.itemCount,removeItem)
+                    swipeAdapter.addData(swipeAdapter.itemCount, removeItem)
                 }
 
                 override fun isLongPressDragEnabled(): Boolean = false
@@ -63,7 +66,7 @@ fun showDialogRecycle(context: Context) {
                             var fraction = swipeValue / (sqrt(
                                 (viewHolder.itemView.width * viewHolder.itemView.width
                                         + viewHolder.itemView.height * viewHolder.itemView.height).toDouble()
-                            )/2)
+                            ) / 2)
                             // 边界修正 最大为1
                             if (fraction > 1) {
                                 fraction = 1.0
@@ -115,7 +118,58 @@ fun showDialogRecycle(context: Context) {
         }
         it.findViewById<RecyclerView>(R.id.recycle_grid).apply {
             adapter = testAdapter
-            layoutManager = MeetingPageLayoutManager( 2,2,HORIZONTAL)
+            addItemDecoration(object : RecyclerView.ItemDecoration() {
+                private val mHeight = 5f.dp2px() //分割线高度
+
+                /*
+                 * etItemOffsets：通过Rect为每个Item设置偏移，用于绘制Decoration。
+                 * onDraw：通过该方法，在Canvas上绘制内容，在绘制Item之前调用。
+                 * （如果没有通过getItemOffsets设置偏移的话，Item的内容会将其覆盖）
+                 * onDrawOver：通过该方法，在Canvas上绘制内容,在Item之后调用。
+                 * (画的内容会覆盖在item的上层)
+                 */
+
+                override fun getItemOffsets(
+                    outRect: Rect,
+                    view: View,
+                    parent: RecyclerView,
+                    state: RecyclerView.State
+                ) {
+                    super.getItemOffsets(outRect, view, parent, state)
+                    val position = parent.getChildAdapterPosition(view)
+                    when (position % 4) {
+                        0 -> {
+                            outRect.bottom = mHeight
+                            outRect.right = mHeight
+                        }
+                        1 -> {
+                            outRect.left = mHeight
+                            outRect.bottom = mHeight
+                        }
+                        2 ->{
+                            outRect.top = mHeight
+                            outRect.right = mHeight
+                        }
+                        3->{
+                            outRect.top = mHeight
+                            outRect.left = mHeight
+                        }
+                    }
+                }
+
+                override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+                    super.onDraw(c, parent, state)
+                }
+
+                override fun onDrawOver(
+                    c: Canvas,
+                    parent: RecyclerView,
+                    state: RecyclerView.State
+                ) {
+                    super.onDrawOver(c, parent, state)
+                }
+            })
+            layoutManager = MeetingPageLayoutManager(2, 2, HORIZONTAL)
             PagerSnapHelper().attachToRecyclerView(this)
         }
     }

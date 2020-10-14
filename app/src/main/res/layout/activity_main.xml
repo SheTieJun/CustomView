@@ -15,14 +15,7 @@
 
     <include layout="@layout/item_4" />
 
-    <Button
-        android:id="@+id/btn_LineWaveVoice"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="LineWaveVoice"
-        app:layout_constraintTop_toBottomOf="@id/btn_fish"
-        app:layout_constraintStart_toStartOf="parent"
-        android:textAllCaps="false"/>
+    <include layout="@layout/item_5" />
 
     <Button
         android:id="@+id/btn_AngleSeekBar"
