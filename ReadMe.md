@@ -11,3 +11,5 @@
 | Android O 画中画|[PictureInPicture](https://github.com/SheTieJun/CustomView/tree/master/app/src/main/java/me/shetj/customviewdemo/pic) | |
 | Transition 和 揭露动画(view 切换效果)|[Transition](https://github.com/SheTieJun/CustomView/tree/master/app/src/main/java/me/shetj/customviewdemo/tansition)||
 | 生成添加水印图片|[WaterMark](https://github.com/SheTieJun/CustomView/tree/master/app/src/main/java/me/shetj/customviewdemo/water_mark) | |
+| recycleView Page|[page](https://github.com/SheTieJun/CustomView/tree/master/app/src/main/java/me/shetj/customviewdemo/page)||
+| LoadingDialog with Rx or coroutines |[pageLayoutManager](https://github.com/SheTieJun/CustomView/tree/master/app/src/main/java/me/shetj/customviewdemo/utils/LoadingDialog.kt)
