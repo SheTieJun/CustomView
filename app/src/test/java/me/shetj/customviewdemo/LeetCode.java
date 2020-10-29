@@ -1,12 +1,10 @@
 package me.shetj.customviewdemo;
 
 
-import org.jetbrains.annotations.TestOnly;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringJoiner;
 
 import me.shetj.base.tools.json.GsonKit;
 

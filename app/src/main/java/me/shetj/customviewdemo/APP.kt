@@ -6,6 +6,7 @@ import android.app.Application
 import android.content.Context
 import androidx.multidex.MultiDex
 import me.shetj.base.S
+import me.shetj.customviewdemo.utils.UncaughtExceptionHandler
 
 /**
  *
@@ -21,6 +22,7 @@ class APP : Application()   {
     override fun onCreate() {
         super.onCreate()
         S.init(this, true,null)
+        Thread.setDefaultUncaughtExceptionHandler(UncaughtExceptionHandler())
     }
 
     override fun attachBaseContext(base: Context?) {

@@ -8,9 +8,7 @@ import android.view.ViewGroup
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.OnLifecycleEvent
 import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
-import me.shetj.base.ktx.hide
 import me.shetj.base.mvp.BaseFragment
 import me.shetj.base.mvp.EmptyPresenter
 import me.shetj.base.tools.app.FragmentUtils

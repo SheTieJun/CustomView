@@ -14,4 +14,12 @@
         android:src="@drawable/p_1"
         android:scaleType="centerCrop"/>
 
+    <TextView
+        android:id="@+id/position"
+        android:layout_width="100dp"
+        android:layout_height="match_parent"
+        android:textColor="@color/black"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:text="1"/>
 </androidx.cardview.widget.CardView>

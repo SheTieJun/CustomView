@@ -47,4 +47,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/recycle_move" />
 
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_Change"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        android:text="交换"
+        app:layout_constraintBottom_toBottomOf="parent"
+/>
 </androidx.constraintlayout.widget.ConstraintLayout>

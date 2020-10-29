@@ -5,8 +5,8 @@ import android.content.Intent
 import android.net.Uri
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import me.shetj.base.ktx.showToast
 import me.shetj.base.sim.SimpleCallBack
@@ -23,7 +23,7 @@ fun showWaterMarkDialog(context: AppCompatActivity, url:Uri  = Uri.fromFile(File
     createDialog(context, R.layout.layout_water_mark) {
         val image = it.findViewById<WaterMarkImage>(R.id.image)
         it.findViewById<View>(R.id.bt_save).setOnClickListener {
-            GlobalScope.launch(Dispatchers.IO) {
+            context.lifecycleScope.launch(Dispatchers.IO) {
                 val save = image.save(EnvironmentStorage.downloadCache + "/showWaterMarkDialog.png")
                 launch(Dispatchers.Main) {
                     if (save) {

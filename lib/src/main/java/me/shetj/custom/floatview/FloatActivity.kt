@@ -7,8 +7,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import androidx.annotation.RequiresApi
-import java.util.*
-import kotlin.collections.ArrayList
 
 /**
  * 用于在内部自动申请权限

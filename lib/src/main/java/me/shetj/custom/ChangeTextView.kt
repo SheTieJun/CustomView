@@ -1,7 +1,9 @@
 package me.shetj.custom
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Color
+import android.graphics.LinearGradient
+import android.graphics.Shader
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatTextView
 

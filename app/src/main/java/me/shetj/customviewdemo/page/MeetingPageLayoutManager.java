@@ -12,7 +12,6 @@ import androidx.annotation.IntRange;
 import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.RecyclerView;
 
-
 import timber.log.Timber;
 
 import static android.view.View.MeasureSpec.EXACTLY;

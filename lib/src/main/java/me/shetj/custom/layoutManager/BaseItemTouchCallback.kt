@@ -4,8 +4,6 @@ import android.graphics.Canvas
 import android.view.animation.AccelerateInterpolator
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import kotlin.math.abs
-import kotlin.math.min
 
 
 open class BaseItemTouchCallback(private val touchListener: ItemTouchListener?) : ItemTouchHelper.Callback() {

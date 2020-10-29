@@ -1,10 +1,7 @@
 package me.shetj.customviewdemo.recycle
 
-import android.view.ViewGroup
-import android.widget.ImageView
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import me.shetj.base.base.BaseSAdapter
-import me.shetj.base.tools.app.ArmsUtils
 import me.shetj.customviewdemo.R
 
 
@@ -16,5 +13,6 @@ class TestAdapter(dates: MutableList<String>) :
             R.id.iv_image,
             if (item.toInt() % 2 == 0) R.drawable.p_1 else R.drawable.p_2
         )
+        holder.setText(R.id.position,""+item)
     }
 }

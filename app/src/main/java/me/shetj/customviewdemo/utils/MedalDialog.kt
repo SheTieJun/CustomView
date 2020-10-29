@@ -44,6 +44,7 @@ object MedalDialog {
             Timber.i("setOnShowListener")
             ivMedal.animate().scaleX(1.25f)
                 .scaleY(1.25f).apply {
+                    //华为手机不支持rotationYBy
                     if (!Build.MANUFACTURER.contains("HUAWEI", true)) {
                         rotationYBy(720f)
                     }else{
