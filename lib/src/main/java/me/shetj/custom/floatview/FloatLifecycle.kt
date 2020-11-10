@@ -62,6 +62,9 @@ internal class FloatLifecycle(
         }, delay)
     }
 
+    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+    }
+
     override fun onActivityStarted(activity: Activity) {
         startCount++
     }
@@ -84,11 +87,7 @@ internal class FloatLifecycle(
         }
     }
 
-    override fun onActivityCreated(
-        activity: Activity,
-        savedInstanceState: Bundle
-    ) {
-    }
+
 
     override fun onActivitySaveInstanceState(
         activity: Activity,

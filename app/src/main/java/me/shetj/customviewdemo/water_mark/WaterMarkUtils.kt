@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.view.View
+import androidx.activity.result.ActivityResultCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
@@ -11,6 +12,7 @@ import kotlinx.coroutines.launch
 import me.shetj.base.ktx.showToast
 import me.shetj.base.sim.SimpleCallBack
 import me.shetj.base.tools.file.EnvironmentStorage
+import me.shetj.base.tools.file.FileQUtils.searchFile
 import me.shetj.base.tools.image.ImageUtils
 import me.shetj.custom.WaterMarkImage
 import me.shetj.customviewdemo.R
@@ -40,7 +42,7 @@ fun showWaterMarkDialog(context: AppCompatActivity, url:Uri  = Uri.fromFile(File
 
 
 fun selectImage(context: AppCompatActivity){
-    ImageUtils.selectLocalImage(context)
+    context.searchFile(callback = ActivityResultCallback<Uri?> { result -> result?.let { showWaterMarkDialog(context, it) } })
 }
 
 

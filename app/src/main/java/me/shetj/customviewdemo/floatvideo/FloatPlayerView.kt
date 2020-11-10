@@ -91,7 +91,7 @@ class FloatPlayerView : FrameLayout {
         mPath?.reset()
         mRect?.set(0f, 0f, w.toFloat(), h.toFloat())
         mRect?.let {
-            mPath?.addRoundRect(mRect, rd, rd, Path.Direction.CW)
+            mPath?.addRoundRect(mRect!!, rd, rd, Path.Direction.CW)
         }
     }
 

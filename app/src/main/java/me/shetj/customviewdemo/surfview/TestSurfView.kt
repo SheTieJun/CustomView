@@ -26,20 +26,6 @@ class TestSurfView @JvmOverloads constructor(
         style = Paint.Style.FILL
     }
 
-    override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
-
-
-    }
-
-    override fun surfaceDestroyed(holder: SurfaceHolder?) {
-
-    }
-
-    override fun surfaceCreated(holder: SurfaceHolder?) {
-        draw()
-    }
-
-
     private fun draw() {
 
         try {
@@ -53,6 +39,16 @@ class TestSurfView @JvmOverloads constructor(
             if (mCanvas != null)
                 holder.unlockCanvasAndPost(mCanvas);
         }
+    }
+
+    override fun surfaceCreated(holder: SurfaceHolder) {
+    }
+
+    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
+    }
+
+    override fun surfaceDestroyed(holder: SurfaceHolder) {
+        draw()
     }
 
 }

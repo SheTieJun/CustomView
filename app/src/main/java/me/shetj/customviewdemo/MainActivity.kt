@@ -15,6 +15,7 @@ import me.shetj.customviewdemo.anim.PathAnim
 import me.shetj.customviewdemo.floatvideo.destroyFloat
 import me.shetj.customviewdemo.floatvideo.showDialogFloat
 import me.shetj.customviewdemo.pic.PictureInPictureActivity
+import me.shetj.customviewdemo.pre_video.PreVideoActivity
 import me.shetj.customviewdemo.recycle.showDialogRecycle
 import me.shetj.customviewdemo.sticker.StickerActivity
 import me.shetj.customviewdemo.tansition.showDialogLogin
@@ -49,6 +50,7 @@ class MainActivity : AppCompatActivity() {
         btn_change_text.setOnClickListener {  showChangeText()}
         btn_text_font.setOnClickListener { createShowTextDialog(this) }
         btn_loading.setOnClickListener { createLoading(this) }
+        btn_videoPre.setOnClickListener { start<PreVideoActivity>() }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

@@ -22,4 +22,13 @@
         app:layout_constraintTop_toTopOf="@id/btn_LineWaveVoice"
         app:layout_constraintStart_toEndOf="@id/btn_LineWaveVoice"
         android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btn_videoPre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="videoPre"
+        app:layout_constraintTop_toTopOf="@id/btn_LineWaveVoice"
+        app:layout_constraintStart_toEndOf="@id/btn_loading"
+        android:textAllCaps="false" />
 </merge>
