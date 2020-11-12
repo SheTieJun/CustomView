@@ -1,5 +1,6 @@
 package me.shetj.customviewdemo.recycle
 
+import android.annotation.SuppressLint
 import android.view.MotionEvent
 import android.view.View
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -36,6 +37,7 @@ class SwipeLayoutManager(
     }
 
     //居中显示view
+    @SuppressLint("ClickableViewAccessibility")
     private fun layoutView(
         recycler: RecyclerView.Recycler,
         view: View,
@@ -73,7 +75,7 @@ class SwipeLayoutManager(
                     if (event.action == MotionEvent.ACTION_DOWN) {
                         val childViewHolder = recyclerView.getChildViewHolder(view)
                         //只让第一个滑动
-                        if (childViewHolder.adapterPosition == 0) {
+                        if (childViewHolder.bindingAdapterPosition == 0) {
                             itemTouchHelper.startSwipe(childViewHolder)
                         }
                     }

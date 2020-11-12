@@ -18,6 +18,7 @@ import kotlin.math.abs
 class PreVideoActivity : AppCompatActivity() {
 
     val publishSubject = PublishSubject.create<Int>()
+    val videoCode:VideoCode by lazy { VideoCode() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +37,8 @@ class PreVideoActivity : AppCompatActivity() {
                 ActivityResultCallback<Uri?> { result ->
                     result.toJson().logi()
                     player.setVideoURI(result)
+                    videoCode.setVideoPath(this,result,surface)
+                    videoCode.startExtractor()
                 })
         }
         seekBar.setOnSeekBarChangeListener(object :SeekBar.OnSeekBarChangeListener{
@@ -56,5 +59,9 @@ class PreVideoActivity : AppCompatActivity() {
         })
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        videoCode.release()
+    }
 
 }
