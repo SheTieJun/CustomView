@@ -11,6 +11,7 @@
         android:layout_height="wrap_content"
         android:text="CircleProgressView"
         android:textAllCaps="false"
+        android:layout_marginStart="8dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -20,6 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAllCaps="false"
+        android:layout_marginStart="8dp"
         app:layout_constraintStart_toEndOf="@id/btn_cir"
         app:layout_constraintTop_toTopOf="@id/btn_cir"
         android:text="recycleView" />
@@ -29,6 +31,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAllCaps="false"
+        android:layout_marginStart="8dp"
         app:layout_constraintStart_toEndOf="@id/btn_recycle"
         app:layout_constraintTop_toTopOf="@id/btn_cir"
         android:text="水印" />

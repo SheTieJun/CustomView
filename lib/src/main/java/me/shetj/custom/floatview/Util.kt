@@ -27,24 +27,34 @@ object Util {
     }
 
     private var sPoint: Point? = null
+
     @JvmStatic
     fun getScreenWidth(context: Context): Int {
+        if (sPoint == null) {
+            getPoint(context)
+        }
+        return sPoint!!.x
+    }
+
+    private fun getPoint(context: Context) {
         if (sPoint == null) {
             sPoint = Point()
             val wm =
                 context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-            wm.defaultDisplay.getSize(sPoint)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                wm.currentWindowMetrics.bounds.also {
+                    sPoint!!.set(it.width(), it.height())
+                }
+            } else {
+                wm.defaultDisplay.getSize(sPoint)
+            }
         }
-        return sPoint!!.x
     }
 
     @JvmStatic
     fun getScreenHeight(context: Context): Int {
         if (sPoint == null) {
-            sPoint = Point()
-            val wm =
-                context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-            wm.defaultDisplay.getSize(sPoint)
+            getPoint(context)
         }
         return sPoint!!.y
     }

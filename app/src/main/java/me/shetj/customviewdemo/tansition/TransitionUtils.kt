@@ -93,7 +93,7 @@ private fun getExpansionAnimation(card: View, isLogin: Boolean = false): Animato
             false -> card.width / 2
         },
         when(isLogin) {
-            true -> ArmsUtils.dip2px(50f)
+            true -> ArmsUtils.dp2px(50f)
             false -> 0
         },
         0f,
@@ -113,7 +113,7 @@ private fun getGoLoginAnimation(card: View, isLogin: Boolean = false): Animator 
             false -> card.width / 2
         },
         when(isLogin) {
-            true -> ArmsUtils.dip2px(50f)
+            true -> ArmsUtils.dp2px(50f)
             false -> 0
         },
         card.height.toFloat(),

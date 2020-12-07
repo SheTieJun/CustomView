@@ -18,7 +18,7 @@ class FloatPlayerView : FrameLayout {
     private var mRect: RectF? = null
     private var videoPlayer: FloatingVideo? = null
     private var mPath: Path? = null
-    private val rd = ArmsUtils.dip2px(5f).toFloat()
+    private val rd = ArmsUtils.dp2px(5f).toFloat()
 
     constructor(context: Context?) : super(context!!) {
         init()

@@ -24,7 +24,7 @@ fun createDialog(
     return AlertDialog.Builder(context)
         .setView(view)
         .show()?.apply {
-            window?.setLayout(ArmsUtils.dip2px(300f), LinearLayout.LayoutParams.WRAP_CONTENT);
+            window?.setLayout(ArmsUtils.dp2px(300f), LinearLayout.LayoutParams.WRAP_CONTENT);
         }
 }
 
@@ -42,10 +42,8 @@ fun createLoading(context: Context) {
         delay(5000)
         "结束".logi()
     }.apply {
-        AndroidSchedulers.mainThread().scheduleDirect(
-            {
+        AndroidSchedulers.mainThread().scheduleDirect({
                 hideLoading()
-            }, 6000, TimeUnit.MILLISECONDS
-        )
+            }, 5100, TimeUnit.MILLISECONDS)
     }
 }

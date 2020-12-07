@@ -27,13 +27,13 @@
                 android:layout_marginTop="10dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:background="@color/md_teal_600" />
+                android:background="@color/teal_700" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="LOGIN"
-                android:textColor="@color/md_orange_400"
+                android:textColor="@color/orange"
                 app:layout_constraintTop_toTopOf="@id/v1"
                 app:layout_constraintBottom_toBottomOf="@id/v1"
                 app:layout_constraintStart_toStartOf="@id/input_userName"
@@ -44,16 +44,18 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/v1"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_marginStart="40dp"
                 android:layout_marginEnd="40dp"
                 android:layout_height="wrap_content">
 
-                <AutoCompleteTextView
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/userName"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="40dp"
                     android:hint="Username"
+                    android:padding="5dp"
                     android:inputType="textEmailAddress"
                     android:maxLines="1"
                     android:textColorHint="@color/whiteHintText"
@@ -69,13 +71,15 @@
                 app:layout_constraintEnd_toEndOf="@id/input_userName"
                 app:layout_constraintTop_toBottomOf="@id/input_userName"
                 android:layout_width="0dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_height="wrap_content">
 
-                <AutoCompleteTextView
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/Password"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="40dp"
                     android:hint="Password"
+                    android:padding="5dp"
                     android:textColorHint="@color/whiteHintText"
                     android:inputType="textEmailAddress"
                     android:maxLines="1"
@@ -85,14 +89,14 @@
             </com.google.android.material.textfield.TextInputLayout>
 
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_go"
                 android:layout_width="wrap_content"
                 android:layout_height="38dp"
                 android:text="Go"
                 android:layout_marginTop="25dp"
                 android:textColor="@color/white"
-                android:background="@drawable/bg_green"
+                app:backgroundTint="@color/teal_700"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/text_input_password"/>
@@ -110,8 +114,8 @@
         app:layout_constraintTop_toTopOf="@id/card"
         android:layout_marginTop="25dp"
         app:fabCustomSize="50dp"
-        app:backgroundTint="@color/md_teal_600"
-        android:tint="@color/white"
+        app:backgroundTint="@color/teal_700"
+        app:tint="@color/white"
         android:src="@drawable/ic_baseline_add_24"
         />
 

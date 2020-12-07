@@ -10,4 +10,6 @@
         <attr name="borderColor" format="color"/>
         <attr name="borderAlpha" format="integer"/>
     </declare-styleable>
+
+    <attr format="dimension" name="tl_textSelectSize"/>
 </resources>

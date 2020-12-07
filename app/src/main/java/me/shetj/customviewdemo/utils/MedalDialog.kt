@@ -80,7 +80,7 @@ object MedalDialog {
     }
 
     private fun View.ration(){
-        val objectAnimator = ObjectAnimator.ofFloat(this, "rotation", 0f, 359f);
+        val objectAnimator = ObjectAnimator.ofFloat(this, View.ROTATION, 0f, 359f);
         objectAnimator.repeatCount = ValueAnimator.INFINITE;
         objectAnimator.duration = 30000
         objectAnimator.interpolator = LinearInterpolator();

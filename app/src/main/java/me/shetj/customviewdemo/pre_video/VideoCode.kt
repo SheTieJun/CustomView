@@ -2,12 +2,13 @@ package me.shetj.customviewdemo.pre_video
 
 import android.content.Context
 import android.media.MediaCodec
+import android.media.MediaCodec.BufferInfo
+import android.media.MediaCodec.CONFIGURE_FLAG_ENCODE
 import android.media.MediaExtractor
 import android.media.MediaFormat
 import android.net.Uri
 import android.util.Log
 import android.view.Surface
-import android.view.SurfaceView
 import java.lang.Thread.sleep
 
 
@@ -24,16 +25,16 @@ class VideoCode {
     private var isEOS: Boolean = false
     private var context: Context? = null
 
-    fun setVideoPath(context: Context, videoPath: Uri, surfaceView: SurfaceView? = null) {
+    fun setVideoPath(context: Context, videoPath: Uri) {
         this.context = context
         this.videoPath = videoPath
-        this.mSurfaceView = surfaceView?.holder?.surface
     }
-
+    fun setSurface(surfaceView: Surface? = null) {
+        this.mSurfaceView = surfaceView
+    }
 
     fun startExtractor() {
         initExtractor()
-        Thread { decoderVideo() }.start()
     }
 
     private fun initExtractor() {
@@ -49,35 +50,31 @@ class VideoCode {
             val trackCount = mediaExtractor!!.trackCount
 
             for (i in 0 until trackCount) {
-
                 val mediaFormat = mediaExtractor!!.getTrackFormat(i)
                 val mimeType = mediaFormat.getString(MediaFormat.KEY_MIME)
                 if (mimeType?.startsWith("video/", false) == true) {
                     mediaExtractor?.selectTrack(i)
-                    initVideo(mediaFormat)
+                    mCodec = MediaCodec.createDecoderByType(mimeType)
+                    mCodec?.configure(mediaFormat, mSurfaceView, null, CONFIGURE_FLAG_ENCODE)
+                    mCodec?.start()
+                    Thread { decoderVideo() }.start()
                     break
                 }
             }
 
         } catch (e: Exception) {
+            release()
             Log.e(TAG, e.message.toString())
         }
-    }
-
-    private fun initVideo(mediaFormat: MediaFormat) {
-        val mimeType = mediaFormat.getString(MediaFormat.KEY_MIME)
-        if (mCodec == null) {
-            mCodec = MediaCodec.createDecoderByType(mimeType!!)
-        }
-        mCodec?.configure(mediaFormat, mSurfaceView, null, 0)
-        mCodec?.start()
     }
 
 
     private fun decoderVideo() {
         val start = System.currentTimeMillis()
+        mCodec!!.outputBuffers
+        var frameIndex = 0
         isEOS = false
-        val bufferInfo = MediaCodec.BufferInfo()
+        val bufferInfo = BufferInfo()
         try {
             while (!isEOS && mCodec != null && mediaExtractor != null) {
 
@@ -91,7 +88,10 @@ class VideoCode {
                         isEOS = true
                     } else {
                         mCodec!!.queueInputBuffer(inIndex, 0, sampleSize, mediaExtractor!!.sampleTime, 0)
-                        mediaExtractor!!.advance()
+                        val ad = mediaExtractor!!.advance()
+                        if (!ad) {
+                            isEOS = false
+                        }
                     }
                 }
 
@@ -99,11 +99,11 @@ class VideoCode {
 
                 when (outIndex) {
                     MediaCodec.INFO_OUTPUT_FORMAT_CHANGED -> {
+                        mCodec!!.outputBuffers;
                     }
                     MediaCodec.INFO_TRY_AGAIN_LATER -> {
                     }
                     else -> {
-                        mCodec!!.getOutputBuffer(outIndex)
                         while (bufferInfo.presentationTimeUs / 1000 > System.currentTimeMillis() - start) {
                             try {
                                 sleep(10)
@@ -113,6 +113,8 @@ class VideoCode {
                             }
                         }
                         mCodec!!.releaseOutputBuffer(outIndex, true)
+                        frameIndex++;
+                        Log.v(TAG, "frameIndex:  $frameIndex");
                     }
                 }
 
@@ -123,6 +125,7 @@ class VideoCode {
             }
 
         } catch (e: Exception) {
+            Log.e(TAG, e.message.toString())
             e.printStackTrace()
             isEOS = true
             releaseDecode()
@@ -140,12 +143,14 @@ class VideoCode {
                 mediaExtractor!!.release()
             }
         } catch (e: Exception) {
-            Log.e("mixRecorder", "message = ${e.message}")
+            Log.e(TAG, "message = ${e.message}")
         }
     }
 
     fun release() {
         isEOS = true
         releaseDecode()
+        mCodec = null
+        mediaExtractor = null
     }
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:tools="http://schemas.android.com/tools"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="@layout/activity_main">
 
 
@@ -9,36 +9,40 @@
         android:id="@+id/btn_fish"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:text="阴阳鱼"
-        app:layout_constraintTop_toBottomOf="@id/btn_medal"
+        android:textAllCaps="false"
         app:layout_constraintStart_toStartOf="parent"
-        android:textAllCaps="false" />
+        app:layout_constraintTop_toBottomOf="@id/btn_medal" />
 
     <Button
         android:id="@+id/btn_fragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:text="Fragment"
-        app:layout_constraintStart_toEndOf="@id/btn_fish"
+        android:textAllCaps="false"
         app:layout_constraintBottom_toBottomOf="@id/btn_fish"
-        android:textAllCaps="false" />
+        app:layout_constraintStart_toEndOf="@id/btn_fish" />
 
     <Button
         android:id="@+id/btn_change_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:text="ChangeText"
-        app:layout_constraintStart_toEndOf="@id/btn_fragment"
+        android:textAllCaps="false"
         app:layout_constraintBottom_toBottomOf="@id/btn_fish"
-        android:textAllCaps="false" />
+        app:layout_constraintStart_toEndOf="@id/btn_fragment" />
 
     <Button
         android:id="@+id/btn_text_font"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:text="TextFont"
-        app:layout_constraintStart_toEndOf="@id/btn_change_text"
+        android:textAllCaps="false"
         app:layout_constraintBottom_toBottomOf="@id/btn_fish"
-        android:textAllCaps="false" />
+        app:layout_constraintStart_toEndOf="@id/btn_change_text" />
 
 </merge>

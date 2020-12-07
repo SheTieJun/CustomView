@@ -105,10 +105,10 @@ class FloatingVideo : StandardGSYVideoPlayer {
         val mVideoHeight = gsyVideoManager.currentVideoHeight
         if (mVideoWidth > 0 && mVideoHeight > 0) {
             if (mVideoWidth > mVideoHeight) {
-                val fl = ArmsUtils.dip2px(169f).toFloat() / mVideoWidth.toFloat()
+                val fl = ArmsUtils.dp2px(169f).toFloat() / mVideoWidth.toFloat()
                 updateWH((mVideoWidth * fl).toInt(), (mVideoHeight * fl).toInt())
             } else {
-                val fl = ArmsUtils.dip2px(93f).toFloat() / mVideoHeight.toFloat()
+                val fl = ArmsUtils.dp2px(93f).toFloat() / mVideoHeight.toFloat()
                 updateWH((mVideoWidth * fl).toInt(), (mVideoHeight * fl).toInt())
             }
         }

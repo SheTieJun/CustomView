@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Rect
 import android.view.View
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -104,6 +105,7 @@ fun showDialogRecycle(context: Context) {
 
         //卡片滑动
         it.findViewById<RecyclerView>(R.id.recycle_swipe).apply {
+            itemAnimator = DefaultItemAnimator()
             adapter = swipeAdapter.apply {
                 setAnimationWithDefault(BaseQuickAdapter.AnimationType.AlphaIn)
             }

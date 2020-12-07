@@ -1,7 +1,12 @@
 package me.shetj.customviewdemo
 
 import android.content.Context
+import android.content.res.AssetManager
 import android.text.format.Formatter
+import java.io.BufferedReader
+import java.io.IOException
+import java.io.InputStreamReader
+
 
 
 fun getNextLevelData(level: Int):Int{

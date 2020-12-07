@@ -18,7 +18,7 @@ class TestSurfView @JvmOverloads constructor(
     }
 
     private var mCanvas: Canvas?=null
-    private var mSurfaceHolder: SurfaceHolder??=null
+     var mSurfaceHolder: SurfaceHolder??=null
     private var mPaint: Paint = Paint().apply {
         flags = Paint.ANTI_ALIAS_FLAG
         isAntiAlias = true
@@ -42,6 +42,7 @@ class TestSurfView @JvmOverloads constructor(
     }
 
     override fun surfaceCreated(holder: SurfaceHolder) {
+        mSurfaceHolder = holder
     }
 
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
