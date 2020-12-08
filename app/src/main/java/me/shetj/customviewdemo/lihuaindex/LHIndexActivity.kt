@@ -28,84 +28,90 @@ class LHIndexActivity : BaseBindingActivity<IndexViewModel, ActivityLHIndexBindi
             setOnNavigationItemSelectedListener {
                 when(it.itemId){
                     R.id.navigation_class -> {
-                        showClassFragment()
+                        mViewBinding.viewPagerRoot.currentItem = 0
                     }
                     R.id.navigation_learn -> {
-                        showLearnFragment()
+                        mViewBinding.viewPagerRoot.currentItem = 1
                     }
                     R.id.navigation_user -> {
-                        showUserFragment()
+                        mViewBinding.viewPagerRoot.currentItem = 2
                     }
                 }
                 return@setOnNavigationItemSelectedListener true
             }
         }
-        showClassFragment()
+        mViewBinding.viewPagerRoot.apply {
+            isUserInputEnabled = false
+        }.adapter = IndexPagerAdapter(this,ArrayList<Fragment>().apply {
+            add(IndexFragment())
+            add(LearnFragment())
+            add(UserFragment())
+        })
     }
 
-    private fun showClassFragment() {
-        if (currentFragment === classFragment && currentFragment != null) return
-        val ft = supportFragmentManager.beginTransaction()
-        if (currentFragment != null) ft.hide(currentFragment!!)
-        if (classFragment == null) {
-            classFragment =
-                supportFragmentManager.findFragmentByTag("classFragment")
-        }
-        if (classFragment == null) {
-            classFragment = IndexFragment()
-            ft.add(mViewBinding.viewPagerRoot.id,
-                classFragment!!,
-                "classFragment"
-            )
-        } else {
-            ft.show(classFragment!!)
-        }
-        ft.commitAllowingStateLoss()
-        currentFragment = classFragment
-
-    }
-
-    private fun showUserFragment() {
-        if (currentFragment === userCenterFragment && currentFragment != null) return
-        val ft = supportFragmentManager.beginTransaction()
-        if (currentFragment != null) ft.hide(currentFragment!!)
-        if (userCenterFragment == null) {
-            userCenterFragment =
-                supportFragmentManager.findFragmentByTag("userCenterFragment")
-        }
-        if (userCenterFragment == null) {
-            userCenterFragment = UserFragment()
-            ft.add(mViewBinding.viewPagerRoot.id,
-                userCenterFragment!!,
-                "userCenterFragment"
-            )
-        } else {
-            ft.show(userCenterFragment!!)
-        }
-        ft.commitAllowingStateLoss()
-        currentFragment = userCenterFragment
-
-    }
-
-
-    private fun  showLearnFragment() {
-        if (currentFragment === startLearningFragment && currentFragment != null) return
-        val ft = supportFragmentManager.beginTransaction()
-        if (currentFragment != null) ft.hide(currentFragment!!)
-        if (startLearningFragment == null) {
-            startLearningFragment =
-                supportFragmentManager.findFragmentByTag("startLearningFragment")
-        }
-        if (startLearningFragment == null) {
-            startLearningFragment = LearnFragment()
-            ft.add(mViewBinding.viewPagerRoot.id,
-                startLearningFragment!!,
-                "startLearningFragment"
-            )
-        } else {
-            ft.show(startLearningFragment!!)
-        }
-        ft.commitAllowingStateLoss()
-        currentFragment = startLearningFragment
-    }
+//    private fun showClassFragment() {
+//        if (currentFragment === classFragment && currentFragment != null) return
+//        val ft = supportFragmentManager.beginTransaction()
+//        if (currentFragment != null) ft.hide(currentFragment!!)
+//        if (classFragment == null) {
+//            classFragment =
+//                supportFragmentManager.findFragmentByTag("classFragment")
+//        }
+//        if (classFragment == null) {
+//            classFragment = IndexFragment()
+//            ft.add(mViewBinding.viewPagerRoot.id,
+//                classFragment!!,
+//                "classFragment"
+//            )
+//        } else {
+//            ft.show(classFragment!!)
+//        }
+//        ft.commitAllowingStateLoss()
+//        currentFragment = classFragment
+//
+//    }
+//
+//    private fun showUserFragment() {
+//        if (currentFragment === userCenterFragment && currentFragment != null) return
+//        val ft = supportFragmentManager.beginTransaction()
+//        if (currentFragment != null) ft.hide(currentFragment!!)
+//        if (userCenterFragment == null) {
+//            userCenterFragment =
+//                supportFragmentManager.findFragmentByTag("userCenterFragment")
+//        }
+//        if (userCenterFragment == null) {
+//            userCenterFragment = UserFragment()
+//            ft.add(mViewBinding.viewPagerRoot.id,
+//                userCenterFragment!!,
+//                "userCenterFragment"
+//            )
+//        } else {
+//            ft.show(userCenterFragment!!)
+//        }
+//        ft.commitAllowingStateLoss()
+//        currentFragment = userCenterFragment
+//
+//    }
+//
+//
+//    private fun  showLearnFragment() {
+//        if (currentFragment === startLearningFragment && currentFragment != null) return
+//        val ft = supportFragmentManager.beginTransaction()
+//        if (currentFragment != null) ft.hide(currentFragment!!)
+//        if (startLearningFragment == null) {
+//            startLearningFragment =
+//                supportFragmentManager.findFragmentByTag("startLearningFragment")
+//        }
+//        if (startLearningFragment == null) {
+//            startLearningFragment = LearnFragment()
+//            ft.add(mViewBinding.viewPagerRoot.id,
+//                startLearningFragment!!,
+//                "startLearningFragment"
+//            )
+//        } else {
+//            ft.show(startLearningFragment!!)
+//        }
+//        ft.commitAllowingStateLoss()
+//        currentFragment = startLearningFragment
+//    }
 }
