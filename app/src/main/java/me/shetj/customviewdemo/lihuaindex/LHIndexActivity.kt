@@ -1,11 +1,17 @@
 package me.shetj.customviewdemo.lihuaindex
 
-import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import me.shetj.base.mvvm.BaseBindingActivity
+import me.shetj.base.tools.app.ArmsUtils.Companion.statuInScreen
 import me.shetj.customviewdemo.R
 import me.shetj.customviewdemo.databinding.ActivityLHIndexBinding
 
-class LHIndexActivity : BaseBindingActivity<IndexViewModel,ActivityLHIndexBinding>() {
+class LHIndexActivity : BaseBindingActivity<IndexViewModel, ActivityLHIndexBinding>() {
+
+    private var currentFragment: Fragment ? = null
+    private var classFragment:Fragment ?= null
+    private var userCenterFragment:Fragment ?= null
+    private var startLearningFragment:Fragment ?= null
 
     override fun initViewBinding(): ActivityLHIndexBinding {
         return ActivityLHIndexBinding.inflate(layoutInflater)
@@ -13,18 +19,93 @@ class LHIndexActivity : BaseBindingActivity<IndexViewModel,ActivityLHIndexBindin
 
     override fun onActivityCreate() {
         super.onActivityCreate()
-    
-        mViewBinding.slidingTabLayout.apply {
-             isTabSpaceEqual = false
-             tabPadding = 15f
-             indicatorWidth = 22f
-             setIndicatorMargin(0f,1f,0f,2f)
-             textsize = 14f
-             textBold = 1
-             textSelectColor = ContextCompat.getColor(context, R.color.blackText)
-             indicatorColor = ContextCompat.getColor(context, R.color.blackDivider)
-             textUnselectColor = ContextCompat.getColor(context, R.color.blackSecondText)
-        }.setViewPager(mViewBinding.viewPager, arrayOf("全部课程","接单市集"),this,
-            arrayListOf(BlankFragment.newInstance("1","2"),BlankFragment.newInstance("1","2")))
+        statuInScreen(true)
+        viewBindData()
+    }
+
+    private fun viewBindData() {
+        mViewBinding.BottomNavigationView.apply {
+            setOnNavigationItemSelectedListener {
+                when(it.itemId){
+                    R.id.navigation_class -> {
+                        showClassFragment()
+                    }
+                    R.id.navigation_learn -> {
+                        showLearnFragment()
+                    }
+                    R.id.navigation_user -> {
+                        showUserFragment()
+                    }
+                }
+                return@setOnNavigationItemSelectedListener true
+            }
+        }
+        showClassFragment()
+    }
+
+    private fun showClassFragment() {
+        if (currentFragment === classFragment && currentFragment != null) return
+        val ft = supportFragmentManager.beginTransaction()
+        if (currentFragment != null) ft.hide(currentFragment!!)
+        if (classFragment == null) {
+            classFragment =
+                supportFragmentManager.findFragmentByTag("classFragment")
+        }
+        if (classFragment == null) {
+            classFragment = IndexFragment()
+            ft.add(mViewBinding.viewPagerRoot.id,
+                classFragment!!,
+                "classFragment"
+            )
+        } else {
+            ft.show(classFragment!!)
+        }
+        ft.commitAllowingStateLoss()
+        currentFragment = classFragment
+
+    }
+
+    private fun showUserFragment() {
+        if (currentFragment === userCenterFragment && currentFragment != null) return
+        val ft = supportFragmentManager.beginTransaction()
+        if (currentFragment != null) ft.hide(currentFragment!!)
+        if (userCenterFragment == null) {
+            userCenterFragment =
+                supportFragmentManager.findFragmentByTag("userCenterFragment")
+        }
+        if (userCenterFragment == null) {
+            userCenterFragment = UserFragment()
+            ft.add(mViewBinding.viewPagerRoot.id,
+                userCenterFragment!!,
+                "userCenterFragment"
+            )
+        } else {
+            ft.show(userCenterFragment!!)
+        }
+        ft.commitAllowingStateLoss()
+        currentFragment = userCenterFragment
+
+    }
+
+
+    private fun  showLearnFragment() {
+        if (currentFragment === startLearningFragment && currentFragment != null) return
+        val ft = supportFragmentManager.beginTransaction()
+        if (currentFragment != null) ft.hide(currentFragment!!)
+        if (startLearningFragment == null) {
+            startLearningFragment =
+                supportFragmentManager.findFragmentByTag("startLearningFragment")
+        }
+        if (startLearningFragment == null) {
+            startLearningFragment = LearnFragment()
+            ft.add(mViewBinding.viewPagerRoot.id,
+                startLearningFragment!!,
+                "startLearningFragment"
+            )
+        } else {
+            ft.show(startLearningFragment!!)
+        }
+        ft.commitAllowingStateLoss()
+        currentFragment = startLearningFragment
     }
 }

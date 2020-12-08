@@ -10,7 +10,11 @@
         android:autoSizePresetSizes="@array/autosize_text_sizes"
         android:autoSizeTextType="uniform"
         android:fontFamily="@font/caesar_dressing"
+        android:rotation="-360"
+        android:rotationX="-360"
         android:text="@string/test_string"
+        android:textAlignment="viewEnd"
+        android:textAllCaps="true"
         android:typeface="normal"
         tools:text="@string/test_string" />
 </androidx.constraintlayout.widget.ConstraintLayout>

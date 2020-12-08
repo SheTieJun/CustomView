@@ -59,5 +59,5 @@ dependencies {
     implementation 'com.github.SheTieJun.Mp3Recorder:recorder-mix:1.1.0'
     implementation 'com.github.SheTieJun.Mp3Recorder:recorder-core:1.1.0'
     implementation "me.shetj.sdk:orange-dialog:$orange_dialog"
-    implementation 'com.github.SheTieJun:FlycoTabLayout:e94fe40702'
+    implementation 'com.github.SheTieJun:FlycoTabLayout:d1e70cac78'
 }
