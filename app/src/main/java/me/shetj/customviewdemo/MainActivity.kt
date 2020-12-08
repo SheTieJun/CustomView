@@ -24,6 +24,7 @@ import me.shetj.customviewdemo.recycle.showDialogRecycle
 import me.shetj.customviewdemo.sticker.StickerActivity
 import me.shetj.customviewdemo.tansition.showDialogLogin
 import me.shetj.customviewdemo.text.createShowTextDialog
+import me.shetj.customviewdemo.tx.video.TXPlayerActivity
 import me.shetj.customviewdemo.utils.*
 import me.shetj.customviewdemo.utils.MedalDialog.showDialog
 import me.shetj.customviewdemo.water_mark.onImageActivityResult
@@ -64,6 +65,7 @@ class MainActivity : AppCompatActivity() {
         btn_videoPre.setOnClickListener { start<PreVideoActivity>() }
         country.setOnClickListener { showCountry() }
         index.setOnClickListener { start<LHIndexActivity>() }
+        btn_tx_player.setOnClickListener { start<TXPlayerActivity>() }
     }
 
     private fun showCountry() {

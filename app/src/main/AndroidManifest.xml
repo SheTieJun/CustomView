@@ -18,7 +18,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
         tools:replace="android:allowBackup">
-        <activity android:name=".lihuaindex.LHIndexActivity"></activity>
+        <activity android:name=".tx.video.TXPlayerActivity"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
+            android:supportsPictureInPicture="true"
+            android:theme="@style/base_EdgeStyle"
+            />
+        <activity android:name=".lihuaindex.LHIndexActivity" />
         <activity android:name=".pre_video.PreVideoActivity" />
         <activity
             android:name=".pic.PictureInPictureActivity"

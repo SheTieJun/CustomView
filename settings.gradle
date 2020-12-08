@@ -1,3 +1,4 @@
 rootProject.name='CustomView'
 include ':app'
 include ':lib'
+include ':superplayerkit'
