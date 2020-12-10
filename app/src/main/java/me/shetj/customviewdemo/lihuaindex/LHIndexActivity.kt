@@ -8,11 +8,6 @@ import me.shetj.customviewdemo.databinding.ActivityLHIndexBinding
 
 class LHIndexActivity : BaseBindingActivity<IndexViewModel, ActivityLHIndexBinding>() {
 
-    private var currentFragment: Fragment ? = null
-    private var classFragment:Fragment ?= null
-    private var userCenterFragment:Fragment ?= null
-    private var startLearningFragment:Fragment ?= null
-
     override fun initViewBinding(): ActivityLHIndexBinding {
         return ActivityLHIndexBinding.inflate(layoutInflater)
     }
@@ -40,6 +35,7 @@ class LHIndexActivity : BaseBindingActivity<IndexViewModel, ActivityLHIndexBindi
                 return@setOnNavigationItemSelectedListener true
             }
         }
+
         mViewBinding.viewPagerRoot.apply {
             isUserInputEnabled = false
         }.adapter = IndexPagerAdapter(this,ArrayList<Fragment>().apply {
@@ -47,6 +43,8 @@ class LHIndexActivity : BaseBindingActivity<IndexViewModel, ActivityLHIndexBindi
             add(LearnFragment())
             add(UserFragment())
         })
+
+
     }
 
 //    private fun showClassFragment() {

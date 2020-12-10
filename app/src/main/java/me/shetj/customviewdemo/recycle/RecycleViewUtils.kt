@@ -30,7 +30,7 @@ fun showDialogRecycle(context: Context) {
         val moveAdapter =
             SwipeAdapter(IntArray(30).map { (it + Random.nextInt(3)).toString() }.toMutableList())
         val testAdapter =
-            TestAdapter(IntArray(30).map { (it + Random.nextInt(3)).toString() }.toMutableList())
+            TestMAdapter(IntArray(30).map { (it + Random.nextInt(3)).toString() }.toMutableList())
         val itemTouchHelperSwipe =
             ItemTouchHelper(object : BaseItemTouchCallback(object : ItemTouchListener {
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {

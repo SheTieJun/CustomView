@@ -20,6 +20,7 @@ import me.shetj.customviewdemo.floatvideo.showDialogFloat
 import me.shetj.customviewdemo.lihuaindex.LHIndexActivity
 import me.shetj.customviewdemo.pic.PictureInPictureActivity
 import me.shetj.customviewdemo.pre_video.PreVideoActivity
+import me.shetj.customviewdemo.recycle.PinnedRecycleActivity
 import me.shetj.customviewdemo.recycle.showDialogRecycle
 import me.shetj.customviewdemo.sticker.StickerActivity
 import me.shetj.customviewdemo.tansition.showDialogLogin
@@ -66,6 +67,7 @@ class MainActivity : AppCompatActivity() {
         country.setOnClickListener { showCountry() }
         index.setOnClickListener { start<LHIndexActivity>() }
         btn_tx_player.setOnClickListener { start<TXPlayerActivity>() }
+        btn_recycle_spine.setOnClickListener { start<PinnedRecycleActivity>() }
     }
 
     private fun showCountry() {
