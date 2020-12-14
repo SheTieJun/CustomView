@@ -12,6 +12,7 @@ import kotlinx.android.synthetic.main.item_4.*
 import kotlinx.android.synthetic.main.item_5.*
 import me.shetj.base.ktx.*
 import me.shetj.base.tools.app.FragmentUtils
+import me.shetj.base.view.TipPopupWindow
 import me.shetj.customviewdemo.anim.PathAnim
 import me.shetj.customviewdemo.country.AreaCodeModel
 import me.shetj.customviewdemo.country.CountryBottomDialog
@@ -20,6 +21,7 @@ import me.shetj.customviewdemo.floatvideo.showDialogFloat
 import me.shetj.customviewdemo.lihuaindex.LHIndexActivity
 import me.shetj.customviewdemo.pic.PictureInPictureActivity
 import me.shetj.customviewdemo.pre_video.PreVideoActivity
+import me.shetj.customviewdemo.recorder.RecorderPopup
 import me.shetj.customviewdemo.recycle.PinnedRecycleActivity
 import me.shetj.customviewdemo.recycle.showDialogRecycle
 import me.shetj.customviewdemo.sticker.StickerActivity
@@ -38,8 +40,19 @@ import java.io.InputStreamReader
 class MainActivity : AppCompatActivity() {
 
 
-    private var jsonList: MutableList<AreaCodeModel>?=null
-    private val phoneDialog :CountryBottomDialog  by lazy { CountryBottomDialog(this,jsonList?:ArrayList()) }
+    private var jsonList: MutableList<AreaCodeModel>? = null
+    private val phoneDialog: CountryBottomDialog by lazy {
+        CountryBottomDialog(
+            this,
+            jsonList ?: ArrayList()
+        )
+    }
+    private val recorderPopup: RecorderPopup by lazy {
+        RecorderPopup(this) {
+            it.logi()
+            it.showToast()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,8 +72,13 @@ class MainActivity : AppCompatActivity() {
         btn_water_mark.setOnClickListener { selectImage(this) }
         btn_sticker.setOnClickListener { start<StickerActivity>() }
         btn_popup.setOnClickListener { showQMUIPopup() }
-        btn_fragment.setOnClickListener { PathAnim.showFragmentAnim(this,fragmentManager = supportFragmentManager) }
-        btn_change_text.setOnClickListener {  showChangeText()}
+        btn_fragment.setOnClickListener {
+            PathAnim.showFragmentAnim(
+                this,
+                fragmentManager = supportFragmentManager
+            )
+        }
+        btn_change_text.setOnClickListener { showChangeText() }
         btn_text_font.setOnClickListener { createShowTextDialog(this) }
         btn_loading.setOnClickListener { createLoading(this) }
         btn_videoPre.setOnClickListener { start<PreVideoActivity>() }
@@ -68,6 +86,7 @@ class MainActivity : AppCompatActivity() {
         index.setOnClickListener { start<LHIndexActivity>() }
         btn_tx_player.setOnClickListener { start<TXPlayerActivity>() }
         btn_recycle_spine.setOnClickListener { start<PinnedRecycleActivity>() }
+        btn_record.setOnClickListener { recorderPopup.showPop() }
     }
 
     private fun showCountry() {
@@ -86,7 +105,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        onImageActivityResult(this,requestCode, resultCode, data)
+        onImageActivityResult(this, requestCode, resultCode, data)
     }
 
     override fun onPause() {
@@ -105,6 +124,7 @@ class MainActivity : AppCompatActivity() {
             super.onBackPressed()
         }
     }
+
     override fun onDestroy() {
         super.onDestroy()
     }

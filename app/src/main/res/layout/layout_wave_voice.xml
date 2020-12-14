@@ -18,4 +18,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         />
 
+    <me.shetj.custom.IngView
+        android:id="@+id/ingView"
+        app:layout_constraintTop_toBottomOf="@id/line_wave_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_goneMarginBottom="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_height="wrap_content"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

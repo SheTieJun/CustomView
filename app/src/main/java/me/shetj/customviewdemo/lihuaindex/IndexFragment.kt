@@ -55,15 +55,6 @@ class IndexFragment : BaseBindingFragment<BaseViewModel, FragmentIndexBinding>()
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment IndexFragment.
-         */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
             IndexFragment().apply {
@@ -82,5 +73,10 @@ class IndexFragment : BaseBindingFragment<BaseViewModel, FragmentIndexBinding>()
         container: ViewGroup?
     ): FragmentIndexBinding {
         return FragmentIndexBinding.inflate(inflater, container, false)
+    }
+
+    override fun onBack() {
+        super.onBack()
+        requireActivity().finish()
     }
 }

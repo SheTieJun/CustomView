@@ -12,7 +12,6 @@ android {
         versionCode 1
         versionName "1.0"
         ndk {
-            // 设置支持的SO库架构,考虑到x5没有64位包,所以这个理不支持64位,音频解码让其向下兼容
             abiFilters 'arm64-v8a'
         }
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

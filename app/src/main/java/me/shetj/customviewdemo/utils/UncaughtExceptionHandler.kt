@@ -38,7 +38,7 @@ internal class UncaughtExceptionHandler : Thread.UncaughtExceptionHandler {
         return writer.toString()
     }
 
-    private val logFilePath = EnvironmentStorage.filesDir + File.separator + "crashLog"
+    private val logFilePath = EnvironmentStorage.sdCardPath + File.separator + "crashLog"
     private fun saveThrowableMessage(errorMessage: String) {
         if (TextUtils.isEmpty(errorMessage)) {
             return

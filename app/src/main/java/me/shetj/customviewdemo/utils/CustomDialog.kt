@@ -7,6 +7,7 @@ import me.shetj.base.tools.json.GsonKit
 import me.shetj.base.tools.json.HighStringFormatUtil
 import me.shetj.custom.CircleProgressView
 import me.shetj.custom.HaloView
+import me.shetj.custom.IngView
 import me.shetj.custom.LineWaveView
 import me.shetj.customviewdemo.R
 import me.shetj.customviewdemo.anim.StrokeView
