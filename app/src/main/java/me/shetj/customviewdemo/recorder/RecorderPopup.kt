@@ -1,11 +1,13 @@
 package me.shetj.customviewdemo.recorder
 
 import android.Manifest
+import android.transition.TransitionManager
 import android.view.Gravity
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import me.shetj.base.ktx.hasPermission
+import me.shetj.base.ktx.logi
 import me.shetj.customviewdemo.R
 import me.shetj.customviewdemo.databinding.RecordLayoutPopupBinding
 import me.shetj.recorder.core.SimRecordListener
@@ -18,7 +20,7 @@ typealias Success = (file: String) -> Unit
 class RecorderPopup(private val mContext: AppCompatActivity, private val onSuccess: Success) :
     BasePopupWindow<RecordLayoutPopupBinding>(mContext) {
 
-    private val TIME = (30 * 60 * 1000).toLong()
+    private val maxTime = (2 * 60 * 1000).toLong()
 
     private var isComplete = false
 
@@ -60,6 +62,7 @@ class RecorderPopup(private val mContext: AppCompatActivity, private val onSucce
     private val listener: SimRecordListener = object : SimRecordListener() {
 
         override fun onStart() {
+            TransitionManager.beginDelayedTransition(mViewBinding.root)
             mViewBinding.tvReRecord.isVisible = true
             mViewBinding.tvSaveRecord.isVisible = true
             mViewBinding.llTime.isVisible = true
@@ -69,7 +72,7 @@ class RecorderPopup(private val mContext: AppCompatActivity, private val onSucce
 
         override fun autoComplete(file: String, time: Long) {
             super.autoComplete(file, time)
-            onShowSuccessView(file)
+            onShowSuccessView()
         }
 
         override fun onRecording(time: Long, volume: Int) {
@@ -77,10 +80,14 @@ class RecorderPopup(private val mContext: AppCompatActivity, private val onSucce
             mViewBinding.tvRecordTime.text = formatSeconds(time / 1000)
         }
 
+        override fun onMaxChange(time: Long) {
+            super.onMaxChange(time)
+            mViewBinding.tvRecordDuration.text = "/" + formatSeconds(time)
+        }
 
         override fun onSuccess(file: String, time: Long) {
             super.onSuccess(file, time)
-            onShowSuccessView(file)
+            onShowSuccessView()
         }
 
         override fun onReset() {
@@ -91,8 +98,8 @@ class RecorderPopup(private val mContext: AppCompatActivity, private val onSucce
             mViewBinding.tvReRecord.isVisible = false
             mViewBinding.tvSaveRecord.isVisible = false
             mViewBinding.tvState.text = ""
-            mViewBinding.tvRecordTime.text =formatSeconds(0)
-            mViewBinding.tvRecordDuration.text = "/" + formatSeconds(TIME)
+            mViewBinding.tvRecordTime.text = formatSeconds(0)
+            mViewBinding.tvRecordDuration.text = "/" + formatSeconds(maxTime)
             mViewBinding.ivRecordState.setImageResource(R.drawable.ic_record_start)
         }
 
@@ -104,17 +111,20 @@ class RecorderPopup(private val mContext: AppCompatActivity, private val onSucce
             )
         }
 
-        override fun onRemind(mDuration: Long) {
-            super.onRemind(mDuration)
+        override fun onRemind(duration: Long) {
+            super.onRemind(duration)
+            "录音中，60秒后自动保存".logi()
+            mViewBinding.tvTips.isVisible = true
+            mViewBinding.tvTips.text = "录音中，60秒后自动保存"
+        }
 
+        override fun onError(e: Exception) {
+            super.onError(e)
+            onReset()
         }
     }
 
-    private val recordUtils by lazy {
-        MixRecordUtils(listener).apply {
-            setMaxProgress(TIME)
-        }
-    }
+    private val recordUtils by lazy { MixRecordUtils(maxTime,listener)}
 
     private val player: AudioPlayer by lazy { AudioPlayer() }
 
@@ -131,7 +141,7 @@ class RecorderPopup(private val mContext: AppCompatActivity, private val onSucce
             if (!isComplete) {
                 isComplete = true
                 recordUtils.stopFullRecord()
-            }else {
+            } else {
                 player.pause()
             }
             realDismiss()
@@ -151,29 +161,33 @@ class RecorderPopup(private val mContext: AppCompatActivity, private val onSucce
     override fun showPop() {
         recordUtils.onReset()
         setOnDismissListener {
-            if (isComplete){
+            if (isComplete) {
                 recordUtils.saveFile?.let { onSuccess.invoke(it) }
             }
         }
         showAtLocation(mContext.window.decorView, Gravity.BOTTOM, 0, 0)
     }
 
-    private fun onShowSuccessView(file: String) {
+    private fun onShowSuccessView() {
         isComplete = true
+        mViewBinding.tvRecordTime.text = formatSeconds(maxTime)
+        mViewBinding.tvRecordDuration.text = "/" + formatSeconds(maxTime)
+        mViewBinding.tvTips.isVisible = false
         mViewBinding.ivRecordState.setImageResource(R.drawable.ic_record_audition)
         mViewBinding.tvState.text = "试听"
         mViewBinding.tvState.isVisible = true
     }
 
 
-    fun realDismiss(){
+    private fun realDismiss() {
         AndroidSchedulers.mainThread().scheduleDirect({
             dismiss()
-        },200,TimeUnit.MILLISECONDS)
+        }, 200, TimeUnit.MILLISECONDS)
     }
 
     override fun dismissOnDestroy() {
         super.dismissOnDestroy()
+        recordUtils.destroy()
         player.stopPlay()
     }
 }

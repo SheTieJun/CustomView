@@ -13,8 +13,10 @@ import me.shetj.recorder.mixRecorder.mixRecorder
  * 录音工具类
  */
 class MixRecordUtils(
+    private val maxTime: Int = 30 * 60 * 1000,
     private val callBack: SimRecordListener?
 ) : RecordListener, PermissionListener {
+
     val isRecording: Boolean
         get() {
             return if (mRecorder != null) {
@@ -38,7 +40,7 @@ class MixRecordUtils(
 
     private var startTime: Long = 0 //秒 s
     private var mRecorder: BaseRecorder? = null
-    var saveFile :String ? = null
+    var saveFile: String? = null
         private set
 
     @JvmOverloads
@@ -99,11 +101,11 @@ class MixRecordUtils(
     private fun initRecorder() {
         mRecorder = mixRecorder(
             Utils.app,
-            mMaxTime = 3600 * 1000,
             recordListener = this,
             permissionListener = this,
-            isDebug = true
+            isDebug = false
         )
+        mRecorder?.setMaxTime(maxTime, 60 * 1000)
     }
 
     fun isPause(): Boolean {
@@ -130,17 +132,21 @@ class MixRecordUtils(
         mRecorder?.onReset()
     }
 
-    fun cleanPath(){
-        saveFile = null
+    fun cleanPath() {
+        saveFile?.let {
+            FileUtils.deleteFile(it)
+            saveFile = null
+        }
     }
+
     /**
      * 录音异常
      */
     private fun resolveError() {
-        saveFile?.let { FileUtils.deleteFile(it) }
         if (mRecorder != null && mRecorder!!.isRecording) {
             mRecorder!!.stop()
         }
+        cleanPath()
     }
 
     /**
@@ -174,16 +180,16 @@ class MixRecordUtils(
         callBack?.onPause()
     }
 
-    override fun onRemind(mDuration: Long) {
-        callBack?.onRemind(mDuration)
+    override fun onRemind(duration: Long) {
+        callBack?.onRemind(duration)
     }
 
     override fun onSuccess(file: String, time: Long) {
         callBack?.onSuccess(file, time)
     }
 
-    override fun setMaxProgress(time: Long) {
-        callBack?.setMaxProgress(time)
+    override fun onMaxChange(time: Long) {
+        callBack?.onMaxChange(time)
     }
 
     override fun onError(e: Exception) {
@@ -197,6 +203,10 @@ class MixRecordUtils(
 
     fun setVolume(volume: Float) {
         mRecorder?.setVolume(volume)
+    }
+
+    fun destroy() {
+        mRecorder?.onDestroy()
     }
 
 
