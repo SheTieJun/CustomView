@@ -27,10 +27,10 @@ import java.util.*
  * 3.循环功能
  */
 
-class VideoCaseHelper(val videoView: VodMoreView): TimerConfigure.CallBack{
+class VideoCaseHelper(val vodMoreView: VodMoreView): TimerConfigure.CallBack{
 
     private var adapter: VideoFullSpeedListAdapter? =null
-    private var context :Context   = videoView.context
+    private var context :Context   = vodMoreView.context
     private var iRecyclerViewSpeed :  RecyclerView? =null
     private var iRecyclerViewTime :  RecyclerView? =null
     private var iRecyclerViewPlayMode :  RecyclerView? =null
@@ -43,7 +43,7 @@ class VideoCaseHelper(val videoView: VodMoreView): TimerConfigure.CallBack{
 
     init {
         TimerConfigure.instance.addCallBack(this)
-        initView(videoView)
+        initView(vodMoreView)
     }
 
     private fun initView(rootView: ViewGroup?) {
@@ -112,7 +112,8 @@ class VideoCaseHelper(val videoView: VodMoreView): TimerConfigure.CallBack{
         iRecyclerViewSpeed?.layoutManager = androidx.recyclerview.widget.GridLayoutManager(context, 5)
         adapter?.setOnItemClickListener { adapter1, _, position ->
             val speedRate = adapter1.getItem(position) as Float
-            videoView.onCheckedChanged(speedRate)
+            vodMoreView.onCheckedChanged(speedRate)
+            setCurSpeed(speedRate)
         }
         iRecyclerViewSpeed?.adapter = adapter
     }
