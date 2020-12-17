@@ -1,78 +1,58 @@
-package com.tencent.liteav.demo.superplayer.model.protocol;
+package com.tencent.liteav.demo.superplayer.model.protocol
 
-import android.os.Handler;
-import android.os.Looper;
-import android.text.TextUtils;
-
-import com.tencent.liteav.basic.log.TXCLog;
-import com.tencent.liteav.demo.superplayer.model.entity.PlayImageSpriteInfo;
-import com.tencent.liteav.demo.superplayer.model.entity.PlayKeyFrameDescInfo;
-import com.tencent.liteav.demo.superplayer.model.entity.ResolutionName;
-import com.tencent.liteav.demo.superplayer.model.entity.VideoQuality;
-import com.tencent.liteav.demo.superplayer.model.net.HttpURLClient;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.List;
+import android.os.*
+import android.text.TextUtils
+import com.tencent.liteav.basic.log.TXCLog
+import com.tencent.liteav.demo.superplayer.model.entity.PlayImageSpriteInfo
+import com.tencent.liteav.demo.superplayer.model.entity.PlayKeyFrameDescInfo
+import com.tencent.liteav.demo.superplayer.model.entity.ResolutionName
+import com.tencent.liteav.demo.superplayer.model.entity.VideoQuality
+import com.tencent.liteav.demo.superplayer.model.net.HttpURLClient
+import com.tencent.liteav.demo.superplayer.model.net.HttpURLClient.OnHttpCallback
+import com.tencent.liteav.demo.superplayer.model.protocol.PlayInfoConstant.EncryptedURLType
+import com.tencent.liteav.demo.superplayer.model.protocol.PlayInfoProtocolV4
+import org.json.JSONException
+import org.json.JSONObject
 
 /**
  * V4视频信息协议实现类
  *
  * 负责V4视频信息协议的请求控制与数据获取
  */
-public class PlayInfoProtocolV4 implements IPlayInfoProtocol {
-    private static final String TAG = "TCPlayInfoProtocolV4";
-
-    private final String BASE_URLS_V4 = "https://playvideo.qcloud.com/getplayinfo/v4";  // V4协议请求地址
-
-    private Handler         mMainHandler;   // 用于切换线程
-    private PlayInfoParams  mParams;        // 协议请求输入的参数
-    private IPlayInfoParser mParser;        // 协议请求返回Json的解析对象
-    private String          mRequestContext;//透传字段
-
-    public PlayInfoProtocolV4(PlayInfoParams params) {
-        mParams = params;
-        mMainHandler = new Handler(Looper.getMainLooper());
-    }
+class PlayInfoProtocolV4(  // 协议请求输入的参数
+    private val mParams: PlayInfoParams
+) : IPlayInfoProtocol {
+    private val BASE_URLS_V4 = "https://playvideo.qcloud.com/getplayinfo/v4" // V4协议请求地址
+    private val mMainHandler // 用于切换线程
+            : Handler
+    private var mParser // 协议请求返回Json的解析对象
+            : IPlayInfoParser? = null
+    override var penetrateContext //透传字段
+            : String? = null
+        private set
 
     /**
      * 发送视频信息协议网络请求
      *
      * @param callback 协议请求回调
      */
-    @Override
-    public void sendRequest(final IPlayInfoRequestCallback callback) {
+    override fun sendRequest(callback: IPlayInfoRequestCallback?) {
         if (mParams.fileId == null) {
-            return;
+            return
         }
-        String urlString = makeUrlString();
-        HttpURLClient.getInstance().get(urlString, new HttpURLClient.OnHttpCallback() {
-            @Override
-            public void onSuccess(String result) {
-                boolean ret = parseJson(result, callback);
+        val urlString = makeUrlString()
+        HttpURLClient.instance.get(urlString, object : OnHttpCallback {
+            override fun onSuccess(result: String) {
+                val ret = parseJson(result, callback)
                 if (ret) {
-                    runOnMainThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            callback.onSuccess(PlayInfoProtocolV4.this, mParams);
-                        }
-                    });
+                    runOnMainThread { callback!!.onSuccess(this@PlayInfoProtocolV4, mParams) }
                 }
             }
 
-            @Override
-            public void onError() {
-                runOnMainThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (callback != null) {
-                            callback.onError(-1, "http request error.");
-                        }
-                    }
-                });
+            override fun onError() {
+                runOnMainThread { callback?.onError(-1, "http request error.") }
             }
-        });
+        })
     }
 
     /**
@@ -81,47 +61,37 @@ public class PlayInfoProtocolV4 implements IPlayInfoProtocol {
      * @param content  响应Json字符串
      * @param callback 协议请求回调
      */
-    private boolean parseJson(String content, final IPlayInfoRequestCallback callback) {
+    private fun parseJson(content: String, callback: IPlayInfoRequestCallback?): Boolean {
         if (TextUtils.isEmpty(content)) {
-            TXCLog.e(TAG, "parseJson err, content is empty!");
-            runOnMainThread(new Runnable() {
-                @Override
-                public void run() {
-                    callback.onError(-1, "request return error!");
-                }
-            });
-            return false;
+            TXCLog.e(TAG, "parseJson err, content is empty!")
+            runOnMainThread { callback!!.onError(-1, "request return error!") }
+            return false
         }
         try {
-            JSONObject jsonObject = new JSONObject(content);
-            final int code = jsonObject.getInt("code");
-            final String message = jsonObject.optString("message");
-            final String warning = jsonObject.optString("warning");
-            mRequestContext = jsonObject.optString("context");
-            TXCLog.i(TAG, "context : " + mRequestContext);
-            TXCLog.i(TAG, "message: " + message);
-            TXCLog.i(TAG, "warning: " + warning);
+            val jsonObject = JSONObject(content)
+            val code = jsonObject.getInt("code")
+            val message = jsonObject.optString("message")
+            val warning = jsonObject.optString("warning")
+            penetrateContext = jsonObject.optString("context")
+            TXCLog.i(TAG, "context : " + penetrateContext)
+            TXCLog.i(TAG, "message: $message")
+            TXCLog.i(TAG, "warning: $warning")
             if (code == 0) {
-                int version = jsonObject.getInt("version");
+                val version = jsonObject.getInt("version")
                 if (version == 2) {
-                    mParser = new PlayInfoParserV2(jsonObject);
+                    mParser = PlayInfoParserV2(jsonObject)
                 } else if (version == 4) {
-                    mParser = new PlayInfoParserV4(jsonObject);
+                    mParser = PlayInfoParserV4(jsonObject)
                 }
             } else {
-                runOnMainThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        callback.onError(code, message);
-                    }
-                });
-                return false;
+                runOnMainThread { callback!!.onError(code, message) }
+                return false
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
-            TXCLog.e(TAG, "parseJson err");
+        } catch (e: JSONException) {
+            e.printStackTrace()
+            TXCLog.e(TAG, "parseJson err")
         }
-        return true;
+        return true
     }
 
     /**
@@ -129,143 +99,115 @@ public class PlayInfoProtocolV4 implements IPlayInfoProtocol {
      *
      * @return 协议请求url字符串
      */
-    private String makeUrlString() {
-        String urlStr = String.format("%s/%d/%s", BASE_URLS_V4, mParams.appId, mParams.fileId);
-        String psign = makeJWTSignature(mParams);
-        String query = null;
+    private fun makeUrlString(): String {
+        var urlStr = String.format("%s/%d/%s", BASE_URLS_V4, mParams.appId, mParams.fileId)
+        val psign = makeJWTSignature(mParams)
+        var query: String? = null
         if (mParams.videoId != null) {
-            query = makeQueryString(null, psign, null);
+            query = makeQueryString(null, psign, null)
         }
-
         if (!TextUtils.isEmpty(query)) {
-            urlStr = urlStr + "?" + query;
+            urlStr = "$urlStr?$query"
         }
-        TXCLog.d(TAG, "request url: " + urlStr);
-        return urlStr;
+        TXCLog.d(TAG, "request url: $urlStr")
+        return urlStr
     }
-
-    public static String makeJWTSignature(PlayInfoParams params) {
-        if (params.videoId != null && !TextUtils.isEmpty(params.videoId.pSign)) {
-            return params.videoId.pSign;
-        }
-        return null;
-    }
-
 
     /**
      * 拼装协议请求url中的query字段
      *
      * @return query字段字符串
      */
-    private String makeQueryString(String pcfg, String psign, String content) {
-        StringBuilder str = new StringBuilder();
+    private fun makeQueryString(pcfg: String?, psign: String?, content: String?): String {
+        val str = StringBuilder()
         if (!TextUtils.isEmpty(pcfg)) {
-            str.append("pcfg=" + pcfg + "&");
+            str.append("pcfg=$pcfg&")
         }
-
         if (!TextUtils.isEmpty(psign)) {
-            str.append("psign=" + psign + "&");
+            str.append("psign=$psign&")
         }
-
         if (!TextUtils.isEmpty(content)) {
-            str.append("context=" + content + "&");
+            str.append("context=$content&")
         }
-        if (str.length() > 1) {
-            str.deleteCharAt(str.length() - 1);
+        if (str.length > 1) {
+            str.deleteCharAt(str.length - 1)
         }
-        return str.toString();
+        return str.toString()
     }
 
     /**
      * 中途取消请求
      */
-    @Override
-    public void cancelRequest() {
-
-    }
+    override fun cancelRequest() {}
 
     /**
      * 获取视频播放url
      *
      * @return 视频播放url字符串
      */
-    @Override
-    public String getUrl() {
-        return mParser == null ? null : mParser.getURL();
+    override val url: String?
+        get() = if (mParser == null) null else mParser!!.uRL
+
+    override fun getEncyptedUrl(type: EncryptedURLType): String? {
+        return if (mParser == null) null else mParser!!.getEncryptedURL(type)
     }
 
-    @Override
-    public String getEncyptedUrl(PlayInfoConstant.EncryptedURLType type) {
-        return mParser == null ? null : mParser.getEncryptedURL(type);
-    }
-
-    @Override
-    public String getToken() {
-        return mParser == null ? null : mParser.getToken();
-    }
+    override val token: String?
+        get() = if (mParser == null) null else mParser!!.token
 
     /**
      * 获取视频名称
      *
      * @return 视频名称字符串
      */
-    @Override
-    public String getName() {
-        return mParser == null ? null : mParser.getName();
-    }
+    override val name: String?
+        get() = if (mParser == null) null else mParser!!.name
 
     /**
      * 获取雪碧图信息
      *
      * @return 雪碧图信息对象
      */
-    @Override
-    public PlayImageSpriteInfo getImageSpriteInfo() {
-        return mParser == null ? null : mParser.getImageSpriteInfo();
-    }
+    override val imageSpriteInfo: PlayImageSpriteInfo?
+        get() = if (mParser == null) null else mParser!!.imageSpriteInfo
 
     /**
      * 获取关键帧信息
      *
      * @return 关键帧信息数组
      */
-    @Override
-    public List<PlayKeyFrameDescInfo> getKeyFrameDescInfo() {
-        return mParser == null ? null : mParser.getKeyFrameDescInfo();
-    }
+    override val keyFrameDescInfo: List<PlayKeyFrameDescInfo?>?
+        get() = if (mParser == null) null else mParser!!.keyFrameDescInfo
 
     /**
      * 获取画质信息
      *
      * @return 画质信息数组
      */
-    @Override
-    public List<VideoQuality> getVideoQualityList() {
-        return mParser == null ? null : mParser.getVideoQualityList();
-    }
+    override val videoQualityList: List<VideoQuality?>?
+        get() = if (mParser == null) null else mParser!!.videoQualityList
 
     /**
      * 获取默认画质
      *
      * @return 默认画质信息对象
      */
-    @Override
-    public VideoQuality getDefaultVideoQuality() {
-        return mParser == null ? null : mParser.getDefaultVideoQuality();
-    }
+    override val defaultVideoQuality: VideoQuality?
+        get() = if (mParser == null) null else mParser!!.defaultVideoQuality
 
     /**
      * 切换到主线程
-     * <p>
+     *
+     *
      * 从视频协议请求回调的子线程切换回主线程
      *
      * @param r 需要在主线程中执行的任务
      */
-    private void runOnMainThread(Runnable r) {
-        if (Looper.myLooper() == mMainHandler.getLooper()) {
-            r.run();
+    private fun runOnMainThread(r: Runnable) {
+        if (Looper.myLooper() == mMainHandler.looper) {
+            r.run()
         } else {
-            mMainHandler.post(r);
+            mMainHandler.post(r)
         }
     }
 
@@ -274,13 +216,19 @@ public class PlayInfoProtocolV4 implements IPlayInfoProtocol {
      *
      * @return 画质别名数组
      */
-    @Override
-    public List<ResolutionName> getResolutionNameList() {
-        return mParser == null ? null : mParser.getResolutionNameList();
+    override val resolutionNameList: List<ResolutionName?>?
+        get() = if (mParser == null) null else mParser!!.resolutionNameList
+
+    companion object {
+        private const val TAG = "TCPlayInfoProtocolV4"
+        fun makeJWTSignature(params: PlayInfoParams): String? {
+            return if (params.videoId != null && !TextUtils.isEmpty(params.videoId!!.pSign)) {
+                params.videoId!!.pSign
+            } else null
+        }
     }
 
-    @Override
-    public String getPenetrateContext() {
-        return mRequestContext;
+    init {
+        mMainHandler = Handler(Looper.getMainLooper())
     }
 }

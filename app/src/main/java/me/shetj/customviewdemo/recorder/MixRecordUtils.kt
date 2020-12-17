@@ -13,7 +13,7 @@ import me.shetj.recorder.mixRecorder.mixRecorder
  * 录音工具类
  */
 class MixRecordUtils(
-    private val maxTime: Int = 30 * 60 * 1000,
+    private val maxTime: Long = 30 * 60 * 1000,
     private val callBack: SimRecordListener?
 ) : RecordListener, PermissionListener {
 
@@ -105,7 +105,7 @@ class MixRecordUtils(
             permissionListener = this,
             isDebug = false
         )
-        mRecorder?.setMaxTime(maxTime, 60 * 1000)
+        mRecorder!!.setMaxTime(maxTime.toInt(), 60 * 1000)
     }
 
     fun isPause(): Boolean {

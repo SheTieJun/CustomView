@@ -1,57 +1,59 @@
-package com.tencent.liteav.demo.superplayer.model;
+package com.tencent.liteav.demo.superplayer.model
 
-import com.tencent.liteav.demo.superplayer.SuperPlayerDef;
-import com.tencent.liteav.demo.superplayer.model.entity.PlayImageSpriteInfo;
-import com.tencent.liteav.demo.superplayer.model.entity.PlayKeyFrameDescInfo;
-import com.tencent.liteav.demo.superplayer.model.entity.VideoQuality;
-import com.tencent.rtmp.TXLivePlayer;
+import com.tencent.liteav.demo.superplayer.SuperPlayerDef.PlayerType
+import com.tencent.liteav.demo.superplayer.model.entity.PlayImageSpriteInfo
+import com.tencent.liteav.demo.superplayer.model.entity.PlayKeyFrameDescInfo
+import com.tencent.liteav.demo.superplayer.model.entity.VideoQuality
+import com.tencent.rtmp.TXLivePlayer
 
-import java.util.List;
-
-public abstract class SuperPlayerObserver {
-
+abstract class SuperPlayerObserver {
     /**
      * 开始播放
      * @param name 当前视频名称
      */
-    public void onPlayBegin(String name) {}
+    open fun onPlayBegin(name: String?) {}
 
     /**
      * 播放暂停
      */
-    public void onPlayPause() {}
+    open fun onPlayPause() {}
 
     /**
      * 播放器停止
      */
-    public void onPlayStop() {}
+    open fun onPlayStop() {}
 
     /**
      * 播放器进入Loading状态
      */
-    public void onPlayLoading() {}
+    open fun onPlayLoading() {}
 
+
+    open fun onVideoSize(width:Int,height:Int){
+
+    }
     /**
      * 播放进度回调
      *
      * @param current
      * @param duration
      */
-    public void onPlayProgress(long current, long duration) {}
+    open fun onPlayProgress(current: Long, duration: Long) {}
+    open fun onSeek(position: Int) {}
+    open fun onSwitchStreamStart(success: Boolean, playerType: PlayerType, quality: VideoQuality) {}
+    open fun onSwitchStreamEnd(success: Boolean, playerType: PlayerType, quality: VideoQuality?) {}
+    open fun onError(code: Int, message: String?) {}
+    open fun onPlayerTypeChange(playType: PlayerType?) {}
+    open fun onPlayTimeShiftLive(player: TXLivePlayer?, url: String?) {}
+    open fun onVideoQualityListChange(
+        videoQualities: List<VideoQuality?>?,
+        defaultVideoQuality: VideoQuality?
+    ) {
+    }
 
-    public void onSeek(int position) {}
-
-    public void onSwitchStreamStart(boolean success, SuperPlayerDef.PlayerType playerType, VideoQuality quality){}
-
-    public void onSwitchStreamEnd(boolean success, SuperPlayerDef.PlayerType playerType, VideoQuality quality){}
-
-    public void onError(int code, String message) {}
-
-    public void onPlayerTypeChange(SuperPlayerDef.PlayerType playType) {}
-
-    public void onPlayTimeShiftLive(TXLivePlayer player, String url) {}
-
-    public void onVideoQualityListChange(List<VideoQuality> videoQualities, VideoQuality defaultVideoQuality) {}
-
-    public void onVideoImageSpriteAndKeyFrameChanged(PlayImageSpriteInfo info, List<PlayKeyFrameDescInfo> list) {}
+    open fun onVideoImageSpriteAndKeyFrameChanged(
+        info: PlayImageSpriteInfo?,
+        list: List<PlayKeyFrameDescInfo?>?
+    ) {
+    }
 }

@@ -1,18 +1,18 @@
-package com.tencent.liteav.demo.superplayer.model.entity;
+package com.tencent.liteav.demo.superplayer.model.entity
 
 /**
  * 视频关键帧信息
  */
-public class PlayKeyFrameDescInfo {
+class PlayKeyFrameDescInfo {
+    var content // 描述信息
+            : String? = null
+    var time // 关键帧时间(秒)
+            = 0f
 
-    public String content;    // 描述信息
-    public float  time;       // 关键帧时间(秒)
-
-    @Override
-    public String toString() {
+    override fun toString(): String {
         return "TCPlayKeyFrameDescInfo{" +
                 "content='" + content + '\'' +
                 ", time=" + time +
-                '}';
+                '}'
     }
 }

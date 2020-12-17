@@ -1,24 +1,19 @@
-package com.tencent.liteav.demo.superplayer.model.utils;
+package com.tencent.liteav.demo.superplayer.model.utils
 
-import com.tencent.liteav.basic.log.TXCLog;
-import com.tencent.liteav.demo.superplayer.model.entity.PlayInfoStream;
-import com.tencent.liteav.demo.superplayer.model.entity.ResolutionName;
-import com.tencent.liteav.demo.superplayer.model.entity.VideoQuality;
-import com.tencent.rtmp.TXBitrateItem;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import com.tencent.liteav.basic.log.TXCLog
+import com.tencent.liteav.demo.superplayer.model.entity.PlayInfoStream
+import com.tencent.liteav.demo.superplayer.model.entity.ResolutionName
+import com.tencent.liteav.demo.superplayer.model.entity.VideoQuality
+import com.tencent.rtmp.TXBitrateItem
+import java.util.*
 
 /**
  * Created by yuejiaoli on 2018/7/6.
  *
  * 清晰度转换工具
  */
-
-public class VideoQualityUtils {
-
-    private static final String TAG = "TCVideoQualityUtil";
+object VideoQualityUtils {
+    private const val TAG = "TCVideoQualityUtil"
 
     /**
      * 从比特流信息转换为清晰度信息
@@ -26,41 +21,41 @@ public class VideoQualityUtils {
      * @param bitrateItem
      * @return
      */
-    public static VideoQuality convertToVideoQuality(TXBitrateItem bitrateItem, int index) {
-        VideoQuality quality = new VideoQuality();
-        quality.bitrate = bitrateItem.bitrate;
-        quality.index = bitrateItem.index;
-        switch (index) {
-            case 0:
-                quality.name = "FLU";
-                quality.title = "流畅";
-                break;
-            case 1:
-                quality.name = "SD";
-                quality.title = "标清";
-                break;
-            case 2:
-                quality.name = "HD";
-                quality.title = "高清";
-                break;
-            case 3:
-                quality.name = "FHD";
-                quality.title = "超清";
-                break;
-            case 4:
-                quality.name = "2K";
-                quality.title = "2K";
-                break;
-            case 5:
-                quality.name = "4K";
-                quality.title = "4K";
-                break;
-            case 6:
-                quality.name = "8K";
-                quality.title = "8K";
-                break;
+    fun convertToVideoQuality(bitrateItem: TXBitrateItem, index: Int): VideoQuality {
+        val quality = VideoQuality()
+        quality.bitrate = bitrateItem.bitrate
+        quality.index = bitrateItem.index
+        when (index) {
+            0 -> {
+                quality.name = "FLU"
+                quality.title = "流畅"
+            }
+            1 -> {
+                quality.name = "SD"
+                quality.title = "标清"
+            }
+            2 -> {
+                quality.name = "HD"
+                quality.title = "高清"
+            }
+            3 -> {
+                quality.name = "FHD"
+                quality.title = "超清"
+            }
+            4 -> {
+                quality.name = "2K"
+                quality.title = "2K"
+            }
+            5 -> {
+                quality.name = "4K"
+                quality.title = "4K"
+            }
+            6 -> {
+                quality.name = "8K"
+                quality.title = "8K"
+            }
         }
-        return quality;
+        return quality
     }
 
     /**
@@ -70,47 +65,54 @@ public class VideoQualityUtils {
      * @param classification
      * @return
      */
-    public static VideoQuality convertToVideoQuality(PlayInfoStream sourceStream, String classification) {
-        VideoQuality quality = new VideoQuality();
-        quality.bitrate = sourceStream.getBitrate();
-        if (classification.equals("FLU")) {
-            quality.name = "FLU";
-            quality.title = "流畅";
-        } else if (classification.equals("SD")) {
-            quality.name = "SD";
-            quality.title = "标清";
-        } else if (classification.equals("HD")) {
-            quality.name = "HD";
-            quality.title = "高清";
-        } else if (classification.equals("FHD")) {
-            quality.name = "FHD";
-            quality.title = "全高清";
-        } else if (classification.equals("2K")) {
-            quality.name = "2K";
-            quality.title = "2K";
-        } else if (classification.equals("4K")) {
-            quality.name = "4K";
-            quality.title = "4K";
+    fun convertToVideoQuality(sourceStream: PlayInfoStream, classification: String): VideoQuality {
+        val quality = VideoQuality()
+        quality.bitrate = sourceStream.bitrate
+        when (classification) {
+            "FLU" -> {
+                quality.name = "FLU"
+                quality.title = "流畅"
+            }
+            "SD" -> {
+                quality.name = "SD"
+                quality.title = "标清"
+            }
+            "HD" -> {
+                quality.name = "HD"
+                quality.title = "高清"
+            }
+            "FHD" -> {
+                quality.name = "FHD"
+                quality.title = "全高清"
+            }
+            "2K" -> {
+                quality.name = "2K"
+                quality.title = "2K"
+            }
+            "4K" -> {
+                quality.name = "4K"
+                quality.title = "4K"
+            }
         }
-        quality.url = sourceStream.url;
-        quality.index = -1;
-        return quality;
+        quality.url = sourceStream.url
+        quality.index = -1
+        return quality
     }
 
     /**
-     * 从{@link PlayInfoStream}转换为{@link VideoQuality}
+     * 从[PlayInfoStream]转换为[VideoQuality]
      *
      * @param stream
      * @return
      */
-    public static VideoQuality convertToVideoQuality(PlayInfoStream stream) {
-        VideoQuality qulity = new VideoQuality();
-        qulity.bitrate = stream.getBitrate();
-        qulity.name = stream.id;
-        qulity.title = stream.name;
-        qulity.url = stream.url;
-        qulity.index = -1;
-        return qulity;
+    fun convertToVideoQuality(stream: PlayInfoStream?): VideoQuality {
+        val qulity = VideoQuality()
+        qulity.bitrate = stream!!.bitrate
+        qulity.name = stream.id
+        qulity.title = stream.name
+        qulity.url = stream.url
+        qulity.index = -1
+        return qulity
     }
 
     /**
@@ -119,13 +121,13 @@ public class VideoQualityUtils {
      * @param transcodeList
      * @return
      */
-    public static List<VideoQuality> convertToVideoQualityList(HashMap<String, PlayInfoStream> transcodeList) {
-        List<VideoQuality> videoQualities = new ArrayList<>();
-        for (String classification : transcodeList.keySet()) {
-            VideoQuality videoQuality = convertToVideoQuality(transcodeList.get(classification));
-            videoQualities.add(videoQuality);
+    fun convertToVideoQualityList(transcodeList: HashMap<String?, PlayInfoStream?>): MutableList<VideoQuality> {
+        val videoQualities: MutableList<VideoQuality> = ArrayList()
+        for (classification in transcodeList.keys) {
+            val videoQuality = convertToVideoQuality(transcodeList[classification])
+            videoQualities.add(videoQuality)
         }
-        return videoQualities;
+        return videoQualities
     }
 
     /**
@@ -135,22 +137,26 @@ public class VideoQualityUtils {
      * @param resolutionNames 清晰度别名表
      * @return
      */
-    public static VideoQuality convertToVideoQuality(TXBitrateItem bitrateItem, List<ResolutionName> resolutionNames) {
-        VideoQuality quality = new VideoQuality();
-        quality.bitrate = bitrateItem.bitrate;
-        quality.index = bitrateItem.index;
-        boolean getName = false;
-        for (ResolutionName resolutionName : resolutionNames) {
-            if (((resolutionName.width == bitrateItem.width && resolutionName.height == bitrateItem.height) || (resolutionName.width == bitrateItem.height && resolutionName.height == bitrateItem.width))
-                    && "video".equalsIgnoreCase(resolutionName.type)) {
-                quality.title = resolutionName.name;
-                getName = true;
-                break;
+    fun convertToVideoQuality(
+        bitrateItem: TXBitrateItem,
+        resolutionNames: List<ResolutionName?>?
+    ): VideoQuality {
+        val quality = VideoQuality()
+        quality.bitrate = bitrateItem.bitrate
+        quality.index = bitrateItem.index
+        var getName = false
+        for (resolutionName in resolutionNames!!) {
+            if ((resolutionName!!.width == bitrateItem.width && resolutionName.height == bitrateItem.height || resolutionName.width == bitrateItem.height && resolutionName.height == bitrateItem.width)
+                && "video".equals(resolutionName.type, ignoreCase = true)
+            ) {
+                quality.title = resolutionName.name
+                getName = true
+                break
             }
         }
         if (!getName) {
-            TXCLog.i(TAG, "error: could not get quality name!");
+            TXCLog.i(TAG, "error: could not get quality name!")
         }
-        return quality;
+        return quality
     }
 }

@@ -1,253 +1,242 @@
-package com.tencent.liteav.demo.superplayer.ui.view;
+package com.tencent.liteav.demo.superplayer.ui.view
 
-import android.content.Context;
-import android.content.res.TypedArray;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Rect;
-import android.graphics.RectF;
-import android.graphics.drawable.Drawable;
-import android.util.AttributeSet;
-import android.view.MotionEvent;
-import android.view.View;
-import android.widget.RelativeLayout;
-
-import com.tencent.liteav.demo.superplayer.R;
-
-import java.util.List;
+import android.content.*
+import android.graphics.*
+import android.graphics.drawable.Drawable
+import android.util.AttributeSet
+import android.view.*
+import android.widget.RelativeLayout
+import com.tencent.liteav.demo.superplayer.*
+import com.tencent.liteav.demo.superplayer.ui.view.PointSeekBar.*
 
 /**
  * 一个带有打点的，模仿seekbar的view
  *
  * 除seekbar基本功能外，还具备关键帧信息打点的功能
  *
- * 1、添加打点信息{@link #addPoint(PointParams, int)}
+ * 1、添加打点信息[.addPoint]
  *
- * 2、自定义thumb{@link TCThumbView}
+ * 2、自定义thumb[TCThumbView]
  *
- * 3、打点view{@link TCPointView}
+ * 3、打点view[TCPointView]
  *
- * 4、打点信息参数{@link PointParams}
+ * 4、打点信息参数[PointParams]
  */
-public class PointSeekBar extends RelativeLayout {
+class PointSeekBar : RelativeLayout {
+    private var mWidth // 自身宽度
+            = 0
+    private var mHeight // 自身高度
+            = 0
+    private var mSeekBarLeft // SeekBar的起点位置
+            = 0
+    private var mSeekBarRight // SeekBar的终点位置
+            = 0
+    private var mBgTop // 进度条距离父布局上边界的距离
+            = 0
+    private var mBgBottom // 进度条距离父布局下边界的距离
+            = 0
+    private var mRoundSize // 进度条圆角大小
+            = 0
+    private var mViewEnd // 自身的右边界
+            = 0
+    private var mNormalPaint // seekbar背景画笔
+            : Paint? = null
+    private var mProgressPaint // seekbar进度条画笔
+            : Paint? = null
+    private var mPointerPaint // 打点view画笔
+            : Paint? = null
+    private var mThumbDrawable // 拖动块图片
+            : Drawable? = null
+    private var mHalfDrawableWidth // Thumb图片宽度的一半
+            = 0
 
-    private int                             mWidth;                 // 自身宽度
-    private int                             mHeight;                // 自身高度
-    private int                             mSeekBarLeft;           // SeekBar的起点位置
-    private int                             mSeekBarRight;          // SeekBar的终点位置
-    private int                             mBgTop;                 // 进度条距离父布局上边界的距离
-    private int                             mBgBottom;              // 进度条距离父布局下边界的距离
-    private int                             mRoundSize;             // 进度条圆角大小
-    private int                             mViewEnd;               // 自身的右边界
-
-    private Paint                           mNormalPaint;           // seekbar背景画笔
-    private Paint                           mProgressPaint;         // seekbar进度条画笔
-    private Paint                           mPointerPaint;          // 打点view画笔
-
-    private Drawable                        mThumbDrawable;         // 拖动块图片
-    private int                             mHalfDrawableWidth;     // Thumb图片宽度的一半
     // Thumb距父布局中的位置
-    private float                           mThumbLeft;             // thumb的marginLeft值
-    private float                           mThumbRight;            // thumb的marginRight值
-    private float                           mThumbTop;              // thumb的marginTop值
-    private float                           mThumbBottom;           // thumb的marginBottom值
-
-
-    private boolean                         mIsOnDrag;              // 是否处于拖动状态
-    private float                           mCurrentLeftOffset = 0; // thumb距离打点view的偏移量
-    private float                           mLastX;                 // 上一次点击事件的横坐标，用于计算偏移量
-
-    private int                             mCurrentProgress;       // 当前seekbar的数值
-    private int                             mMaxProgress = 100;     // seekbar最大数值
-    private float                           mBarHeightPx = 0;       // seekbar的高度大小 px
-
-    private TCThumbView                     mThumbView;             // 滑动ThumbView
-    private List<PointParams>               mPointList;             // 打点信息的列表
-    private OnSeekBarPointClickListener     mPointClickListener;    // 打点view点击回调
-    private boolean                         mIsChangePointViews;    // 打点信息是否更新过
-
-    public PointSeekBar(Context context) {
-        super(context);
-        init(null);
-    }
-
-    public PointSeekBar(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(attrs);
-    }
-
-    public PointSeekBar(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        init(attrs);
-    }
-
-    /**
-     * 设置seekbar进度值
-     *
-     * @param progress
-     */
-    public void setProgress(int progress) {
-        if (progress < 0) {
-            progress = 0;
-        }
-        if (progress > mMaxProgress) {
-            progress = mMaxProgress;
-        }
-        if (!mIsOnDrag) {
-            mCurrentProgress = progress;
-            invalidate();
-            callbackProgressInternal(progress, false);
-        }
-    }
-
-    /**
-     * 设置seekbar最大值
-     *
-     * @param max
-     */
-    public void setMax(int max) {
-        mMaxProgress = max;
-    }
-
-    /**
-     * 获取seekbar进度值
-     *
-     * @return
-     */
-    public int getProgress() {
-        return mCurrentProgress;
-    }
-
+    private var mThumbLeft // thumb的marginLeft值
+            = 0f
+    private var mThumbRight // thumb的marginRight值
+            = 0f
+    private var mThumbTop // thumb的marginTop值
+            = 0f
+    private var mThumbBottom // thumb的marginBottom值
+            = 0f
+    private var mIsOnDrag // 是否处于拖动状态
+            = false
+    private var mCurrentLeftOffset = 0f // thumb距离打点view的偏移量
+    private var mLastX // 上一次点击事件的横坐标，用于计算偏移量
+            = 0f
+    private var mCurrentProgress // 当前seekbar的数值
+            = 0
     /**
      * 获取seekbar最大值
      *
      * @return
      */
-    public int getMax() {
-        return mMaxProgress;
+    /**
+     * 设置seekbar最大值
+     *
+     * @param max
+     */
+    var max = 100 // seekbar最大数值
+    private var mBarHeightPx = 0f // seekbar的高度大小 px
+    private var mThumbView // 滑动ThumbView
+            : TCThumbView? = null
+    private var mPointList // 打点信息的列表
+            : List<PointParams>? = null
+    private var mPointClickListener // 打点view点击回调
+            : OnSeekBarPointClickListener? = null
+    private var mIsChangePointViews // 打点信息是否更新过
+            = false
+
+    constructor(context: Context?) : super(context) {
+        init(null)
     }
 
-    private void init(AttributeSet attrs) {
-        setWillNotDraw(false);
-        int progressColor = getResources().getColor(R.color.superplayer_default_progress_color);
-        int backgroundColor = getResources().getColor(R.color.superplayer_default_progress_background_color);
-        if (attrs != null) {
-            TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.SuperPlayerTCPointSeekBar);
-            mThumbDrawable = a.getDrawable(R.styleable.SuperPlayerTCPointSeekBar_psb_thumbBackground);
-            mHalfDrawableWidth = mThumbDrawable.getIntrinsicWidth() / 2;
-            progressColor = a.getColor(R.styleable.SuperPlayerTCPointSeekBar_psb_progressColor, progressColor);
-            backgroundColor = a.getColor(R.styleable.SuperPlayerTCPointSeekBar_psb_backgroundColor, backgroundColor);
-            mCurrentProgress = a.getInt(R.styleable.SuperPlayerTCPointSeekBar_psb_progress, 0);
-            mMaxProgress = a.getInt(R.styleable.SuperPlayerTCPointSeekBar_psb_max, 100);
+    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
+        init(attrs)
+    }
 
-            mBarHeightPx = a.getDimension(R.styleable.SuperPlayerTCPointSeekBar_psb_progressHeight, 8);
-            a.recycle();
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
+        init(attrs)
+    }
+    /**
+     * 获取seekbar进度值
+     *
+     * @return
+     */
+    /**
+     * 设置seekbar进度值
+     *
+     * @param progress
+     */
+    var progress: Int
+        get() = mCurrentProgress
+        set(progress) {
+            var progress = progress
+            if (progress < 0) {
+                progress = 0
+            }
+            if (progress > max) {
+                progress = max
+            }
+            if (!mIsOnDrag) {
+                mCurrentProgress = progress
+                invalidate()
+                callbackProgressInternal(progress, false)
+            }
         }
-        mNormalPaint = new Paint();
-        mNormalPaint.setColor(backgroundColor);
 
-        mPointerPaint = new Paint();
-        mPointerPaint.setColor(Color.RED);
-
-        mProgressPaint = new Paint();
-        mProgressPaint.setColor(progressColor);
-        this.post(new Runnable() {
-            @Override
-            public void run() {
-                addThumbView();
-            }
-        });
+    private fun init(attrs: AttributeSet?) {
+        setWillNotDraw(false)
+        var progressColor = resources.getColor(R.color.superplayer_default_progress_color)
+        var backgroundColor =
+            resources.getColor(R.color.superplayer_default_progress_background_color)
+        if (attrs != null) {
+            val a = context.obtainStyledAttributes(attrs, R.styleable.SuperPlayerTCPointSeekBar)
+            mThumbDrawable =
+                a.getDrawable(R.styleable.SuperPlayerTCPointSeekBar_psb_thumbBackground)
+            mHalfDrawableWidth = mThumbDrawable!!.intrinsicWidth / 2
+            progressColor =
+                a.getColor(R.styleable.SuperPlayerTCPointSeekBar_psb_progressColor, progressColor)
+            backgroundColor = a.getColor(
+                R.styleable.SuperPlayerTCPointSeekBar_psb_backgroundColor,
+                backgroundColor
+            )
+            mCurrentProgress = a.getInt(R.styleable.SuperPlayerTCPointSeekBar_psb_progress, 0)
+            max = a.getInt(R.styleable.SuperPlayerTCPointSeekBar_psb_max, 100)
+            mBarHeightPx =
+                a.getDimension(R.styleable.SuperPlayerTCPointSeekBar_psb_progressHeight, 8f)
+            a.recycle()
+        }
+        mNormalPaint = Paint()
+        mNormalPaint!!.color = backgroundColor
+        mPointerPaint = Paint()
+        mPointerPaint!!.color = Color.RED
+        mProgressPaint = Paint()
+        mProgressPaint!!.color = progressColor
+        post { addThumbView() }
     }
 
-
-    private void changeThumbPos() {
-        LayoutParams params = (LayoutParams) mThumbView.getLayoutParams();
-        params.leftMargin = (int) mThumbLeft;
-        params.topMargin = (int) mThumbTop;
-        mThumbView.setLayoutParams(params);
+    private fun changeThumbPos() {
+        val params = mThumbView!!.layoutParams as LayoutParams
+        params.leftMargin = mThumbLeft.toInt()
+        params.topMargin = mThumbTop.toInt()
+        mThumbView!!.layoutParams = params
     }
 
-    private void addThumbView() {
-        mThumbView = new TCThumbView(getContext(), mThumbDrawable);
-        LayoutParams thumbParams = new LayoutParams(mThumbDrawable.getIntrinsicHeight(), mThumbDrawable.getIntrinsicHeight());
-        mThumbView.setLayoutParams(thumbParams);
-        addView(mThumbView);
+    private fun addThumbView() {
+        mThumbView = TCThumbView(context, mThumbDrawable)
+        val thumbParams =
+            LayoutParams(mThumbDrawable!!.intrinsicHeight, mThumbDrawable!!.intrinsicHeight)
+        mThumbView!!.layoutParams = thumbParams
+        addView(mThumbView)
     }
 
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-        mWidth = w;
-        mHeight = h;
-
-        mSeekBarLeft = mHalfDrawableWidth;
-        mSeekBarRight = mWidth - mHalfDrawableWidth;
-
-
-        float barPaddingTop = (mHeight - mBarHeightPx) / 2;
-        mBgTop = (int) barPaddingTop;
-        mBgBottom = (int) (mHeight - barPaddingTop);
-        mRoundSize = mHeight / 2;
-
-        mViewEnd = mWidth;
-
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        mWidth = w
+        mHeight = h
+        mSeekBarLeft = mHalfDrawableWidth
+        mSeekBarRight = mWidth - mHalfDrawableWidth
+        val barPaddingTop = (mHeight - mBarHeightPx) / 2
+        mBgTop = barPaddingTop.toInt()
+        mBgBottom = ((mHeight - barPaddingTop).toInt())
+        mRoundSize = mHeight / 2
+        mViewEnd = mWidth
     }
 
-    private void calProgressDis() {
-        float dis = (mSeekBarRight - mSeekBarLeft) * (mCurrentProgress * 1.0f / mMaxProgress);
-        mThumbLeft = dis;
-        mLastX = mThumbLeft;
-        mCurrentLeftOffset = 0;
-        calculatePointerRect();
+    private fun calProgressDis() {
+        val dis = (mSeekBarRight - mSeekBarLeft) * (mCurrentProgress * 1.0f / max)
+        mThumbLeft = dis
+        mLastX = mThumbLeft
+        mCurrentLeftOffset = 0f
+        calculatePointerRect()
     }
 
-
-    private void addThumbAndPointViews() {
-        this.post(new Runnable() {
-            @Override
-            public void run() {
-                if (mIsChangePointViews) {
-                    PointSeekBar.this.removeAllViews();
-                    if (mPointList != null) {
-                        for (int i = 0; i < mPointList.size(); i++) {
-                            PointParams params = mPointList.get(i);
-                            addPoint(params, i);
-                        }
+    private fun addThumbAndPointViews() {
+        post {
+            if (mIsChangePointViews) {
+                removeAllViews()
+                if (mPointList != null) {
+                    for (i in mPointList!!.indices) {
+                        val params = mPointList!![i]
+                        addPoint(params, i)
                     }
-                    addThumbView();
-                    mIsChangePointViews = false;
                 }
-                if(!mIsOnDrag) {
-                    calProgressDis();
-                    changeThumbPos();
-                }
+                addThumbView()
+                mIsChangePointViews = false
             }
-        });
+            if (!mIsOnDrag) {
+                calProgressDis()
+                changeThumbPos()
+            }
+        }
     }
 
-
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
         //draw  bg
-        RectF rectF = new RectF();
-        rectF.left = mSeekBarLeft;
-        rectF.right = mSeekBarRight;
-        rectF.top = mBgTop;
-        rectF.bottom = mBgBottom;
-        canvas.drawRoundRect(rectF, mRoundSize, mRoundSize, mNormalPaint);
+        val rectF = RectF()
+        rectF.left = mSeekBarLeft.toFloat()
+        rectF.right = mSeekBarRight.toFloat()
+        rectF.top = mBgTop.toFloat()
+        rectF.bottom = mBgBottom.toFloat()
+        canvas.drawRoundRect(rectF, mRoundSize.toFloat(), mRoundSize.toFloat(), mNormalPaint!!)
 
         //draw progress
-        RectF pRecf = new RectF();
-        pRecf.left = mSeekBarLeft;
-        pRecf.top = mBgTop;
-        pRecf.right = mThumbRight - mHalfDrawableWidth;
-        pRecf.bottom = mBgBottom;
-        canvas.drawRoundRect(pRecf,
-                mRoundSize, mRoundSize, mProgressPaint);
-
-        addThumbAndPointViews();
+        val pRecf = RectF()
+        pRecf.left = mSeekBarLeft.toFloat()
+        pRecf.top = mBgTop.toFloat()
+        pRecf.right = mThumbRight - mHalfDrawableWidth
+        pRecf.bottom = mBgBottom.toFloat()
+        canvas.drawRoundRect(
+            pRecf,
+            mRoundSize.toFloat(), mRoundSize.toFloat(), mProgressPaint!!
+        )
+        addThumbAndPointViews()
     }
 
     /**
@@ -256,160 +245,138 @@ public class PointSeekBar extends RelativeLayout {
      * @param pointParams
      * @param index
      */
-    public void addPoint(PointParams pointParams, final int index) {
-        float percent = pointParams.progress * 1.0f / mMaxProgress;
-        int pointSize = mBgBottom - mBgTop;
-        float leftMargin = percent * (mSeekBarRight - mSeekBarLeft);
-
-        float rectLeft = (mThumbDrawable.getIntrinsicWidth() - pointSize) / 2;
-        float rectTop = mBgTop;
-        float rectBottom = mBgBottom;
-        float rectRight = rectLeft + pointSize;
-
-        final TCPointView view = new TCPointView(getContext());
-        LayoutParams params = new LayoutParams(mThumbDrawable.getIntrinsicWidth(), mThumbDrawable.getIntrinsicWidth());
-        params.leftMargin = (int) leftMargin;
-        view.setDrawRect(rectLeft, rectTop, rectBottom, rectRight);
-        view.setLayoutParams(params);
-        view.setColor(pointParams.color);
-        view.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mPointClickListener != null) {
-                    mPointClickListener.onSeekBarPointClick(view, index);
-                }
+    fun addPoint(pointParams: PointParams, index: Int) {
+        val percent = pointParams.progress * 1.0f / max
+        val pointSize = mBgBottom - mBgTop
+        val leftMargin = percent * (mSeekBarRight - mSeekBarLeft)
+        val rectLeft = ((mThumbDrawable!!.intrinsicWidth - pointSize) / 2).toFloat()
+        val rectTop = mBgTop.toFloat()
+        val rectBottom = mBgBottom.toFloat()
+        val rectRight = rectLeft + pointSize
+        val view = TCPointView(context)
+        val params = LayoutParams(mThumbDrawable!!.intrinsicWidth, mThumbDrawable!!.intrinsicWidth)
+        params.leftMargin = leftMargin.toInt()
+        view.setDrawRect(rectLeft, rectTop, rectBottom, rectRight)
+        view.layoutParams = params
+        view.setColor(pointParams.color)
+        view.setOnClickListener {
+            if (mPointClickListener != null) {
+                mPointClickListener!!.onSeekBarPointClick(view, index)
             }
-        });
-        addView(view);
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if (!isEnabled()) return false;
-
-        boolean isHandle = false;
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                isHandle = handleDownEvent(event);
-                break;
-            case MotionEvent.ACTION_MOVE:
-                isHandle = handleMoveEvent(event);
-                break;
-            case MotionEvent.ACTION_CANCEL:
-            case MotionEvent.ACTION_UP:
-                isHandle = handleUpEvent(event);
-                break;
-
         }
-        return isHandle;
+        addView(view)
     }
 
-    private boolean handleUpEvent(MotionEvent event) {
-        float x = event.getX();
-        float y = event.getY();
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        if (!isEnabled) return false
+        var isHandle = false
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> isHandle = handleDownEvent(event)
+            MotionEvent.ACTION_MOVE -> isHandle = handleMoveEvent(event)
+            MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_UP -> isHandle = handleUpEvent(event)
+        }
+        return isHandle
+    }
+
+    private fun handleUpEvent(event: MotionEvent): Boolean {
+        val x = event.x
+        val y = event.y
         if (mIsOnDrag) {
-            mIsOnDrag = false;
+            mIsOnDrag = false
             if (mListener != null) {
-                mListener.onStopTrackingTouch(this);
+                mListener!!.onStopTrackingTouch(this)
             }
-            return true;
+            return true
         }
-        return false;
+        return false
     }
 
-    private boolean handleMoveEvent(MotionEvent event) {
-        float x = event.getX();
-        float y = event.getY();
+    private fun handleMoveEvent(event: MotionEvent): Boolean {
+        val x = event.x
+        val y = event.y
         if (mIsOnDrag) {
-            mCurrentLeftOffset = x - mLastX;
+            mCurrentLeftOffset = x - mLastX
             //计算出标尺的Rect
-            calculatePointerRect();
+            calculatePointerRect()
             if (mThumbRight - mHalfDrawableWidth <= mSeekBarLeft) {
-                mThumbLeft = 0;
-                mThumbRight = mThumbLeft + mThumbDrawable.getIntrinsicWidth();
+                mThumbLeft = 0f
+                mThumbRight = mThumbLeft + mThumbDrawable!!.intrinsicWidth
             }
             if (mThumbLeft + mHalfDrawableWidth >= mSeekBarRight) {
-                mThumbRight = mWidth;
-                mThumbLeft = mWidth - mThumbDrawable.getIntrinsicWidth();
+                mThumbRight = mWidth.toFloat()
+                mThumbLeft = (mWidth - mThumbDrawable!!.intrinsicWidth).toFloat()
             }
-            changeThumbPos();
-            invalidate();
-            callbackProgress();
-            mLastX = x;
-            return true;
+            changeThumbPos()
+            invalidate()
+            callbackProgress()
+            mLastX = x
+            return true
         }
-        return false;
+        return false
     }
 
-    private void callbackProgress() {
-        if (mThumbLeft == 0) {
-            callbackProgressInternal(0, true);
-        } else if (mThumbRight == mWidth) {
-            callbackProgressInternal(mMaxProgress, true);
+    private fun callbackProgress() {
+        if (mThumbLeft == 0f) {
+            callbackProgressInternal(0, true)
+        } else if (mThumbRight == mWidth.toFloat()) {
+            callbackProgressInternal(max, true)
         } else {
-            float pointerMiddle = mThumbLeft + mHalfDrawableWidth;
+            val pointerMiddle = mThumbLeft + mHalfDrawableWidth
             if (pointerMiddle >= mViewEnd) {
-                callbackProgressInternal(mMaxProgress, true);
+                callbackProgressInternal(max, true)
             } else {
-                float percent = pointerMiddle / mViewEnd * 1.0f;
-                int progress = (int) (percent * mMaxProgress);
-                if (progress > mMaxProgress) {
-                    progress = mMaxProgress;
+                val percent = pointerMiddle / mViewEnd * 1.0f
+                var progress = (percent * max).toInt()
+                if (progress > max) {
+                    progress = max
                 }
-                callbackProgressInternal(progress, true);
+                callbackProgressInternal(progress, true)
             }
         }
     }
 
-    private void callbackProgressInternal(int progress, boolean isFromUser) {
-        mCurrentProgress = progress;
+    private fun callbackProgressInternal(progress: Int, isFromUser: Boolean) {
+        mCurrentProgress = progress
         if (mListener != null) {
-            mListener.onProgressChanged(this, progress, isFromUser);
+            mListener!!.onProgressChanged(this, progress, isFromUser)
         }
     }
 
-
-    private boolean handleDownEvent(MotionEvent event) {
-        float x = event.getX();
-        float y = event.getY();
+    private fun handleDownEvent(event: MotionEvent): Boolean {
+        val x = event.x
+        val y = event.y
         if (x >= mThumbLeft - 100 && x <= mThumbRight + 100) {
-            if (mListener != null)
-                mListener.onStartTrackingTouch(this);
-            mIsOnDrag = true;
-            mLastX = x;
-            return true;
+            if (mListener != null) mListener!!.onStartTrackingTouch(this)
+            mIsOnDrag = true
+            mLastX = x
+            return true
         }
-        return false;
+        return false
     }
 
-    private void calculatePointerRect() {
+    private fun calculatePointerRect() {
         //draw pointer
-        float pointerLeft = getPointerLeft(mCurrentLeftOffset);
-        float pointerRight = pointerLeft + mThumbDrawable.getIntrinsicWidth();
-        mThumbLeft = pointerLeft;
-        mThumbRight = pointerRight;
-        mThumbTop = 0;
-        mThumbBottom = mHeight;
+        val pointerLeft = getPointerLeft(mCurrentLeftOffset)
+        val pointerRight = pointerLeft + mThumbDrawable!!.intrinsicWidth
+        mThumbLeft = pointerLeft
+        mThumbRight = pointerRight
+        mThumbTop = 0f
+        mThumbBottom = mHeight.toFloat()
     }
 
-
-    private float getPointerLeft(float offset) {
-        return mThumbLeft + offset;
+    private fun getPointerLeft(offset: Float): Float {
+        return mThumbLeft + offset
     }
 
-    private OnSeekBarChangeListener mListener;
-
-    public void setOnSeekBarChangeListener(OnSeekBarChangeListener listener) {
-        mListener = listener;
+    private var mListener: OnSeekBarChangeListener? = null
+    fun setOnSeekBarChangeListener(listener: OnSeekBarChangeListener?) {
+        mListener = listener
     }
 
-    public interface OnSeekBarChangeListener {
-
-        void onProgressChanged(PointSeekBar seekBar, int progress, boolean fromUser);
-
-        void onStartTrackingTouch(PointSeekBar seekBar);
-
-        void onStopTrackingTouch(PointSeekBar seekBar);
+    interface OnSeekBarChangeListener {
+        fun onProgressChanged(seekBar: PointSeekBar, progress: Int, fromUser: Boolean)
+        fun onStartTrackingTouch(seekBar: PointSeekBar?)
+        fun onStopTrackingTouch(seekBar: PointSeekBar)
     }
 
     /**
@@ -417,15 +384,15 @@ public class PointSeekBar extends RelativeLayout {
      *
      * @param listener
      */
-    public void setOnPointClickListener(OnSeekBarPointClickListener listener) {
-        mPointClickListener = listener;
+    fun setOnPointClickListener(listener: OnSeekBarPointClickListener?) {
+        mPointClickListener = listener
     }
 
     /**
      * 打点view点击回调
      */
-    public interface OnSeekBarPointClickListener {
-        void onSeekBarPointClick(View view, int pos);
+    interface OnSeekBarPointClickListener {
+        fun onSeekBarPointClick(view: View, pos: Int)
     }
 
     /**
@@ -433,53 +400,56 @@ public class PointSeekBar extends RelativeLayout {
      *
      * @param pointList
      */
-    public void setPointList(List<PointParams> pointList) {
-        mPointList = pointList;
-        mIsChangePointViews = true;
-        invalidate();
+    fun setPointList(pointList: List<PointParams>?) {
+        mPointList = pointList
+        mIsChangePointViews = true
+        invalidate()
     }
 
     /**
      * 打点信息
      */
-    public static class PointParams {
-        int progress = 0;       // 视频进度值(秒)
-        int color = Color.RED;  // 打点view的颜色
+    class PointParams(progress: Int, color: Int) {
+        var progress = 0 // 视频进度值(秒)
+        var color = Color.RED // 打点view的颜色
 
-        public PointParams(int progress, int color) {
-            this.progress = progress;
-            this.color = color;
+        init {
+            this.progress = progress
+            this.color = color
         }
     }
 
     /**
      * 打点view
      */
-    private static class TCPointView extends View {
-        private int   mColor = Color.WHITE; // view颜色
-        private Paint mPaint;               // 画笔
-        private RectF mRectF;               // 打点view的位置信息(矩形)
+    private class TCPointView : View {
+        private var mColor = Color.WHITE // view颜色
+        private var mPaint // 画笔
+                : Paint? = null
+        private var mRectF // 打点view的位置信息(矩形)
+                : RectF? = null
 
-        public TCPointView(Context context) {
-            super(context);
-            init();
+        constructor(context: Context?) : super(context) {
+            init()
         }
 
-        public TCPointView(Context context,  AttributeSet attrs) {
-            super(context, attrs);
-            init();
+        constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
+            init()
         }
 
-        public TCPointView(Context context,  AttributeSet attrs, int defStyleAttr) {
-            super(context, attrs, defStyleAttr);
-            init();
+        constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(
+            context,
+            attrs,
+            defStyleAttr
+        ) {
+            init()
         }
 
-        private void init() {
-            mPaint = new Paint();
-            mPaint.setAntiAlias(true);
-            mPaint.setColor(mColor);
-            mRectF = new RectF();
+        private fun init() {
+            mPaint = Paint()
+            mPaint!!.isAntiAlias = true
+            mPaint!!.color = mColor
+            mRectF = RectF()
         }
 
         /**
@@ -487,9 +457,9 @@ public class PointSeekBar extends RelativeLayout {
          *
          * @param color
          */
-        public void setColor(int color) {
-            mColor = color;
-            mPaint.setColor(mColor);
+        fun setColor(color: Int) {
+            mColor = color
+            mPaint!!.color = mColor
         }
 
         /**
@@ -500,54 +470,49 @@ public class PointSeekBar extends RelativeLayout {
          * @param right
          * @param bottom
          */
-        public void setDrawRect(float left, float top, float right, float bottom) {
-            mRectF.left = left;
-            mRectF.top = top;
-            mRectF.right = right;
-            mRectF.bottom = bottom;
+        fun setDrawRect(left: Float, top: Float, right: Float, bottom: Float) {
+            mRectF!!.left = left
+            mRectF!!.top = top
+            mRectF!!.right = right
+            mRectF!!.bottom = bottom
         }
 
-
-        @Override
-        protected void onDraw(Canvas canvas) {
-            super.onDraw(canvas);
-            canvas.drawRect(mRectF, mPaint);
+        override fun onDraw(canvas: Canvas) {
+            super.onDraw(canvas)
+            canvas.drawRect(mRectF!!, mPaint!!)
         }
     }
 
     /**
      * 拖动块view
      */
-    private static class TCThumbView extends View {
-        private Paint    mPaint;        // 画笔
-        private Rect     mRect;         // 位置信息(矩形)
-        private Drawable mThumbDrawable;// thumb图片
+    private class TCThumbView(
+        context: Context?, // thumb图片
+        private val mThumbDrawable: Drawable?
+    ) : View(context) {
+        private val mPaint // 画笔
+                : Paint
+        private val mRect // 位置信息(矩形)
+                : Rect
 
-        public TCThumbView(Context context, Drawable drawable) {
-            super(context);
-            mThumbDrawable = drawable;
-            mPaint = new Paint();
-            mPaint.setAntiAlias(true);
-            mRect = new Rect();
+        override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+            super.onSizeChanged(w, h, oldw, oldh)
+            mRect.left = 0
+            mRect.top = 0
+            mRect.right = w
+            mRect.bottom = h
         }
 
-
-        @Override
-        protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-            super.onSizeChanged(w, h, oldw, oldh);
-            mRect.left = 0;
-            mRect.top = 0;
-            mRect.right = w;
-            mRect.bottom = h;
+        override fun onDraw(canvas: Canvas) {
+            super.onDraw(canvas)
+            mThumbDrawable!!.bounds = mRect
+            mThumbDrawable.draw(canvas)
         }
 
-        @Override
-        protected void onDraw(Canvas canvas) {
-            super.onDraw(canvas);
-            mThumbDrawable.setBounds(mRect);
-            mThumbDrawable.draw(canvas);
+        init {
+            mPaint = Paint()
+            mPaint.isAntiAlias = true
+            mRect = Rect()
         }
     }
-
-
 }

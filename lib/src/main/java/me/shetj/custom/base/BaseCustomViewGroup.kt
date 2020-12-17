@@ -27,6 +27,9 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) :
     //最新滑动距离
     private val mScaledTouchSlop = ViewConfiguration.get(context).scaledTouchSlop
 
+    /**
+     *
+     */
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         //将所有的子View进行测量，这会触发每个子View的onMeasure函数

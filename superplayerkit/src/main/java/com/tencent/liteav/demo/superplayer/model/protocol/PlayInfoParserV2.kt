@@ -1,100 +1,127 @@
-package com.tencent.liteav.demo.superplayer.model.protocol;
+package com.tencent.liteav.demo.superplayer.model.protocol
 
-import android.util.Log;
-
-import com.tencent.liteav.basic.log.TXCLog;
-import com.tencent.liteav.demo.superplayer.model.entity.PlayImageSpriteInfo;
-import com.tencent.liteav.demo.superplayer.model.entity.PlayInfoStream;
-import com.tencent.liteav.demo.superplayer.model.entity.PlayKeyFrameDescInfo;
-import com.tencent.liteav.demo.superplayer.model.entity.ResolutionName;
-import com.tencent.liteav.demo.superplayer.model.entity.VideoClassification;
-import com.tencent.liteav.demo.superplayer.model.entity.VideoQuality;
-import com.tencent.liteav.demo.superplayer.model.utils.VideoQualityUtils;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
+import android.util.Log
+import com.tencent.liteav.basic.log.TXCLog
+import com.tencent.liteav.demo.superplayer.model.entity.*
+import com.tencent.liteav.demo.superplayer.model.protocol.PlayInfoConstant.EncryptedURLType
+import com.tencent.liteav.demo.superplayer.model.utils.VideoQualityUtils
+import org.json.JSONException
+import org.json.JSONObject
+import java.io.UnsupportedEncodingException
+import java.net.URLDecoder
+import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * V2视频信息协议解析实现类
  *
  * 负责解析V2视频信息协议请求响应的Json数据
  */
-public class PlayInfoParserV2 implements IPlayInfoParser{
-    private static final String TAG = "TCPlayInfoParserV2";
-
-    private JSONObject mResponse;   // 协议请求返回的Json数据
-
+class PlayInfoParserV2(  // 协议请求返回的Json数据
+    private val mResponse: JSONObject
+) : IPlayInfoParser {
     //播放器配置信息
-    private String                    mDefaultVideoClassification;  // 默认视频清晰度名称
-    private List<VideoClassification> mVideoClassificationList;     // 视频清晰度信息列表
+    private var mDefaultVideoClassification // 默认视频清晰度名称
+            : String? = null
+    private var mVideoClassificationList // 视频清晰度信息列表
+            : List<VideoClassification>? = null
 
-    private PlayImageSpriteInfo        mImageSpriteInfo;            // 雪碧图信息
-    private List<PlayKeyFrameDescInfo> mKeyFrameDescInfo;           // 关键帧打点信息
+    /**
+     * 获取雪碧图信息
+     *
+     * @return 雪碧图信息对象
+     */
+    override var imageSpriteInfo // 雪碧图信息
+            : PlayImageSpriteInfo? = null
+        private set
+
+    /**
+     * 获取关键帧信息
+     *
+     * @return 关键帧信息数组
+     */
+    override var keyFrameDescInfo // 关键帧打点信息
+            : List<PlayKeyFrameDescInfo>? = null
+        private set
+
+    /**
+     * 获取视频名称
+     *
+     * @return 视频名称字符串
+     */
     //视频信息
-    private String         mName;                                   // 视频名称
-    private PlayInfoStream mSourceStream;                           // 源视频流信息
-    private PlayInfoStream mMasterPlayList;                         // 主播放视频流信息
+    override var name // 视频名称
+            : String? = null
+        private set
+    private var mSourceStream // 源视频流信息
+            : PlayInfoStream? = null
+    private var mMasterPlayList // 主播放视频流信息
+            : PlayInfoStream? = null
+    private var mTranscodePlayList // 转码视频信息列表
+            : LinkedHashMap<String?, PlayInfoStream?>? = null
 
-    private LinkedHashMap<String, PlayInfoStream> mTranscodePlayList;   // 转码视频信息列表
+    /**
+     * 获取视频播放url
+     *
+     * @return url字符串
+     */
+    override var uRL // 视频播放url
+            : String? = null
+        private set
+    private var mVideoQualityList // 视频画质信息列表
+            : MutableList<VideoQuality>? = null
 
-    private String             mURL;                    // 视频播放url
-    private List<VideoQuality> mVideoQualityList;       // 视频画质信息列表
-    private VideoQuality       mDefaultVideoQuality;    // 默认视频画质
-
-    public PlayInfoParserV2(JSONObject response) {
-        mResponse = response;
-        parsePlayInfo();
-    }
+    /**
+     * 获取默认画质信息
+     *
+     * @return 默认画质信息对象
+     */
+    override var defaultVideoQuality // 默认视频画质
+            : VideoQuality? = null
+        private set
 
     /**
      * 从视频信息协议请求响应的Json数据中解析出视频信息
      *
      * 解析流程：
      *
-     * 1、解析播放器信息(playerInfo)字段，获取视频清晰度列表{@link #mVideoClassificationList}以及默认清晰度{@link #mDefaultVideoClassification}
+     * 1、解析播放器信息(playerInfo)字段，获取视频清晰度列表[.mVideoClassificationList]以及默认清晰度[.mDefaultVideoClassification]
      *
-     * 2、解析雪碧图信息(imageSpriteInfo)字段，获取雪碧图信息{@link #mImageSpriteInfo}
+     * 2、解析雪碧图信息(imageSpriteInfo)字段，获取雪碧图信息[.mImageSpriteInfo]
      *
-     * 3、解析关键帧信息(keyFrameDescInfo)字段，获取关键帧信息{@link #mKeyFrameDescInfo}
+     * 3、解析关键帧信息(keyFrameDescInfo)字段，获取关键帧信息[.mKeyFrameDescInfo]
      *
-     * 4、解析视频信息(videoInfo)字段，获取视频名称{@link #mName}、源视频信息{@link #mSourceStream}、
-     * 主视频列表{@link #mMasterPlayList}、转码视频列表{@link #mTranscodePlayList}
+     * 4、解析视频信息(videoInfo)字段，获取视频名称[.mName]、源视频信息[.mSourceStream]、
+     * 主视频列表[.mMasterPlayList]、转码视频列表[.mTranscodePlayList]
      *
-     * 5、从主视频列表、转码视频列表、源视频信息中解析出视频播放url{@link #mURL}、画质信息{@link #mVideoQualityList}、
-     * 默认画质{@link #mDefaultVideoQuality}
+     * 5、从主视频列表、转码视频列表、源视频信息中解析出视频播放url[.mURL]、画质信息[.mVideoQualityList]、
+     * 默认画质[.mDefaultVideoQuality]
      */
-    private void parsePlayInfo() {
+    private fun parsePlayInfo() {
         try {
-            JSONObject playerInfo = mResponse.optJSONObject("playerInfo");
+            val playerInfo = mResponse.optJSONObject("playerInfo")
             if (playerInfo != null) {
-                mDefaultVideoClassification = parseDefaultVideoClassification(playerInfo);
-                mVideoClassificationList = parseVideoClassificationList(playerInfo);
+                mDefaultVideoClassification = parseDefaultVideoClassification(playerInfo)
+                mVideoClassificationList = parseVideoClassificationList(playerInfo)
             }
-            JSONObject imageSpriteInfo = mResponse.optJSONObject("imageSpriteInfo");
+            val imageSpriteInfo = mResponse.optJSONObject("imageSpriteInfo")
             if (imageSpriteInfo != null) {
-                mImageSpriteInfo = parseImageSpriteInfo(imageSpriteInfo);
+                this.imageSpriteInfo = parseImageSpriteInfo(imageSpriteInfo)
             }
-            JSONObject keyFrameDescInfo = mResponse.optJSONObject("keyFrameDescInfo");
+            val keyFrameDescInfo = mResponse.optJSONObject("keyFrameDescInfo")
             if (keyFrameDescInfo != null) {
-                mKeyFrameDescInfo = parseKeyFrameDescInfo(keyFrameDescInfo);
+                this.keyFrameDescInfo = parseKeyFrameDescInfo(keyFrameDescInfo)
             }
-            JSONObject videoInfo = mResponse.optJSONObject("videoInfo");
+            val videoInfo = mResponse.optJSONObject("videoInfo")
             if (videoInfo != null) {
-                mName = parseName(videoInfo);
-                mSourceStream = parseSourceStream(videoInfo);
-                mMasterPlayList = parseMasterPlayList(videoInfo);
-                mTranscodePlayList = parseTranscodePlayList(videoInfo);
+                name = parseName(videoInfo)
+                mSourceStream = parseSourceStream(videoInfo)
+                mMasterPlayList = parseMasterPlayList(videoInfo)
+                mTranscodePlayList = parseTranscodePlayList(videoInfo)
             }
-            parseVideoInfo();
-        } catch (JSONException e) {
-            TXCLog.e(TAG, Log.getStackTraceString(e));
+            parseVideoInfo()
+        } catch (e: JSONException) {
+            TXCLog.e(TAG, Log.getStackTraceString(e))
         }
     }
 
@@ -104,8 +131,9 @@ public class PlayInfoParserV2 implements IPlayInfoParser{
      * @param playerInfo 包含默认视频清晰度信息的Json对象
      * @return 默认视频清晰度名称字符串
      */
-    private String parseDefaultVideoClassification(JSONObject playerInfo) throws JSONException {
-        return playerInfo.getString("defaultVideoClassification");
+    @Throws(JSONException::class)
+    private fun parseDefaultVideoClassification(playerInfo: JSONObject): String {
+        return playerInfo.getString("defaultVideoClassification")
     }
 
     /**
@@ -114,30 +142,29 @@ public class PlayInfoParserV2 implements IPlayInfoParser{
      * @param playerInfo 包含默认视频类别信息的Json对象
      * @return 视频清晰度信息数组
      */
-    private List<VideoClassification> parseVideoClassificationList(JSONObject playerInfo) throws JSONException {
-        List<VideoClassification> arrayList = new ArrayList<>();
-        JSONArray videoClassificationArray = playerInfo.getJSONArray("videoClassification");
+    @Throws(JSONException::class)
+    private fun parseVideoClassificationList(playerInfo: JSONObject): List<VideoClassification> {
+        val arrayList: MutableList<VideoClassification> = ArrayList()
+        val videoClassificationArray = playerInfo.getJSONArray("videoClassification")
         if (videoClassificationArray != null) {
-            for (int i = 0; i < videoClassificationArray.length(); i++) {
-                JSONObject object = videoClassificationArray.getJSONObject(i);
-
-                VideoClassification classification = new VideoClassification();
-                classification.setId(object.getString("id"));
-                classification.setName(object.getString("name"));
-
-                List<Integer> definitionList = new ArrayList<>();
-                JSONArray array = object.getJSONArray("definitionList");
+            for (i in 0 until videoClassificationArray.length()) {
+                val `object` = videoClassificationArray.getJSONObject(i)
+                val classification = VideoClassification()
+                classification.id = `object`.getString("id")
+                classification.name = `object`.getString("name")
+                val definitionList: MutableList<Int> = ArrayList()
+                val array = `object`.getJSONArray("definitionList")
                 if (array != null) {
-                    for (int j = 0; j < array.length(); j++) {
-                        int definition = array.getInt(j);
-                        definitionList.add(definition);
+                    for (j in 0 until array.length()) {
+                        val definition = array.getInt(j)
+                        definitionList.add(definition)
                     }
                 }
-                classification.setDefinitionList(definitionList);
-                arrayList.add(classification);
+                classification.definitionList = definitionList
+                arrayList.add(classification)
             }
         }
-        return arrayList;
+        return arrayList
     }
 
     /**
@@ -146,51 +173,54 @@ public class PlayInfoParserV2 implements IPlayInfoParser{
      * @param imageSpriteInfo 包含雪碧图信息的Json对象
      * @return 雪碧图信息对象
      */
-    private PlayImageSpriteInfo parseImageSpriteInfo(JSONObject imageSpriteInfo) throws JSONException {
-        JSONArray imageSpriteList = imageSpriteInfo.getJSONArray("imageSpriteList");
+    @Throws(JSONException::class)
+    private fun parseImageSpriteInfo(imageSpriteInfo: JSONObject): PlayImageSpriteInfo? {
+        val imageSpriteList = imageSpriteInfo.getJSONArray("imageSpriteList")
         if (imageSpriteList != null) {
-            JSONObject spriteJSONObject = imageSpriteList.getJSONObject(imageSpriteList.length() - 1); //获取最后一个来解析
-            PlayImageSpriteInfo info = new PlayImageSpriteInfo();
-            info.webVttUrl = spriteJSONObject.getString("webVttUrl");
-            JSONArray jsonArray = spriteJSONObject.getJSONArray("imageUrls");
-            List<String> imageUrls = new ArrayList<>();
-            for (int i = 0; i < jsonArray.length(); i++) {
-                String url = jsonArray.getString(i);
-                imageUrls.add(url);
+            val spriteJSONObject =
+                imageSpriteList.getJSONObject(imageSpriteList.length() - 1) //获取最后一个来解析
+            val info = PlayImageSpriteInfo()
+            info.webVttUrl = spriteJSONObject.getString("webVttUrl")
+            val jsonArray = spriteJSONObject.getJSONArray("imageUrls")
+            val imageUrls: ArrayList<String> = ArrayList()
+            for (i in 0 until jsonArray.length()) {
+                val url = jsonArray.getString(i)
+                imageUrls.add(url)
             }
-            info.imageUrls = imageUrls;
-            return info;
+            info.imageUrls = imageUrls
+            return info
         }
-        return null;
+        return null
     }
 
     /**
-     *解析关键帧打点信息
+     * 解析关键帧打点信息
      *
      * @param keyFrameDescInfo 包含关键帧信息的Json对象
      * @return 关键帧信息数组
      */
-    private List<PlayKeyFrameDescInfo> parseKeyFrameDescInfo(JSONObject keyFrameDescInfo) throws JSONException {
-        JSONArray jsonArr = keyFrameDescInfo.getJSONArray("keyFrameDescList");
+    @Throws(JSONException::class)
+    private fun parseKeyFrameDescInfo(keyFrameDescInfo: JSONObject): List<PlayKeyFrameDescInfo>? {
+        val jsonArr = keyFrameDescInfo.getJSONArray("keyFrameDescList")
         if (jsonArr != null) {
-            List<PlayKeyFrameDescInfo> infoList = new ArrayList<>();
-            for (int i = 0; i < jsonArr.length(); i++) {
-                String content = jsonArr.getJSONObject(i).getString("content");
-                long time = jsonArr.getJSONObject(i).getLong("timeOffset");
-                float timeS = (float) (time / 1000.0);//转换为秒
-                PlayKeyFrameDescInfo info = new PlayKeyFrameDescInfo();
+            val infoList: MutableList<PlayKeyFrameDescInfo> = ArrayList()
+            for (i in 0 until jsonArr.length()) {
+                val content = jsonArr.getJSONObject(i).getString("content")
+                val time = jsonArr.getJSONObject(i).getLong("timeOffset")
+                val timeS = (time / 1000.0).toFloat() //转换为秒
+                val info = PlayKeyFrameDescInfo()
                 try {
-                    info.content = URLDecoder.decode(content, "UTF-8");
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                    info.content = "";
+                    info.content = URLDecoder.decode(content, "UTF-8")
+                } catch (e: UnsupportedEncodingException) {
+                    e.printStackTrace()
+                    info.content = ""
                 }
-                info.time = timeS;
-                infoList.add(info);
+                info.time = timeS
+                infoList.add(info)
             }
-            return infoList;
+            return infoList
         }
-        return null;
+        return null
     }
 
     /**
@@ -200,12 +230,12 @@ public class PlayInfoParserV2 implements IPlayInfoParser{
      * @return  视频名称字符串
      * @throws JSONException
      */
-    private String parseName(JSONObject videoInfo) throws JSONException {
-        JSONObject basicInfo = videoInfo.getJSONObject("basicInfo");
-        if (basicInfo != null) {
-            return basicInfo.getString("name");
-        }
-        return null;
+    @Throws(JSONException::class)
+    private fun parseName(videoInfo: JSONObject): String? {
+        val basicInfo = videoInfo.getJSONObject("basicInfo")
+        return if (basicInfo != null) {
+            basicInfo.getString("name")
+        } else null
     }
 
     /**
@@ -214,19 +244,20 @@ public class PlayInfoParserV2 implements IPlayInfoParser{
      * @param videoInfo 包含源视频流信息的Json对象
      * @return 源视频流信息对象
      */
-    private PlayInfoStream parseSourceStream(JSONObject videoInfo) throws JSONException {
-        JSONObject sourceVideo = videoInfo.getJSONObject("sourceVideo");
+    @Throws(JSONException::class)
+    private fun parseSourceStream(videoInfo: JSONObject): PlayInfoStream? {
+        val sourceVideo = videoInfo.getJSONObject("sourceVideo")
         if (sourceVideo != null) {
-            PlayInfoStream stream = new PlayInfoStream();
-            stream.url = sourceVideo.getString("url");
-            stream.duration = sourceVideo.getInt("duration");
-            stream.width = sourceVideo.getInt("width");
-            stream.height = sourceVideo.getInt("height");
-            stream.size = sourceVideo.getInt("size");
-            stream.bitrate = sourceVideo.getInt("bitrate");
-            return stream;
+            val stream = PlayInfoStream()
+            stream.url = sourceVideo.getString("url")
+            stream.duration = sourceVideo.getInt("duration")
+            stream.width = sourceVideo.getInt("width")
+            stream.height = sourceVideo.getInt("height")
+            stream.size = sourceVideo.getInt("size")
+            stream.bitrate = sourceVideo.getInt("bitrate")
+            return stream
         }
-        return null;
+        return null
     }
 
     /**
@@ -235,62 +266,63 @@ public class PlayInfoParserV2 implements IPlayInfoParser{
      * @param videoInfo 包含主播放视频流信息的Json对象
      * @return 主播放视频流信息对象
      */
-    private PlayInfoStream parseMasterPlayList(JSONObject videoInfo) throws JSONException {
-        if (!videoInfo.has("masterPlayList"))
-            return null;
-        JSONObject masterPlayList = videoInfo.getJSONObject("masterPlayList");
+    @Throws(JSONException::class)
+    private fun parseMasterPlayList(videoInfo: JSONObject): PlayInfoStream? {
+        if (!videoInfo.has("masterPlayList")) return null
+        val masterPlayList = videoInfo.getJSONObject("masterPlayList")
         if (masterPlayList != null) {
-            PlayInfoStream stream = new PlayInfoStream();
-            stream.url = masterPlayList.getString("url");
-            return stream;
+            val stream = PlayInfoStream()
+            stream.url = masterPlayList.getString("url")
+            return stream
         }
-        return null;
+        return null
     }
 
     /**
      * 解析转码视频流信息
      *
-     * 转码视频流信息{@link #mTranscodePlayList}中不包含清晰度名称，需要与视频清晰度信息{@link #mVideoClassificationList}做匹配
+     * 转码视频流信息[.mTranscodePlayList]中不包含清晰度名称，需要与视频清晰度信息[.mVideoClassificationList]做匹配
      *
      * @param videoInfo 包含转码视频流信息的Json对象
      * @return 转码视频信息列表 key: 清晰度名称 value: 视频流信息
      */
-    private LinkedHashMap<String, PlayInfoStream> parseTranscodePlayList(JSONObject videoInfo) throws JSONException {
-        List<PlayInfoStream> transcodeList = parseStreamList(videoInfo);
-        if (transcodeList == null) return mTranscodePlayList;
-        for (int i = 0; i < transcodeList.size(); i++) {
-            PlayInfoStream stream = transcodeList.get(i);
+    @Throws(JSONException::class)
+    private fun parseTranscodePlayList(videoInfo: JSONObject): LinkedHashMap<String?, PlayInfoStream?>? {
+        val transcodeList = parseStreamList(videoInfo)
+            ?: return mTranscodePlayList
+        for (i in transcodeList.indices) {
+            val stream = transcodeList[i]
             // 匹配清晰度
             if (mVideoClassificationList != null) {
-                for (int j = 0; j < mVideoClassificationList.size(); j++) {
-                    VideoClassification classification = mVideoClassificationList.get(j);
-                    List<Integer> definitionList = classification.getDefinitionList();
-                    if (definitionList.contains(stream.definition)) {
-                        stream.id = classification.getId();
-                        stream.name = classification.getName();
+                for (j in mVideoClassificationList!!.indices) {
+                    val classification = mVideoClassificationList!![j]
+                    val definitionList = classification.definitionList
+                    if (definitionList!!.contains(stream.definition)) {
+                        stream.id = classification.id
+                        stream.name = classification.name
                     }
                 }
             }
         }
         //清晰度去重
-        LinkedHashMap<String, PlayInfoStream> idList = new LinkedHashMap<>();
-        for (int i = 0; i < transcodeList.size(); i++) {
-            PlayInfoStream stream = transcodeList.get(i);
+        val idList = LinkedHashMap<String?, PlayInfoStream?>()
+        for (i in transcodeList.indices) {
+            val stream = transcodeList[i]
             if (!idList.containsKey(stream.id)) {
-                idList.put(stream.id, stream);
+                idList[stream.id] = stream
             } else {
-                PlayInfoStream copy = idList.get(stream.id);
-                if (copy.getUrl().endsWith("mp4")) {  // 列表中url是mp4，则进行下一步
-                    continue;
+                val copy = idList[stream.id]
+                if (copy?.url?.endsWith("mp4") == true) {  // 列表中url是mp4，则进行下一步
+                    continue
                 }
-                if (stream.getUrl().endsWith("mp4")) { // 新判断的url是mp4，则替换列表中
-                    idList.remove(copy.id);
-                    idList.put(stream.id, stream);
+                if (stream?.url?.endsWith("mp4") == true) { // 新判断的url是mp4，则替换列表中
+                    idList.remove(copy!!.id)
+                    idList[stream.id] = stream
                 }
             }
         }
         //按清晰度排序
-        return idList;
+        return idList
     }
 
     /**
@@ -299,150 +331,106 @@ public class PlayInfoParserV2 implements IPlayInfoParser{
      * @param videoInfo 包含转码视频信息的Json对象
      * @return 转码视频是信息数组
      */
-    private List<PlayInfoStream> parseStreamList(JSONObject videoInfo) throws JSONException {
-        List<PlayInfoStream> streamList = new ArrayList<>();
-        JSONArray transcodeList = videoInfo.optJSONArray("transcodeList");
+    @Throws(JSONException::class)
+    private fun parseStreamList(videoInfo: JSONObject): List<PlayInfoStream> {
+        val streamList: MutableList<PlayInfoStream> = ArrayList()
+        val transcodeList = videoInfo.optJSONArray("transcodeList")
         if (transcodeList != null) {
-            for (int i = 0; i < transcodeList.length(); i++) {
-                JSONObject transcode = transcodeList.getJSONObject(i);
-                PlayInfoStream stream = new PlayInfoStream();
-                stream.url = transcode.getString("url");
-                stream.duration = transcode.getInt("duration");
-                stream.width = transcode.getInt("width");
-                stream.height = transcode.getInt("height");
-                stream.size = transcode.getInt("size");
-                stream.bitrate = transcode.getInt("bitrate");
-                stream.definition = transcode.getInt("definition");
-                streamList.add(stream);
+            for (i in 0 until transcodeList.length()) {
+                val transcode = transcodeList.getJSONObject(i)
+                val stream = PlayInfoStream()
+                stream.url = transcode.getString("url")
+                stream.duration = transcode.getInt("duration")
+                stream.width = transcode.getInt("width")
+                stream.height = transcode.getInt("height")
+                stream.size = transcode.getInt("size")
+                stream.bitrate = transcode.getInt("bitrate")
+                stream.definition = transcode.getInt("definition")
+                streamList.add(stream)
             }
         }
-        return streamList;
+        return streamList
     }
 
     /**
      * 解析视频播放url、画质列表、默认画质
      *
-     * V2协议响应Json数据中可能包含多个视频播放信息：主播放视频信息{@link #mMasterPlayList}、转码视频{@link #mTranscodePlayList}、
-     * 源视频{@link #mSourceStream}, 播放优先级依次递减
+     * V2协议响应Json数据中可能包含多个视频播放信息：主播放视频信息[.mMasterPlayList]、转码视频[.mTranscodePlayList]、
+     * 源视频[.mSourceStream], 播放优先级依次递减
      *
      * 从优先级最高的视频信息中解析出播放信息
      */
-    private void parseVideoInfo() {
+    private fun parseVideoInfo() {
         //有主播放视频信息时，从中解析出支持多码率播放的url
         if (mMasterPlayList != null) {
-            mURL = mMasterPlayList.getUrl();
-            return;
+            uRL = mMasterPlayList!!.url
+            return
         }
         //无主播放信息，从转码视频信息中解析出各码流信息
-        if (mTranscodePlayList != null && mTranscodePlayList.size() != 0) {
-            PlayInfoStream stream = mTranscodePlayList.get(mDefaultVideoClassification);
-            String videoURL = null;
+        if (mTranscodePlayList != null && mTranscodePlayList!!.size != 0) {
+            var stream = mTranscodePlayList!![mDefaultVideoClassification]
+            var videoURL: String? = null
             if (stream != null) {
-                videoURL = stream.getUrl();
+                videoURL = stream.url
             } else {
-                for (PlayInfoStream stream1 : mTranscodePlayList.values()) {
-                    if (stream1 != null && stream1.getUrl() != null) {
-                        stream = stream1;
-                        videoURL = stream1.getUrl();
-                        break;
+                for (stream1 in mTranscodePlayList!!.values) {
+                    if (stream1?.url != null) {
+                        stream = stream1
+                        videoURL = stream1.url
+                        break
                     }
                 }
             }
             if (videoURL != null) {
-                mVideoQualityList = VideoQualityUtils.convertToVideoQualityList(mTranscodePlayList);
-                mDefaultVideoQuality = VideoQualityUtils.convertToVideoQuality(stream);
-                mURL = videoURL;
-                return;
+                mVideoQualityList =
+                    VideoQualityUtils.convertToVideoQualityList(mTranscodePlayList!!)
+                defaultVideoQuality = VideoQualityUtils.convertToVideoQuality(stream)
+                uRL = videoURL
+                return
             }
         }
         //无主播放信息、转码信息，从源视频信息中解析出播放信息
         if (mSourceStream != null) {
             if (mDefaultVideoClassification != null) {
-                mDefaultVideoQuality = VideoQualityUtils.convertToVideoQuality(mSourceStream, mDefaultVideoClassification);
-                mVideoQualityList = new ArrayList<>();
-                mVideoQualityList.add(mDefaultVideoQuality);
+                defaultVideoQuality = VideoQualityUtils.convertToVideoQuality(
+                    mSourceStream!!,
+                    mDefaultVideoClassification!!
+                )
+                mVideoQualityList = ArrayList()
+                mVideoQualityList!!.add(defaultVideoQuality!!)
             }
-            mURL = mSourceStream.getUrl();
+            uRL = mSourceStream?.url
         }
     }
 
-    /**
-     * 获取视频播放url
-     *
-     * @return url字符串
-     */
-    @Override
-    public String getURL() {
-        return mURL;
+    override fun getEncryptedURL(type: EncryptedURLType): String? {
+        return null
     }
 
-    @Override
-    public String getEncryptedURL(PlayInfoConstant.EncryptedURLType type) {
-        return null;
-    }
-
-    @Override
-    public String getToken() {
-        return null;
-    }
-
-    /**
-     * 获取视频名称
-     *
-     * @return 视频名称字符串
-     */
-    @Override
-    public String getName() {
-        return mName;
-    }
-
-    /**
-     * 获取雪碧图信息
-     *
-     * @return 雪碧图信息对象
-     */
-    @Override
-    public PlayImageSpriteInfo getImageSpriteInfo() {
-        return mImageSpriteInfo;
-    }
-
-    /**
-     * 获取关键帧信息
-     *
-     * @return 关键帧信息数组
-     */
-    @Override
-    public List<PlayKeyFrameDescInfo> getKeyFrameDescInfo() {
-        return mKeyFrameDescInfo;
-    }
+    override val token: String?
+        get() = null
 
     /**
      * 获取画质信息
      *
      * @return 画质信息数组
      */
-    @Override
-    public List<VideoQuality> getVideoQualityList() {
-        return mVideoQualityList;
-    }
-
-    /**
-     * 获取默认画质信息
-     *
-     * @return 默认画质信息对象
-     */
-    @Override
-    public VideoQuality getDefaultVideoQuality() {
-        return mDefaultVideoQuality;
-    }
+    override val videoQualityList: List<VideoQuality?>?
+        get() = mVideoQualityList
 
     /**
      * 获取视频画质别名列表
      *
      * @return 画质别名数组
      */
-    @Override
-    public List<ResolutionName> getResolutionNameList() {
-        return null;
+    override val resolutionNameList: List<ResolutionName?>?
+        get() = null
+
+    companion object {
+        private const val TAG = "TCPlayInfoParserV2"
+    }
+
+    init {
+        parsePlayInfo()
     }
 }

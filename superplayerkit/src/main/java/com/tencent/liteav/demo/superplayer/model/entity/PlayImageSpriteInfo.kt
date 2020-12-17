@@ -1,20 +1,16 @@
-package com.tencent.liteav.demo.superplayer.model.entity;
-
-import java.util.List;
+package com.tencent.liteav.demo.superplayer.model.entity
 
 /**
  * 视频雪碧图信息
  */
-public class PlayImageSpriteInfo {
+class PlayImageSpriteInfo {
+    var imageUrls: ArrayList<String>? = null // 图片链接URL
+    var webVttUrl: String? = null
 
-    public List<String> imageUrls; // 图片链接URL
-    public String       webVttUrl; // web vtt描述文件下载URL
-
-    @Override
-    public String toString() {
+    override fun toString(): String {
         return "TCPlayImageSpriteInfo{" +
                 "imageUrls=" + imageUrls +
                 ", webVttUrl='" + webVttUrl + '\'' +
-                '}';
+                '}'
     }
 }

@@ -1,72 +1,67 @@
-package com.tencent.liteav.demo.superplayer.model.utils;
+package com.tencent.liteav.demo.superplayer.model.utils
 
-import android.app.Activity;
-import android.app.Service;
-import android.content.ContentResolver;
-import android.content.Context;
-import android.media.AudioManager;
-import android.provider.Settings;
-import android.view.MotionEvent;
-import android.view.Window;
-import android.view.WindowManager;
+import android.app.Activity
+import android.app.Service
+import android.content.ContentResolver
+import android.content.Context
+import android.media.AudioManager
+import android.provider.Settings
+import android.view.MotionEvent
+import android.view.Window
+import android.view.WindowManager
 
 /**
  * 手势控制视频播放进度、调节亮度音量的工具
  */
-
-public class VideoGestureDetector {
-    // 手势类型
-    private static final int NONE           = 0;    // 无效果
-    private static final int VOLUME         = 1;    // 音量
-    private static final int BRIGHTNESS     = 2;    // 亮度
-    private static final int VIDEO_PROGRESS = 3;    // 播放进度
-
-    private int                         mScrollMode = NONE;     // 手势类型
-
-    private VideoGestureListener        mVideoGestureListener;  // 回调
-    private int                         mVideoWidth;            // 视频宽度px
+class VideoGestureDetector(context: Context) {
+    private var mScrollMode = NONE // 手势类型
+    private var mVideoGestureListener // 回调
+            : VideoGestureListener? = null
+    private var mVideoWidth // 视频宽度px
+            = 0
 
     // 亮度相关
-    private float                       mBrightness = 1;        // 当前亮度(0.0~1.0)
-    private Window                      mWindow;                // 当前window
-    private WindowManager.LayoutParams  mLayoutParams;          // 用于获取和设置屏幕亮度
-    private ContentResolver             mResolver;              // 用于获取当前屏幕亮度
+    private var mBrightness = 1f // 当前亮度(0.0~1.0)
+    private var mWindow // 当前window
+            : Window? = null
+    private var mLayoutParams // 用于获取和设置屏幕亮度
+            : WindowManager.LayoutParams? = null
+    private val mResolver // 用于获取当前屏幕亮度
+            : ContentResolver?
 
     // 音量相关
-    private AudioManager                mAudioManager;          // 音频管理器，用于设置音量
-    private int                         mMaxVolume = 0;         // 最大音量值
-    private int                         mOldVolume = 0;         // 记录调节音量之前的旧音量值
-
-    // 视频进度相关
-    private int                         mVideoProgress;         // 记录滑动后的进度，在回调中抛出
-    private int                         mDownProgress;          // 滑动开始时的视频播放进度
+    private val mAudioManager // 音频管理器，用于设置音量
+            : AudioManager
+    private var mMaxVolume = 0 // 最大音量值
+    private var mOldVolume = 0 // 记录调节音量之前的旧音量值
 
     /**
-     * 手势临界值，当两滑动事件坐标的水平差值>20时判定为{@link #VIDEO_PROGRESS}, 否则判定为{@link #VOLUME}或者{@link #BRIGHTNESS}
+     * 获取滑动后对应的视频进度
+     *
+     * @return
      */
-    private int                         offsetX = 20;
+    // 视频进度相关
+    var videoProgress // 记录滑动后的进度，在回调中抛出
+            = 0
+        private set
+    private var mDownProgress // 滑动开始时的视频播放进度
+            = 0
+
+    /**
+     * 手势临界值，当两滑动事件坐标的水平差值>20时判定为[.VIDEO_PROGRESS], 否则判定为[.VOLUME]或者[.BRIGHTNESS]
+     */
+    private val offsetX = 20
 
     //手势灵敏度 0.0~1.0
-    private float                       mSensitivity = 0.3f;    // 调节音量、亮度的灵敏度
-
-    public VideoGestureDetector(Context context) {
-        mAudioManager = (AudioManager) context.getSystemService(Service.AUDIO_SERVICE);
-        mMaxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-        if (context instanceof Activity) {
-            mWindow = ((Activity) context).getWindow();
-            mLayoutParams = mWindow.getAttributes();
-            mBrightness = mLayoutParams.screenBrightness;
-        }
-        mResolver = context.getContentResolver();
-    }
+    private val mSensitivity = 0.3f // 调节音量、亮度的灵敏度
 
     /**
      * 设置回调
      *
      * @param videoGestureListener
      */
-    public void setVideoGestureListener(VideoGestureListener videoGestureListener) {
-        mVideoGestureListener = videoGestureListener;
+    fun setVideoGestureListener(videoGestureListener: VideoGestureListener?) {
+        mVideoGestureListener = videoGestureListener
     }
 
     /**
@@ -75,17 +70,17 @@ public class VideoGestureDetector {
      * @param videoWidth   视频宽度px
      * @param downProgress 手势按下时视频的播放进度(秒)
      */
-    public void reset(int videoWidth, int downProgress) {
-        mVideoProgress = 0;
-        mVideoWidth = videoWidth;
-        mScrollMode = NONE;
-        mOldVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-        mBrightness = mLayoutParams.screenBrightness;
-        if (mBrightness == -1) {
+    fun reset(videoWidth: Int, downProgress: Int) {
+        videoProgress = 0
+        mVideoWidth = videoWidth
+        mScrollMode = NONE
+        mOldVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+        mBrightness = mLayoutParams!!.screenBrightness
+        if (mBrightness == -1f) {
             //一开始是默认亮度的时候，获取系统亮度，计算比例值
-            mBrightness = getBrightness() / 255.0f;
+            mBrightness = brightness / 255.0f
         }
-        mDownProgress = downProgress;
+        mDownProgress = downProgress
     }
 
     /**
@@ -93,18 +88,8 @@ public class VideoGestureDetector {
      *
      * @return
      */
-    public boolean isVideoProgressModel() {
-        return mScrollMode == VIDEO_PROGRESS;
-    }
-
-    /**
-     * 获取滑动后对应的视频进度
-     *
-     * @return
-     */
-    public int getVideoProgress() {
-        return mVideoProgress;
-    }
+    val isVideoProgressModel: Boolean
+        get() = mScrollMode == VIDEO_PROGRESS
 
     /**
      * 滑动手势操控类别判定
@@ -115,59 +100,60 @@ public class VideoGestureDetector {
      * @param distanceX 滑动水平距离
      * @param distanceY 滑动竖直距离
      */
-    public void check(int height, MotionEvent downEvent, MotionEvent moveEvent, float distanceX, float distanceY) {
-        switch (mScrollMode) {
-            case NONE:
-                //offset是让快进快退不要那么敏感的值
-                if (Math.abs(downEvent.getX() - moveEvent.getX()) > offsetX) {
-                    mScrollMode = VIDEO_PROGRESS;
+    fun check(
+        height: Int,
+        downEvent: MotionEvent,
+        moveEvent: MotionEvent,
+        distanceX: Float,
+        distanceY: Float
+    ) {
+        when (mScrollMode) {
+            NONE ->                 //offset是让快进快退不要那么敏感的值
+                mScrollMode = if (Math.abs(downEvent.x - moveEvent.x) > offsetX) {
+                    VIDEO_PROGRESS
                 } else {
-                    int halfVideoWidth = mVideoWidth / 2;
-                    if (downEvent.getX() < halfVideoWidth) {
-                        mScrollMode = BRIGHTNESS;
+                    val halfVideoWidth = mVideoWidth / 2
+                    if (downEvent.x < halfVideoWidth) {
+                        BRIGHTNESS
                     } else {
-                        mScrollMode = VOLUME;
+                        VOLUME
                     }
                 }
-                break;
-            case VOLUME:
-                int value = height / mMaxVolume;
-                int newVolume = (int) ((downEvent.getY() - moveEvent.getY()) / value * mSensitivity + mOldVolume);
-                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, newVolume, AudioManager.FLAG_PLAY_SOUND);
-
-                float volumeProgress = newVolume / Float.valueOf(mMaxVolume) * 100;
+            VOLUME -> {
+                val value = height / mMaxVolume
+                val newVolume =
+                    ((downEvent.y - moveEvent.y) / value * mSensitivity + mOldVolume).toInt()
+                mAudioManager.setStreamVolume(
+                    AudioManager.STREAM_MUSIC,
+                    newVolume,
+                    AudioManager.FLAG_PLAY_SOUND
+                )
+                val volumeProgress = newVolume / java.lang.Float.valueOf(mMaxVolume.toFloat()) * 100
                 if (mVideoGestureListener != null) {
-                    mVideoGestureListener.onVolumeGesture(volumeProgress);
+                    mVideoGestureListener!!.onVolumeGesture(volumeProgress)
                 }
-                break;
-            case BRIGHTNESS:
-                float newBrightness = height == 0 ? 0 : (downEvent.getY() - moveEvent.getY()) / height * mSensitivity;
-                newBrightness += mBrightness;
-
+            }
+            BRIGHTNESS -> {
+                var newBrightness: Float =
+                    if (height == 0) 0f else (downEvent.y - moveEvent.y) / height * mSensitivity
+                newBrightness += mBrightness
                 if (newBrightness < 0) {
-                    newBrightness = 0;
+                    newBrightness = 0f
                 } else if (newBrightness > 1) {
-                    newBrightness = 1;
+                    newBrightness = 1f
                 }
-                if (mLayoutParams != null) {
-                    mLayoutParams.screenBrightness = newBrightness;
-                }
-                if (mWindow != null) {
-                    mWindow.setAttributes(mLayoutParams);
-                }
-
+                mLayoutParams?.screenBrightness = newBrightness
+                mWindow?.attributes = mLayoutParams
+                mVideoGestureListener?.onBrightnessGesture(newBrightness)
+            }
+            VIDEO_PROGRESS -> {
+                val dis = moveEvent.x - downEvent.x
+                val percent = dis / mVideoWidth
+                videoProgress = (mDownProgress + percent * 100).toInt()
                 if (mVideoGestureListener != null) {
-                    mVideoGestureListener.onBrightnessGesture(newBrightness);
+                    mVideoGestureListener!!.onSeekGesture(videoProgress)
                 }
-                break;
-            case VIDEO_PROGRESS:
-                float dis = moveEvent.getX() - downEvent.getX();
-                float percent = dis / mVideoWidth;
-                mVideoProgress = (int) (mDownProgress + percent * 100);
-                if (mVideoGestureListener != null) {
-                    mVideoGestureListener.onSeekGesture(mVideoProgress);
-                }
-                break;
+            }
         }
     }
 
@@ -176,37 +162,59 @@ public class VideoGestureDetector {
      *
      * @return
      */
-    private int getBrightness() {
-        if (mResolver != null) {
-            return Settings.System.getInt(mResolver, Settings.System.SCREEN_BRIGHTNESS, 255);
+    private val brightness: Int
+        private get() = if (mResolver != null) {
+            Settings.System.getInt(
+                mResolver,
+                Settings.System.SCREEN_BRIGHTNESS,
+                255
+            )
         } else {
-            return 255;
+            255
         }
-    }
 
     /**
      * 回调
      */
-    public interface VideoGestureListener {
+    interface VideoGestureListener {
         /**
          * 亮度调节回调
          *
          * @param newBrightness 滑动后的新亮度值
          */
-        void onBrightnessGesture(float newBrightness);
+        fun onBrightnessGesture(newBrightness: Float)
 
         /**
          * 音量调节回调
          *
          * @param volumeProgress 滑动后的新音量值
          */
-        void onVolumeGesture(float volumeProgress);
+        fun onVolumeGesture(volumeProgress: Float)
 
         /**
          * 播放进度调节回调
          *
          * @param seekProgress 滑动后的新视频进度
          */
-        void onSeekGesture(int seekProgress);
+        fun onSeekGesture(seekProgress: Int)
+    }
+
+    companion object {
+        // 手势类型
+        private const val NONE = 0 // 无效果
+        private const val VOLUME = 1 // 音量
+        private const val BRIGHTNESS = 2 // 亮度
+        private const val VIDEO_PROGRESS = 3 // 播放进度
+    }
+
+    init {
+        mAudioManager = context.getSystemService(Service.AUDIO_SERVICE) as AudioManager
+        mMaxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+        if (context is Activity) {
+            mWindow = context.window
+            mLayoutParams = mWindow!!.attributes
+            mBrightness = mLayoutParams!!.screenBrightness
+        }
+        mResolver = context.contentResolver
     }
 }

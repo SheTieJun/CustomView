@@ -1,19 +1,19 @@
-package com.tencent.liteav.demo.superplayer;
+package com.tencent.liteav.demo.superplayer
 
 /**
  * Created by hans on 2019/3/25.
  * 使用腾讯云fileId播放
  */
-public class SuperPlayerVideoId {
+class SuperPlayerVideoId {
+    var fileId // 腾讯云视频fileId
+            : String? = null
+    var pSign // v4 开启防盗链必填
+            : String? = null
 
-    public String fileId;   // 腾讯云视频fileId
-    public String pSign;    // v4 开启防盗链必填
-
-    @Override
-    public String toString() {
+    override fun toString(): String {
         return "SuperPlayerVideoId{" +
                 ", fileId='" + fileId + '\'' +
                 ", pSign='" + pSign + '\'' +
-                '}';
+                '}'
     }
 }

@@ -1,214 +1,168 @@
-package com.tencent.liteav.demo.superplayer.ui.view;
+package com.tencent.liteav.demo.superplayer.ui.view
 
-import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.media.AudioManager;
-import android.util.AttributeSet;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.CompoundButton;
-import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
-import android.widget.SeekBar;
-import android.widget.Switch;
-
-import com.tencent.liteav.demo.superplayer.R;
-import com.tencent.liteav.demo.superplayer.SuperPlayerDef;
-import com.tencent.liteav.demo.superplayer.SuperPlayerGlobalConfig;
+import android.app.Activity
+import android.content.*
+import android.media.AudioManager
+import android.util.AttributeSet
+import android.view.*
+import android.widget.*
+import com.tencent.liteav.demo.superplayer.*
+import com.tencent.liteav.demo.superplayer.SuperPlayerDef.PlayerType
 
 /**
  * Created by yuejiaoli on 2018/7/4.
  *
  * 更多选项弹框
  *
- * 1、声音调节seekBar回调{@link #mVolumeChangeListener}
+ * 1、声音调节seekBar回调[.mVolumeChangeListener]
  *
- * 2、亮度调节seekBar回调{@link #mLightChangeListener}
+ * 2、亮度调节seekBar回调[.mLightChangeListener]
  *
- * 3、倍速选择回调{@link #onCheckedChanged(RadioGroup, int)}
+ * 3、倍速选择回调[.onCheckedChanged]
  *
- * 4、镜像、硬件加速开关回调{@link #onCheckedChanged(CompoundButton, boolean)}
+ * 4、镜像、硬件加速开关回调[.onCheckedChanged]
  */
+class VodMoreView : RelativeLayout, RadioGroup.OnCheckedChangeListener,
+    CompoundButton.OnCheckedChangeListener {
+    private var mContext: Context? = null
+    private var mSeekBarVolume // 音量seekBar
+            : SeekBar? = null
+    private var mSeekBarLight // 亮度seekBar
+            : SeekBar? = null
+    private var mSwitchMirror // 镜像开关
+            : Switch? = null
+    private var mSwitchAccelerate // 硬解开关
+            : Switch? = null
+    private var mCallback // 回调
+            : Callback? = null
+    private var mAudioManager // 音频管理器
+            : AudioManager? = null
+    private var mRadioGroup // 倍速选择radioGroup
+            : RadioGroup? = null
+    private var mRbSpeed1 // 1.0倍速按钮
+            : RadioButton? = null
+    private var mRbSpeed125 // 1.25倍速按钮
+            : RadioButton? = null
+    private var mRbSpeed15 // 1.5倍速按钮
+            : RadioButton? = null
+    private var mRbSpeed2 // 2.0倍速按钮
+            : RadioButton? = null
+    private var mLayoutSpeed // 倍速按钮所在布局
+            : LinearLayout? = null
+    private var mLayoutMirror // 镜像按钮所在布局
+            : LinearLayout? = null
+    private var mVolumeBroadcastReceiver: VolumeBroadcastReceiver? = null
 
-public class VodMoreView extends RelativeLayout implements RadioGroup.OnCheckedChangeListener, CompoundButton.OnCheckedChangeListener {
-
-    private static final String VOLUME_CHANGED_ACTION    = "android.media.VOLUME_CHANGED_ACTION";
-    private static final String EXTRA_VOLUME_STREAM_TYPE = "android.media.EXTRA_VOLUME_STREAM_TYPE";
-
-    private Context mContext;
-
-    private SeekBar         mSeekBarVolume;     // 音量seekBar
-    private SeekBar         mSeekBarLight;      // 亮度seekBar
-    private Switch          mSwitchMirror;      // 镜像开关
-    private Switch          mSwitchAccelerate;  // 硬解开关
-    private Callback        mCallback;          // 回调
-    private AudioManager    mAudioManager;      // 音频管理器
-    private RadioGroup      mRadioGroup;        // 倍速选择radioGroup
-    private RadioButton     mRbSpeed1;          // 1.0倍速按钮
-    private RadioButton     mRbSpeed125;        // 1.25倍速按钮
-    private RadioButton     mRbSpeed15;         // 1.5倍速按钮
-    private RadioButton     mRbSpeed2;          // 2.0倍速按钮
-    private LinearLayout    mLayoutSpeed;       // 倍速按钮所在布局
-    private LinearLayout    mLayoutMirror;      // 镜像按钮所在布局
-
-    private VolumeBroadcastReceiver mVolumeBroadcastReceiver;
-
-    public VodMoreView(Context context) {
-        super(context);
-        init(context);
+    constructor(context: Context) : super(context) {
+        init(context)
     }
 
-    public VodMoreView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context);
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+        init(context)
     }
 
-    public VodMoreView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        init(context);
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
+        init(context)
     }
 
-    private void init(Context context) {
-        mContext = context;
-        LayoutInflater.from(mContext).inflate(R.layout.superplayer_more_popup_view, this);
-
-        mLayoutSpeed = (LinearLayout) findViewById(R.id.superplayer_ll_speed);
-        mRadioGroup = (RadioGroup) findViewById(R.id.superplayer_rg);
-        mRbSpeed1 = (RadioButton) findViewById(R.id.superplayer_rb_speed1);
-        mRbSpeed125 = (RadioButton) findViewById(R.id.superplayer_rb_speed125);
-        mRbSpeed15 = (RadioButton) findViewById(R.id.superplayer_rb_speed15);
-        mRbSpeed2 = (RadioButton) findViewById(R.id.superplayer_rb_speed2);
-
-        mRadioGroup.setOnCheckedChangeListener(this);
-        mSeekBarVolume = (SeekBar) findViewById(R.id.superplayer_sb_audio);
-        mSeekBarLight = (SeekBar) findViewById(R.id.superplayer_sb_light);
-
-        mLayoutMirror = (LinearLayout) findViewById(R.id.superplayer_ll_mirror);
-        mSwitchMirror = (Switch) findViewById(R.id.superplayer_switch_mirror);
-
-        mSwitchAccelerate = (Switch) findViewById(R.id.superplayer_switch_accelerate);
-        SuperPlayerGlobalConfig config = SuperPlayerGlobalConfig.getInstance();
-        mSwitchAccelerate.setChecked(config.enableHWAcceleration);
-
-        mSeekBarVolume.setOnSeekBarChangeListener(mVolumeChangeListener);
-        mSeekBarLight.setOnSeekBarChangeListener(mLightChangeListener);
-
-        mSwitchMirror.setOnCheckedChangeListener(this);
-        mSwitchAccelerate.setOnCheckedChangeListener(this);
-
-        mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-        updateCurrentVolume();
-        updateCurrentLight();
+    private fun init(context: Context) {
+        mContext = context
+        LayoutInflater.from(mContext).inflate(R.layout.superplayer_more_popup_view, this)
+        mLayoutSpeed = findViewById<View>(R.id.superplayer_ll_speed) as LinearLayout
+        mRadioGroup = findViewById<View>(R.id.superplayer_rg) as RadioGroup
+        mRbSpeed1 = findViewById<View>(R.id.superplayer_rb_speed1) as RadioButton
+        mRbSpeed125 = findViewById<View>(R.id.superplayer_rb_speed125) as RadioButton
+        mRbSpeed15 = findViewById<View>(R.id.superplayer_rb_speed15) as RadioButton
+        mRbSpeed2 = findViewById<View>(R.id.superplayer_rb_speed2) as RadioButton
+        mRadioGroup!!.setOnCheckedChangeListener(this)
+        mSeekBarVolume = findViewById<View>(R.id.superplayer_sb_audio) as SeekBar
+        mSeekBarLight = findViewById<View>(R.id.superplayer_sb_light) as SeekBar
+        mLayoutMirror = findViewById<View>(R.id.superplayer_ll_mirror) as LinearLayout
+        mSwitchMirror = findViewById<View>(R.id.superplayer_switch_mirror) as Switch
+        mSwitchAccelerate = findViewById<View>(R.id.superplayer_switch_accelerate) as Switch
+        val config: SuperPlayerGlobalConfig = SuperPlayerGlobalConfig.instance
+        mSwitchAccelerate!!.isChecked = config.enableHWAcceleration
+        mSeekBarVolume!!.setOnSeekBarChangeListener(mVolumeChangeListener)
+        mSeekBarLight!!.setOnSeekBarChangeListener(mLightChangeListener)
+        mSwitchMirror!!.setOnCheckedChangeListener(this)
+        mSwitchAccelerate!!.setOnCheckedChangeListener(this)
+        mAudioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        updateCurrentVolume()
+        updateCurrentLight()
     }
 
-    private void updateCurrentVolume() {
-        int curVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-        int maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-
-        float percentage = (float) curVolume / maxVolume;
-
-        final int progress = (int) (percentage * mSeekBarVolume.getMax());
-        mSeekBarVolume.setProgress(progress);
+    private fun updateCurrentVolume() {
+        val curVolume = mAudioManager!!.getStreamVolume(AudioManager.STREAM_MUSIC)
+        val maxVolume = mAudioManager!!.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+        val percentage = curVolume.toFloat() / maxVolume
+        val progress = (percentage * mSeekBarVolume!!.max).toInt()
+        mSeekBarVolume!!.progress = progress
     }
 
-    private void updateCurrentLight() {
-        Activity activity = (Activity) mContext;
-        Window window = activity.getWindow();
-
-        WindowManager.LayoutParams params = window.getAttributes();
-        params.screenBrightness = getActivityBrightness((Activity) mContext);
-        window.setAttributes(params);
-        if (params.screenBrightness == -1) {
-            mSeekBarLight.setProgress(100);
-            return;
+    private fun updateCurrentLight() {
+        val activity = mContext as Activity?
+        val window = activity!!.window
+        val params = window.attributes
+        params.screenBrightness = getActivityBrightness(mContext as Activity?)
+        window.attributes = params
+        if (params.screenBrightness == -1f) {
+            mSeekBarLight!!.progress = 100
+            return
         }
-        mSeekBarLight.setProgress((int) (params.screenBrightness * 100));
+        mSeekBarLight!!.progress = (params.screenBrightness * 100).toInt()
     }
 
-    /**
-     * 获取当前亮度
-     *
-     * @param activity
-     * @return
-     */
-    public static float getActivityBrightness(Activity activity) {
-        Window localWindow = activity.getWindow();
-        WindowManager.LayoutParams params = localWindow.getAttributes();
-        return params.screenBrightness;
-    }
-
-    private SeekBar.OnSeekBarChangeListener mVolumeChangeListener = new SeekBar.OnSeekBarChangeListener() {
-        @Override
-        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            if (fromUser) {
-                updateVolumeProgress(progress);
+    private val mVolumeChangeListener: SeekBar.OnSeekBarChangeListener =
+        object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                if (fromUser) {
+                    updateVolumeProgress(progress)
+                }
             }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar) {}
         }
 
-        @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {
-
-        }
-
-        @Override
-        public void onStopTrackingTouch(SeekBar seekBar) {
-
-        }
-    };
-
-    private void updateVolumeProgress(int progress) {
-        float percentage = (float) progress / mSeekBarVolume.getMax();
-
-        if (percentage < 0 || percentage > 1)
-            return;
-
+    private fun updateVolumeProgress(progress: Int) {
+        val percentage = progress.toFloat() / mSeekBarVolume!!.max
+        if (percentage < 0 || percentage > 1) return
         if (mAudioManager != null) {
-            int maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-            int newVolume = (int) (percentage * maxVolume);
-            mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, newVolume, 0);
+            val maxVolume = mAudioManager!!.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+            val newVolume = (percentage * maxVolume).toInt()
+            mAudioManager!!.setStreamVolume(AudioManager.STREAM_MUSIC, newVolume, 0)
         }
     }
 
-    private SeekBar.OnSeekBarChangeListener mLightChangeListener = new SeekBar.OnSeekBarChangeListener() {
-        @Override
-        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            if (fromUser) {
-                updateBrightProgress(progress);
+    private val mLightChangeListener: SeekBar.OnSeekBarChangeListener =
+        object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                if (fromUser) {
+                    updateBrightProgress(progress)
+                }
             }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar) {}
         }
 
-        @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {
-
-        }
-
-        @Override
-        public void onStopTrackingTouch(SeekBar seekBar) {
-
-        }
-    };
-
-    private void updateBrightProgress(int progress) {
-        Activity activity = (Activity) mContext;
-        Window window = activity.getWindow();
-        WindowManager.LayoutParams params = window.getAttributes();
-        params.screenBrightness = progress * 1.0f / 100;
+    private fun updateBrightProgress(progress: Int) {
+        val activity = mContext as Activity?
+        val window = activity!!.window
+        val params = window.attributes
+        params.screenBrightness = progress * 1.0f / 100
         if (params.screenBrightness > 1.0f) {
-            params.screenBrightness = 1.0f;
+            params.screenBrightness = 1.0f
         }
         if (params.screenBrightness <= 0.01f) {
-            params.screenBrightness = 0.01f;
+            params.screenBrightness = 0.01f
         }
-
-        window.setAttributes(params);
-        mSeekBarLight.setProgress(progress);
+        window.attributes = params
+        mSeekBarLight!!.progress = progress
     }
 
     /**
@@ -217,18 +171,17 @@ public class VodMoreView extends RelativeLayout implements RadioGroup.OnCheckedC
      * @param compoundButton
      * @param isChecked
      */
-    @Override
-    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-        if (compoundButton.getId() == R.id.superplayer_switch_mirror) {
+    override fun onCheckedChanged(compoundButton: CompoundButton, isChecked: Boolean) {
+        if (compoundButton.id == R.id.superplayer_switch_mirror) {
             if (mCallback != null) {
-                mCallback.onMirrorChange(isChecked);
+                mCallback!!.onMirrorChange(isChecked)
             }
-        } else if (compoundButton.getId() == R.id.superplayer_switch_accelerate) {
-            SuperPlayerGlobalConfig config = SuperPlayerGlobalConfig.getInstance();
-            config.enableHWAcceleration = !config.enableHWAcceleration;
-            mSwitchAccelerate.setChecked(config.enableHWAcceleration);
+        } else if (compoundButton.id == R.id.superplayer_switch_accelerate) {
+            val config: SuperPlayerGlobalConfig = SuperPlayerGlobalConfig.instance
+            config.enableHWAcceleration = !config.enableHWAcceleration
+            mSwitchAccelerate!!.isChecked = config.enableHWAcceleration
             if (mCallback != null) {
-                mCallback.onHWAcceleration(config.enableHWAcceleration);
+                mCallback!!.onHWAcceleration(config.enableHWAcceleration)
             }
         }
     }
@@ -238,8 +191,8 @@ public class VodMoreView extends RelativeLayout implements RadioGroup.OnCheckedC
      *
      * @param callback
      */
-    public void setCallback(Callback callback) {
-        mCallback = callback;
+    fun setCallback(callback: Callback?) {
+        mCallback = callback
     }
 
     /**
@@ -248,74 +201,69 @@ public class VodMoreView extends RelativeLayout implements RadioGroup.OnCheckedC
      * @param radioGroup
      * @param checkedId
      */
-    @Override
-    public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
+    override fun onCheckedChanged(radioGroup: RadioGroup, checkedId: Int) {
         if (checkedId == R.id.superplayer_rb_speed1) {
-            mRbSpeed1.setChecked(true);
+            mRbSpeed1!!.isChecked = true
             if (mCallback != null) {
-                mCallback.onSpeedChange(1.0f);
+                mCallback!!.onSpeedChange(1.0f)
             }
-
         } else if (checkedId == R.id.superplayer_rb_speed125) {
-            mRbSpeed125.setChecked(true);
+            mRbSpeed125!!.isChecked = true
             if (mCallback != null) {
-                mCallback.onSpeedChange(1.25f);
+                mCallback!!.onSpeedChange(1.25f)
             }
-
         } else if (checkedId == R.id.superplayer_rb_speed15) {
-            mRbSpeed15.setChecked(true);
+            mRbSpeed15!!.isChecked = true
             if (mCallback != null) {
-                mCallback.onSpeedChange(1.5f);
+                mCallback!!.onSpeedChange(1.5f)
             }
-
         } else if (checkedId == R.id.superplayer_rb_speed2) {
-            mRbSpeed2.setChecked(true);
+            mRbSpeed2!!.isChecked = true
             if (mCallback != null) {
-                mCallback.onSpeedChange(2.0f);
+                mCallback!!.onSpeedChange(2.0f)
             }
-
         }
     }
 
-    @Override
-    public void setVisibility(int visibility) {
-        super.setVisibility(visibility);
-        if (visibility == View.VISIBLE) {
-            updateCurrentVolume();
-            updateCurrentLight();
-            registerReceiver();
-        }else {
-            unregisterReceiver();
+    override fun setVisibility(visibility: Int) {
+        super.setVisibility(visibility)
+        if (visibility == VISIBLE) {
+            updateCurrentVolume()
+            updateCurrentLight()
+            registerReceiver()
+        } else {
+            unregisterReceiver()
         }
     }
 
-    public void setBrightProgress(int progress) {
-        updateBrightProgress(progress);
+    fun setBrightProgress(progress: Int) {
+        updateBrightProgress(progress)
     }
-
 
     /**
      * 更新播放视频类型
      *
      * @param playType
      */
-    public void updatePlayType(SuperPlayerDef.PlayerType playType) {
-        if (playType == SuperPlayerDef.PlayerType.VOD) {
-            mLayoutSpeed.setVisibility(View.VISIBLE);
-            mLayoutMirror.setVisibility(View.VISIBLE);
+    fun updatePlayType(playType: PlayerType) {
+        if (playType == PlayerType.VOD) {
+            mLayoutSpeed!!.visibility = VISIBLE
+            mLayoutMirror!!.visibility = VISIBLE
         } else {
-            mLayoutSpeed.setVisibility(View.GONE);
-            mLayoutMirror.setVisibility(View.GONE);
+            mLayoutSpeed!!.visibility = GONE
+            mLayoutMirror!!.visibility = GONE
         }
     }
 
-    private class VolumeBroadcastReceiver extends BroadcastReceiver {
-
-        public void onReceive(Context context, Intent intent) {
+    private inner class VolumeBroadcastReceiver : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
             //媒体音量改变才通知
-            if (VOLUME_CHANGED_ACTION.equals(intent.getAction())
-                    && (intent.getIntExtra(EXTRA_VOLUME_STREAM_TYPE, -1) == AudioManager.STREAM_MUSIC)) {
-                updateCurrentVolume();
+            if (VOLUME_CHANGED_ACTION == intent.action && intent.getIntExtra(
+                    EXTRA_VOLUME_STREAM_TYPE,
+                    -1
+                ) == AudioManager.STREAM_MUSIC
+            ) {
+                updateCurrentVolume()
             }
         }
     }
@@ -324,48 +272,64 @@ public class VodMoreView extends RelativeLayout implements RadioGroup.OnCheckedC
      * 注册音量广播接收器
      * @return
      */
-    public void registerReceiver() {
-        mVolumeBroadcastReceiver = new VolumeBroadcastReceiver();
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(VOLUME_CHANGED_ACTION);
-        mContext.registerReceiver(mVolumeBroadcastReceiver, filter);
+    fun registerReceiver() {
+        mVolumeBroadcastReceiver = VolumeBroadcastReceiver()
+        val filter = IntentFilter()
+        filter.addAction(VOLUME_CHANGED_ACTION)
+        mContext!!.registerReceiver(mVolumeBroadcastReceiver, filter)
     }
 
     /**
      * 反注册音量广播监听器，需要与 registerReceiver 成对使用
      */
-    public void unregisterReceiver() {
+    fun unregisterReceiver() {
         try {
-            mContext.unregisterReceiver(mVolumeBroadcastReceiver);
-        } catch (Exception e) {
-            e.printStackTrace();
+            mContext!!.unregisterReceiver(mVolumeBroadcastReceiver)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
     /**
      * 回调
      */
-    public interface Callback {
+    interface Callback {
         /**
          * 播放速度更新回调
          *
          * @param speedLevel
          */
-        void onSpeedChange(float speedLevel);
+        fun onSpeedChange(speedLevel: Float)
 
         /**
          * 镜像开关回调
          *
          * @param isMirror
          */
-        void onMirrorChange(boolean isMirror);
+        fun onMirrorChange(isMirror: Boolean)
 
         /**
          * 硬解开关回调
          *
          * @param isAccelerate
          */
-        void onHWAcceleration(boolean isAccelerate);
+        fun onHWAcceleration(isAccelerate: Boolean)
     }
 
+    companion object {
+        private const val VOLUME_CHANGED_ACTION = "android.media.VOLUME_CHANGED_ACTION"
+        private const val EXTRA_VOLUME_STREAM_TYPE = "android.media.EXTRA_VOLUME_STREAM_TYPE"
+
+        /**
+         * 获取当前亮度
+         *
+         * @param activity
+         * @return
+         */
+        fun getActivityBrightness(activity: Activity?): Float {
+            val localWindow = activity!!.window
+            val params = localWindow.attributes
+            return params.screenBrightness
+        }
+    }
 }

@@ -1,53 +1,50 @@
-package com.tencent.liteav.demo.superplayer.ui.view;
+package com.tencent.liteav.demo.superplayer.ui.view
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.util.AttributeSet;
-import android.view.LayoutInflater;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-
-import com.tencent.liteav.demo.superplayer.R;
+import android.content.*
+import android.graphics.Bitmap
+import android.util.AttributeSet
+import android.view.*
+import android.widget.*
+import com.tencent.liteav.demo.superplayer.*
 
 /**
  * 滑动手势控制播放进度时显示的进度提示view
  */
+class VideoProgressLayout : RelativeLayout {
+    private var mIvThumbnail // 视频缩略图
+            : ImageView? = null
+    private var mTvTime // 视频进度文本
+            : TextView? = null
+    private var mProgressBar // 进度条
+            : ProgressBar? = null
+    private var mHideRunnable // 隐藏自身的线程
+            : HideRunnable? = null
+    private var duration = 1000 // 自身消失的延迟事件ms
 
-public class VideoProgressLayout extends RelativeLayout {
-    private ImageView       mIvThumbnail;       // 视频缩略图
-    private TextView        mTvTime;            // 视频进度文本
-    private ProgressBar     mProgressBar;       // 进度条
-    private HideRunnable    mHideRunnable;      // 隐藏自身的线程
-    private int             duration = 1000;    // 自身消失的延迟事件ms
-
-    public VideoProgressLayout(Context context) {
-        super(context);
-        init(context);
+    constructor(context: Context) : super(context) {
+        init(context)
     }
 
-    public VideoProgressLayout(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context);
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+        init(context)
     }
 
-    private void init(Context context) {
-        LayoutInflater.from(context).inflate(R.layout.superplayer_video_progress_layout, this);
-        mIvThumbnail = (ImageView) findViewById(R.id.superplayer_iv_progress_thumbnail);
-        mProgressBar = (ProgressBar) findViewById(R.id.superplayer_pb_progress_bar);
-        mTvTime = (TextView) findViewById(R.id.superplayer_tv_progress_time);
-        setVisibility(GONE);
-        mHideRunnable = new HideRunnable();
+    private fun init(context: Context) {
+        LayoutInflater.from(context).inflate(R.layout.superplayer_video_progress_layout, this)
+        mIvThumbnail = findViewById<View>(R.id.superplayer_iv_progress_thumbnail) as ImageView
+        mProgressBar = findViewById<View>(R.id.superplayer_pb_progress_bar) as ProgressBar
+        mTvTime = findViewById<View>(R.id.superplayer_tv_progress_time) as TextView
+        visibility = GONE
+        mHideRunnable = HideRunnable()
     }
 
     /**
      * 显示view
      */
-    public void show() {
-        setVisibility(VISIBLE);
-        removeCallbacks(mHideRunnable);
-        postDelayed(mHideRunnable, duration);
+    fun show() {
+        visibility = VISIBLE
+        removeCallbacks(mHideRunnable)
+        postDelayed(mHideRunnable, duration.toLong())
     }
 
     /**
@@ -55,8 +52,8 @@ public class VideoProgressLayout extends RelativeLayout {
      *
      * @param text
      */
-    public void setTimeText(String text) {
-        mTvTime.setText(text);
+    fun setTimeText(text: String?) {
+        mTvTime!!.text = text
     }
 
     /**
@@ -64,8 +61,8 @@ public class VideoProgressLayout extends RelativeLayout {
      *
      * @param progress
      */
-    public void setProgress(int progress) {
-        mProgressBar.setProgress(progress);
+    fun setProgress(progress: Int) {
+        mProgressBar!!.progress = progress
     }
 
     /**
@@ -73,8 +70,8 @@ public class VideoProgressLayout extends RelativeLayout {
      *
      * @param duration
      */
-    public void setDuration(int duration) {
-        this.duration = duration;
+    fun setDuration(duration: Int) {
+        this.duration = duration
     }
 
     /**
@@ -82,9 +79,9 @@ public class VideoProgressLayout extends RelativeLayout {
      *
      * @param bitmap
      */
-    public void setThumbnail(Bitmap bitmap) {
-        mIvThumbnail.setVisibility(VISIBLE);
-        mIvThumbnail.setImageBitmap(bitmap);
+    fun setThumbnail(bitmap: Bitmap?) {
+        mIvThumbnail!!.visibility = VISIBLE
+        mIvThumbnail!!.setImageBitmap(bitmap)
     }
 
     /**
@@ -92,19 +89,18 @@ public class VideoProgressLayout extends RelativeLayout {
      *
      * @param enable
      */
-    public void setProgressVisibility(boolean enable) {
-        mProgressBar.setVisibility(enable ? VISIBLE : GONE);
+    fun setProgressVisibility(enable: Boolean) {
+        mProgressBar!!.visibility = if (enable) VISIBLE else GONE
     }
 
     /**
      * 隐藏view的线程
      */
-    private class HideRunnable implements Runnable {
-        @Override
-        public void run() {
-            mIvThumbnail.setImageBitmap(null);
-            mIvThumbnail.setVisibility(GONE);
-            VideoProgressLayout.this.setVisibility(GONE);
+    private inner class HideRunnable : Runnable {
+        override fun run() {
+            mIvThumbnail!!.setImageBitmap(null)
+            mIvThumbnail!!.visibility = GONE
+            this@VideoProgressLayout.visibility = GONE
         }
     }
 }

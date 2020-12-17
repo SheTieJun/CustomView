@@ -23,6 +23,9 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) :
     //最新滑动距离
     private val mScaledTouchSlop = ViewConfiguration.get(context).scaledTouchSlop
 
+    /**
+     * 父容器传过来
+     */
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val minw = paddingLeft + paddingRight + suggestedMinimumWidth
         val w = resolveSizeAndState(minw, widthMeasureSpec, 1)

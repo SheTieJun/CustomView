@@ -1,29 +1,28 @@
-package com.tencent.liteav.demo.superplayer.model.protocol;
+package com.tencent.liteav.demo.superplayer.model.protocol
 
-import com.tencent.liteav.demo.superplayer.SuperPlayerVideoId;
-import com.tencent.liteav.demo.superplayer.model.entity.SuperPlayerVideoIdV2;
+import com.tencent.liteav.demo.superplayer.SuperPlayerVideoId
+import com.tencent.liteav.demo.superplayer.model.entity.SuperPlayerVideoIdV2
 
 /**
  * 视频信息协议解析需要传入的参数
  */
-public class PlayInfoParams {
+class PlayInfoParams {
     //必选
-    public int      appId;                  // 腾讯云视频appId
-    public String   fileId;                 // 腾讯云视频fileId
+    var appId // 腾讯云视频appId
+            = 0
+    var fileId // 腾讯云视频fileId
+            : String? = null
+    var videoId //v4 协议参数
+            : SuperPlayerVideoId? = null
+    var videoIdV2 //v2 协议参数
+            : SuperPlayerVideoIdV2? = null
 
-    public SuperPlayerVideoId   videoId;    //v4 协议参数
-    public SuperPlayerVideoIdV2 videoIdV2;  //v2 协议参数
-
-    public PlayInfoParams() {
-    }
-
-    @Override
-    public String toString() {
+    override fun toString(): String {
         return "TCPlayInfoParams{" +
                 ", appId='" + appId + '\'' +
                 ", fileId='" + fileId + '\'' +
-                ", v4='" + (videoId != null ? videoId.toString() : "") + '\'' +
-                ", v2='" + (videoIdV2 != null ? videoIdV2.toString() : "") + '\'' +
-                '}';
+                ", v4='" + (if (videoId != null) videoId.toString() else "") + '\'' +
+                ", v2='" + (if (videoIdV2 != null) videoIdV2.toString() else "") + '\'' +
+                '}'
     }
 }

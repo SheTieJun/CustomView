@@ -1,33 +1,28 @@
-package com.tencent.liteav.demo.superplayer.model.net;
+package com.tencent.liteav.demo.superplayer.model.net
 
-import android.os.AsyncTask;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
+import android.os.AsyncTask
+import java.io.BufferedReader
+import java.io.IOException
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
+import java.net.URL
 
 /**
  * Created by hans on 2018/9/11.
- * <p>
+ *
+ *
  * 超级播放器模块由于涉及查询视频信息，所以需要有一个内置的HTTP请求模块
- * <p>
+ *
+ *
  * 为了不引入额外的网络请求库，这里使用原生的Java HTTPURLConnection实现
- * <p>
+ *
+ *
  * 推荐您修改网络模块，使用您项目中的网络请求库，如okHTTP、Volley等
  */
-public class HttpURLClient {
+class HttpURLClient {
 
-    private static class Holder {
-        static final HttpURLClient INSTANCE = new HttpURLClient();
-    }
-
-    public static HttpURLClient getInstance() {
-        return Holder.INSTANCE;
+    companion object   Holder {
+        val instance = HttpURLClient()
     }
 
     /**
@@ -36,46 +31,40 @@ public class HttpURLClient {
      * @param urlStr
      * @param callback
      */
-    public void get(final String urlStr, final OnHttpCallback callback) {
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                BufferedReader bufferedReader = null;
-                try {
-                    URL url = new URL(urlStr);
-                    URLConnection connection = url.openConnection();
-                    connection.setConnectTimeout(15000);
-                    connection.setReadTimeout(15000);
-                    connection.connect();
-                    InputStream in = connection.getInputStream();
-                    if (in == null) {
-                        if (callback != null)
-                            callback.onError();
-                        return;
-                    }
-                    bufferedReader = new BufferedReader(new InputStreamReader(in));
-                    String line = null;
-                    StringBuilder sb = new StringBuilder();
-                    while ((line = bufferedReader.readLine()) != null) {
-                        sb.append(line);
-                    }
-                    if (callback != null)
-                        callback.onSuccess(sb.toString());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    if (callback != null)
-                        callback.onError();
-                } finally {
-                    if (bufferedReader != null) {
-                        try {
-                            bufferedReader.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+    operator fun get(urlStr: String?, callback: OnHttpCallback?) {
+        AsyncTask.execute(Runnable {
+            var bufferedReader: BufferedReader? = null
+            try {
+                val url = URL(urlStr)
+                val connection = url.openConnection()
+                connection.connectTimeout = 15000
+                connection.readTimeout = 15000
+                connection.connect()
+                val `in` = connection.getInputStream()
+                if (`in` == null) {
+                    callback?.onError()
+                    return@Runnable
+                }
+                bufferedReader = BufferedReader(InputStreamReader(`in`))
+                var line: String? = null
+                val sb = StringBuilder()
+                while (bufferedReader.readLine().also { line = it } != null) {
+                    sb.append(line)
+                }
+                callback?.onSuccess(sb.toString())
+            } catch (e: IOException) {
+                e.printStackTrace()
+                callback?.onError()
+            } finally {
+                if (bufferedReader != null) {
+                    try {
+                        bufferedReader.close()
+                    } catch (e: IOException) {
+                        e.printStackTrace()
                     }
                 }
             }
-        });
+        })
     }
 
     /**
@@ -84,61 +73,53 @@ public class HttpURLClient {
      * @param urlStr
      * @param callback
      */
-    public void postJson(final String urlStr, final String json, final OnHttpCallback callback) {
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                BufferedReader bufferedReader = null;
-                try {
-                    URL url = new URL(urlStr);
-                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                    connection.setConnectTimeout(15000);
-                    connection.setReadTimeout(15000);
-                    connection.setRequestMethod("POST");
-                    connection.addRequestProperty("Content-Type", "application/json; charset=utf-8");
-                    connection.setDoInput(true);
-                    connection.setDoOutput(true);
-                    connection.connect();
-
-                    OutputStream outputStream = connection.getOutputStream();
-                    outputStream.write(json.getBytes());
-                    outputStream.flush();
-                    outputStream.close();
-
-                    InputStream in = connection.getInputStream();
-                    if (in == null) {
-                        if (callback != null)
-                            callback.onError();
-                        return;
-                    }
-                    bufferedReader = new BufferedReader(new InputStreamReader(in));
-                    String line = null;
-                    StringBuilder sb = new StringBuilder();
-                    while ((line = bufferedReader.readLine()) != null) {
-                        sb.append(line);
-                    }
-                    if (callback != null)
-                        callback.onSuccess(sb.toString());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    if (callback != null)
-                        callback.onError();
-                } finally {
-                    if (bufferedReader != null) {
-                        try {
-                            bufferedReader.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+    fun postJson(urlStr: String?, json: String, callback: OnHttpCallback?) {
+        AsyncTask.execute(Runnable {
+            var bufferedReader: BufferedReader? = null
+            try {
+                val url = URL(urlStr)
+                val connection = url.openConnection() as HttpURLConnection
+                connection.connectTimeout = 15000
+                connection.readTimeout = 15000
+                connection.requestMethod = "POST"
+                connection.addRequestProperty("Content-Type", "application/json; charset=utf-8")
+                connection.doInput = true
+                connection.doOutput = true
+                connection.connect()
+                val outputStream = connection.outputStream
+                outputStream.write(json.toByteArray())
+                outputStream.flush()
+                outputStream.close()
+                val `in` = connection.inputStream
+                if (`in` == null) {
+                    callback?.onError()
+                    return@Runnable
+                }
+                bufferedReader = BufferedReader(InputStreamReader(`in`))
+                var line: String? = null
+                val sb = StringBuilder()
+                while (bufferedReader.readLine().also { line = it } != null) {
+                    sb.append(line)
+                }
+                callback?.onSuccess(sb.toString())
+            } catch (e: IOException) {
+                e.printStackTrace()
+                callback?.onError()
+            } finally {
+                if (bufferedReader != null) {
+                    try {
+                        bufferedReader.close()
+                    } catch (e: IOException) {
+                        e.printStackTrace()
                     }
                 }
             }
-        });
+        })
     }
 
-    public interface OnHttpCallback {
-        void onSuccess(String result);
-
-        void onError();
+    interface OnHttpCallback {
+        fun onSuccess(result: String)
+        fun onError()
     }
+
 }

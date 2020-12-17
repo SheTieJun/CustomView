@@ -1,21 +1,18 @@
-package com.tencent.liteav.demo.superplayer.model;
+package com.tencent.liteav.demo.superplayer.model
 
-import com.tencent.liteav.demo.superplayer.SuperPlayerDef;
-import com.tencent.liteav.demo.superplayer.SuperPlayerModel;
-import com.tencent.liteav.demo.superplayer.model.entity.VideoQuality;
-import com.tencent.rtmp.TXLivePlayer;
-import com.tencent.rtmp.ui.TXCloudVideoView;
+import com.tencent.liteav.demo.superplayer.SuperPlayerDef.*
+import com.tencent.liteav.demo.superplayer.SuperPlayerModel.SuperPlayerURL
+import com.tencent.liteav.demo.superplayer.model.entity.VideoQuality
+import com.tencent.rtmp.TXLivePlayer
+import com.tencent.rtmp.ui.TXCloudVideoView
 
-import java.util.List;
-
-public interface SuperPlayer {
-
+interface SuperPlayer {
     /**
      * 开始播放
      *
      * @param url 视频地址
      */
-    void play(String url);
+    fun play(url: String?)
 
     /**
      * 开始播放
@@ -23,7 +20,7 @@ public interface SuperPlayer {
      * @param appId 腾讯云视频appId
      * @param url   直播播放地址
      */
-    void play(int appId, String url);
+    fun play(appId: Int, url: String?)
 
     /**
      * 开始播放
@@ -32,7 +29,7 @@ public interface SuperPlayer {
      * @param fileId 腾讯云视频fileId
      * @param psign  防盗链签名，开启防盗链的视频必填，非防盗链视频可不填
      */
-    void play(int appId, String fileId, String psign);
+    fun play(appId: Int, fileId: String?, psign: String?)
 
     /**
      * 多分辨率播放
@@ -40,100 +37,96 @@ public interface SuperPlayer {
      * @param superPlayerURLS   不同分辨率数据
      * @param defaultIndex      默认播放Index
      */
-    void play(int appId, List<SuperPlayerModel.SuperPlayerURL> superPlayerURLS, int defaultIndex);
+    fun play(appId: Int, superPlayerURLS: List<SuperPlayerURL?>?, defaultIndex: Int)
 
     /**
      * 重播
      */
-    void reStart();
+    fun reStart()
 
     /**
      * 暂停播放
      */
-    void pause();
+    fun pause()
 
     /**
      * 暂停点播视频
      */
-    void pauseVod();
+    fun pauseVod()
 
     /**
      * 恢复播放
      */
-    void resume();
+    fun resume()
 
     /**
      * 恢复直播播放，从直播时移播放中，恢复到直播播放。
      */
-    void resumeLive();
+    fun resumeLive()
 
+
+    fun getWidth():Int
+
+    fun getHeight():Int
     /**
      * 停止播放
      */
-    void stop();
+    fun stop()
 
     /**
      * 销毁播放器
      */
-    void destroy();
+    fun destroy()
 
     /**
      * 切换播放器模式
      *
-     * @param playerMode {@link SuperPlayerDef.PlayerMode#WINDOW  }          窗口模式
-     *                   {@link SuperPlayerDef.PlayerMode#FULLSCREEN  }      全屏模式
-     *                   {@link SuperPlayerDef.PlayerMode#FLOAT  }           悬浮窗模式
+     * @param playerMode [SuperPlayerDef.PlayerMode.WINDOW]          窗口模式
+     * [SuperPlayerDef.PlayerMode.FULLSCREEN]      全屏模式
+     * [SuperPlayerDef.PlayerMode.FLOAT]           悬浮窗模式
      */
-    void switchPlayMode(SuperPlayerDef.PlayerMode playerMode);
-
-    void enableHardwareDecode(boolean enable);
-
-    void setPlayerView(TXCloudVideoView videoView);
-
-    void seek(int position);
-
-    void snapshot(TXLivePlayer.ITXSnapshotListener listener);
-
-    void setRate(float speedLevel);
-
-    void setMirror(boolean isMirror);
-
-    void switchStream(VideoQuality quality);
-
-    String getPlayURL();
+    fun switchPlayMode(playerMode: PlayerMode)
+    fun enableHardwareDecode(enable: Boolean)
+    fun setPlayerView(videoView: TXCloudVideoView?)
+    fun seek(position: Int)
+    fun snapshot(listener: TXLivePlayer.ITXSnapshotListener)
+    fun setRate(speedLevel: Float)
+    fun setMirror(isMirror: Boolean)
+    fun switchStream(quality: VideoQuality)
+    val playURL: String?
 
     /**
      * 获取当前播放器模式
      *
-     * @return {@link SuperPlayerDef.PlayerMode#WINDOW  }          窗口模式
-     * {@link SuperPlayerDef.PlayerMode#FULLSCREEN  }              全屏模式
-     * {@link SuperPlayerDef.PlayerMode#FLOAT  }                   悬浮窗模式
+     * @return [SuperPlayerDef.PlayerMode.WINDOW]          窗口模式
+     * [SuperPlayerDef.PlayerMode.FULLSCREEN]              全屏模式
+     * [SuperPlayerDef.PlayerMode.FLOAT]                   悬浮窗模式
      */
-    SuperPlayerDef.PlayerMode getPlayerMode();
+    val playerMode: PlayerMode
 
     /**
      * 获取当前播放器状态
      *
-     * @return {@link SuperPlayerDef.PlayerState#PLAYING  }     播放中
-     * {@link SuperPlayerDef.PlayerState#PAUSE  }               暂停中
-     * {@link SuperPlayerDef.PlayerState#LOADING  }             缓冲中
-     * {@link SuperPlayerDef.PlayerState#END  }                 结束播放
+     * @return [SuperPlayerDef.PlayerState.PLAYING]     播放中
+     * [SuperPlayerDef.PlayerState.PAUSE]               暂停中
+     * [SuperPlayerDef.PlayerState.LOADING]             缓冲中
+     * [SuperPlayerDef.PlayerState.END]                 结束播放
      */
-    SuperPlayerDef.PlayerState getPlayerState();
+    val playerState: PlayerState
 
     /**
      * 获取当前播放器类型
      *
-     * @return {@link SuperPlayerDef.PlayerType#LIVE  }     直播
-     * {@link SuperPlayerDef.PlayerType#LIVE_SHIFT  }       直播时移
-     * {@link SuperPlayerDef.PlayerType#VOD  }              点播
+     * @return [SuperPlayerDef.PlayerType.LIVE]     直播
+     * [SuperPlayerDef.PlayerType.LIVE_SHIFT]       直播时移
+     * [SuperPlayerDef.PlayerType.VOD]              点播
      */
-    SuperPlayerDef.PlayerType getPlayerType();
+    val playerType: PlayerType
 
     /**
      * 设置播放器状态回调
      *
-     * @param observer {@link SuperPlayerObserver}
+     * @param observer [SuperPlayerObserver]
      */
-    void setObserver(SuperPlayerObserver observer);
+    fun setObserver(observer: SuperPlayerObserver?)
 }

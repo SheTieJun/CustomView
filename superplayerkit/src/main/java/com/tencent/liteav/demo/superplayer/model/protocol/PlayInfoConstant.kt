@@ -1,20 +1,8 @@
-package com.tencent.liteav.demo.superplayer.model.protocol;
+package com.tencent.liteav.demo.superplayer.model.protocol
 
-public class PlayInfoConstant {
+class PlayInfoConstant {
+    enum class EncryptedURLType(val value: String) {
+        SIMPLEAES("SimpleAES"), WIDEVINE("widevine");
 
-    public enum EncryptedURLType {
-
-        SIMPLEAES("SimpleAES"),
-        WIDEVINE("widevine");
-
-        EncryptedURLType(String type){
-            value = type;
-        }
-
-        private  String value;
-
-        public String  getValue(){
-            return value;
-        }
     }
 }

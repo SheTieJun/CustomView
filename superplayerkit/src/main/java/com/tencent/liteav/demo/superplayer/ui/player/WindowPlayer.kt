@@ -1,229 +1,247 @@
-package com.tencent.liteav.demo.superplayer.ui.player;
+package com.tencent.liteav.demo.superplayer.ui.player
 
-import android.animation.ValueAnimator;
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.os.Build;
-import android.util.AttributeSet;
-import android.view.GestureDetector;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-
-import com.tencent.liteav.demo.superplayer.R;
-import com.tencent.liteav.demo.superplayer.SuperPlayerDef;
-import com.tencent.liteav.demo.superplayer.model.utils.VideoGestureDetector;
-import com.tencent.liteav.demo.superplayer.ui.view.PointSeekBar;
-import com.tencent.liteav.demo.superplayer.ui.view.VideoProgressLayout;
-import com.tencent.liteav.demo.superplayer.ui.view.VolumeBrightnessProgressLayout;
+import android.animation.ValueAnimator
+import android.content.*
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+import android.os.Build
+import android.util.AttributeSet
+import android.view.*
+import android.view.GestureDetector.SimpleOnGestureListener
+import android.widget.*
+import com.tencent.liteav.demo.superplayer.*
+import com.tencent.liteav.demo.superplayer.SuperPlayerDef.*
+import com.tencent.liteav.demo.superplayer.model.utils.VideoGestureDetector
+import com.tencent.liteav.demo.superplayer.model.utils.VideoGestureDetector.VideoGestureListener
+import com.tencent.liteav.demo.superplayer.ui.player.AbsPlayer
+import com.tencent.liteav.demo.superplayer.ui.view.PointSeekBar
+import com.tencent.liteav.demo.superplayer.ui.view.VideoProgressLayout
+import com.tencent.liteav.demo.superplayer.ui.view.VolumeBrightnessProgressLayout
 
 /**
  * 窗口模式播放控件
  *
  * 除基本播放控制外，还有手势控制快进快退、手势调节亮度音量等
  *
- * 1、点击事件监听{@link #onClick(View)}
+ * 1、点击事件监听[.onClick]
  *
- * 2、触摸事件监听{@link #onTouchEvent(MotionEvent)}
+ * 2、触摸事件监听[.onTouchEvent]
  *
- * 2、进度条事件监听{@link #onProgressChanged(PointSeekBar, int, boolean)}
- *                {@link #onStartTrackingTouch(PointSeekBar)}
- *                {@link #onStopTrackingTouch(PointSeekBar)}
+ * 2、进度条事件监听[.onProgressChanged]
+ * [.onStartTrackingTouch]
+ * [.onStopTrackingTouch]
  */
-public class WindowPlayer extends AbsPlayer implements View.OnClickListener,
-        PointSeekBar.OnSeekBarChangeListener {
-
+class WindowPlayer : AbsPlayer, View.OnClickListener, PointSeekBar.OnSeekBarChangeListener {
     // UI控件
-    private LinearLayout                        mLayoutTop;                             // 顶部标题栏布局
-    private LinearLayout                        mLayoutBottom;                          // 底部进度条所在布局
-    private ImageView                           mIvPause;                               // 暂停播放按钮
-    private ImageView                           mIvFullScreen;                          // 全屏按钮
-    private TextView                            mTvTitle;                               // 视频名称文本
-    private TextView                            mTvBackToLive;                          // 返回直播文本
-    private ImageView                           mBackground;                            // 背景
-    private ImageView                           mIvWatermark;                           // 水印
-    private TextView                            mTvCurrent;                             // 当前进度文本
-    private TextView                            mTvDuration;                            // 总时长文本
-    private PointSeekBar                        mSeekBarProgress;                       // 播放进度条
-    private LinearLayout                        mLayoutReplay;                          // 重播按钮所在布局
-    private ProgressBar                         mPbLiveLoading;                         // 加载圈
-    private VolumeBrightnessProgressLayout      mGestureVolumeBrightnessProgressLayout; // 音量亮度调节布局
-    private VideoProgressLayout                 mGestureVideoProgressLayout;            // 手势快进提示布局
+    private var mLayoutTop // 顶部标题栏布局
+            : LinearLayout? = null
+    private var mLayoutBottom // 底部进度条所在布局
+            : LinearLayout? = null
+    private var mIvPause // 暂停播放按钮
+            : ImageView? = null
+    private var mIvFullScreen // 全屏按钮
+            : ImageView? = null
+    private var mTvTitle // 视频名称文本
+            : TextView? = null
+    private var mTvBackToLive // 返回直播文本
+            : TextView? = null
+    private var mBackground // 背景
+            : ImageView? = null
+    private var mIvWatermark // 水印
+            : ImageView? = null
+    private var mTvCurrent // 当前进度文本
+            : TextView? = null
+    private var mTvDuration // 总时长文本
+            : TextView? = null
+    private var mSeekBarProgress // 播放进度条
+            : PointSeekBar? = null
+    private var mLayoutReplay // 重播按钮所在布局
+            : LinearLayout? = null
+    private var mPbLiveLoading // 加载圈
+            : ProgressBar? = null
+    private var mGestureVolumeBrightnessProgressLayout // 音量亮度调节布局
+            : VolumeBrightnessProgressLayout? = null
+    private var mGestureVideoProgressLayout // 手势快进提示布局
+            : VideoProgressLayout? = null
+    private var mGestureDetector // 手势检测监听器
+            : GestureDetector? = null
+    private var mVideoGestureDetector // 手势控制工具
+            : VideoGestureDetector? = null
+    private var isShowing // 自身是否可见
+            = false
+    private var mIsChangingSeekBarProgress // 进度条是否正在拖动，避免SeekBar由于视频播放的update而跳动
+            = false
+    private var mPlayType // 当前播放视频类型
+            : PlayerType? = null
+    private var mCurrentPlayState: PlayerState? = PlayerState.END // 当前播放状态
+    private var mDuration // 视频总时长
+            : Long = 0
+    private var mLivePushDuration // 直播推流总时长
+            : Long = 0
+    private var mProgress // 当前播放进度
+            : Long = 0
+    private var mBackgroundBmp // 背景图
+            : Bitmap? = null
+    private var mWaterMarkBmp // 水印图
+            : Bitmap? = null
+    private var mWaterMarkBmpX // 水印x坐标
+            = 0f
+    private var mWaterMarkBmpY // 水印y坐标
+            = 0f
+    private var mLastClickTime // 上次点击事件的时间
+            : Long = 0
 
-    private GestureDetector                     mGestureDetector;                       // 手势检测监听器
-    private VideoGestureDetector                mVideoGestureDetector;                      // 手势控制工具
-
-    private boolean                             isShowing;                              // 自身是否可见
-    private boolean                             mIsChangingSeekBarProgress;             // 进度条是否正在拖动，避免SeekBar由于视频播放的update而跳动
-    private SuperPlayerDef.PlayerType           mPlayType;                              // 当前播放视频类型
-    private SuperPlayerDef.PlayerState          mCurrentPlayState = SuperPlayerDef.PlayerState.END;                 // 当前播放状态
-    private long                                mDuration;                              // 视频总时长
-    private long                                mLivePushDuration;                      // 直播推流总时长
-    private long                                mProgress;                              // 当前播放进度
-
-    private Bitmap                              mBackgroundBmp;                         // 背景图
-    private Bitmap                              mWaterMarkBmp;                          // 水印图
-    private float                               mWaterMarkBmpX;                         // 水印x坐标
-    private float                               mWaterMarkBmpY;                         // 水印y坐标
-    private long                                mLastClickTime;                         // 上次点击事件的时间
-
-    public WindowPlayer(Context context) {
-        super(context);
-        initialize(context);
+    constructor(context: Context?) : super(context) {
+        initialize(context)
     }
 
-    public WindowPlayer(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        initialize(context);
+    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
+        initialize(context)
     }
 
-    public WindowPlayer(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        initialize(context);
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(
+        context,
+        attrs,
+        defStyleAttr
+    ) {
+        initialize(context)
     }
 
     /**
      * 初始化控件、手势检测监听器、亮度/音量/播放进度的回调
      */
-    private void initialize(Context context) {
-        initView(context);
-        mGestureDetector = new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
-            @Override
-            public boolean onDoubleTap(MotionEvent e) {
-                togglePlayState();
-                show();
+    private fun initialize(context: Context?) {
+        initView(context)
+        mGestureDetector = GestureDetector(getContext(), object : SimpleOnGestureListener() {
+            override fun onDoubleTap(e: MotionEvent): Boolean {
+                togglePlayState()
+                show()
                 if (mHideViewRunnable != null) {
-                    removeCallbacks(mHideViewRunnable);
-                    postDelayed(mHideViewRunnable, 7000);
+                    removeCallbacks(mHideViewRunnable)
+                    postDelayed(mHideViewRunnable, 7000)
                 }
-                return true;
+                return true
             }
 
-            @Override
-            public boolean onSingleTapConfirmed(MotionEvent e) {
-                toggle();
-                return true;
+            override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
+                toggle()
+                return true
             }
 
-            @Override
-            public boolean onScroll(MotionEvent downEvent, MotionEvent moveEvent, float distanceX, float distanceY) {
+            override fun onScroll(
+                downEvent: MotionEvent,
+                moveEvent: MotionEvent,
+                distanceX: Float,
+                distanceY: Float
+            ): Boolean {
                 if (downEvent == null || moveEvent == null) {
-                    return false;
+                    return false
                 }
                 if (mVideoGestureDetector != null && mGestureVolumeBrightnessProgressLayout != null) {
-                    mVideoGestureDetector.check(mGestureVolumeBrightnessProgressLayout.getHeight(), downEvent, moveEvent, distanceX, distanceY);
+                    mVideoGestureDetector!!.check(
+                        mGestureVolumeBrightnessProgressLayout!!.height,
+                        downEvent,
+                        moveEvent,
+                        distanceX,
+                        distanceY
+                    )
                 }
-                return true;
+                return true
             }
 
-            @Override
-            public boolean onDown(MotionEvent e) {
+            override fun onDown(e: MotionEvent): Boolean {
                 if (mVideoGestureDetector != null) {
-                    mVideoGestureDetector.reset(getWidth(), mSeekBarProgress.getProgress());
+                    mVideoGestureDetector!!.reset(width, mSeekBarProgress!!.progress)
                 }
-                return true;
+                return true
             }
-
-        });
-        mGestureDetector.setIsLongpressEnabled(false);
-
-        mVideoGestureDetector = new VideoGestureDetector(getContext());
-        mVideoGestureDetector.setVideoGestureListener(new VideoGestureDetector.VideoGestureListener() {
-            @Override
-            public void onBrightnessGesture(float newBrightness) {
+        })
+        mGestureDetector!!.setIsLongpressEnabled(false)
+        mVideoGestureDetector = VideoGestureDetector(getContext())
+        mVideoGestureDetector!!.setVideoGestureListener(object : VideoGestureListener {
+            override fun onBrightnessGesture(newBrightness: Float) {
                 if (mGestureVolumeBrightnessProgressLayout != null) {
-                    mGestureVolumeBrightnessProgressLayout.setProgress((int) (newBrightness * 100));
-                    mGestureVolumeBrightnessProgressLayout.setImageResource(R.drawable.superplayer_ic_light_max);
-                    mGestureVolumeBrightnessProgressLayout.show();
+                    mGestureVolumeBrightnessProgressLayout!!.setProgress((newBrightness * 100).toInt())
+                    mGestureVolumeBrightnessProgressLayout!!.setImageResource(R.drawable.superplayer_ic_light_max)
+                    mGestureVolumeBrightnessProgressLayout!!.show()
                 }
             }
 
-            @Override
-            public void onVolumeGesture(float volumeProgress) {
+            override fun onVolumeGesture(volumeProgress: Float) {
                 if (mGestureVolumeBrightnessProgressLayout != null) {
-                    mGestureVolumeBrightnessProgressLayout.setImageResource(R.drawable.superplayer_ic_volume_max);
-                    mGestureVolumeBrightnessProgressLayout.setProgress((int) volumeProgress);
-                    mGestureVolumeBrightnessProgressLayout.show();
+                    mGestureVolumeBrightnessProgressLayout!!.setImageResource(R.drawable.superplayer_ic_volume_max)
+                    mGestureVolumeBrightnessProgressLayout!!.setProgress(volumeProgress.toInt())
+                    mGestureVolumeBrightnessProgressLayout!!.show()
                 }
             }
 
-            @Override
-            public void onSeekGesture(int progress) {
-                mIsChangingSeekBarProgress = true;
+            override fun onSeekGesture(progress: Int) {
+                var progress = progress
+                mIsChangingSeekBarProgress = true
                 if (mGestureVideoProgressLayout != null) {
-
-                    if (progress > mSeekBarProgress.getMax()) {
-                        progress = mSeekBarProgress.getMax();
+                    if (progress > mSeekBarProgress!!.max) {
+                        progress = mSeekBarProgress!!.max
                     }
                     if (progress < 0) {
-                        progress = 0;
+                        progress = 0
                     }
-                    mGestureVideoProgressLayout.setProgress(progress);
-                    mGestureVideoProgressLayout.show();
-
-                    float percentage = ((float) progress) / mSeekBarProgress.getMax();
-                    float currentTime = (mDuration * percentage);
-                    if (mPlayType == SuperPlayerDef.PlayerType.LIVE || mPlayType == SuperPlayerDef.PlayerType.LIVE_SHIFT) {
-                        if (mLivePushDuration > MAX_SHIFT_TIME) {
-                            currentTime = (int) (mLivePushDuration - MAX_SHIFT_TIME *  (1 - percentage));
+                    mGestureVideoProgressLayout!!.setProgress(progress)
+                    mGestureVideoProgressLayout!!.show()
+                    val percentage = progress.toFloat() / mSeekBarProgress!!.max
+                    var currentTime = mDuration * percentage
+                    if (mPlayType == PlayerType.LIVE || mPlayType == PlayerType.LIVE_SHIFT) {
+                        currentTime = if (mLivePushDuration > MAX_SHIFT_TIME) {
+                            (mLivePushDuration - MAX_SHIFT_TIME * (1 - percentage))
                         } else {
-                            currentTime  = mLivePushDuration * percentage;
+                            mLivePushDuration * percentage
                         }
-                        mGestureVideoProgressLayout.setTimeText(formattedTime((long) currentTime));
+                        mGestureVideoProgressLayout!!.setTimeText(formattedTime(currentTime.toLong()))
                     } else {
-                        mGestureVideoProgressLayout.setTimeText(formattedTime((long) currentTime) + " / " + formattedTime((long) mDuration));
+                        mGestureVideoProgressLayout!!.setTimeText(
+                            formattedTime(currentTime.toLong()) + " / " + formattedTime(
+                                mDuration
+                            )
+                        )
                     }
-
                 }
-                if (mSeekBarProgress!= null)
-                    mSeekBarProgress.setProgress(progress);
+                if (mSeekBarProgress != null) mSeekBarProgress!!.progress = (progress)
             }
-        });
+        })
     }
 
     /**
      * 初始化view
      */
-    private void initView(Context context) {
-        LayoutInflater.from(context).inflate(R.layout.superplayer_vod_player_window, this);
-
-        mLayoutTop = (LinearLayout) findViewById(R.id.superplayer_rl_top);
-        mLayoutTop.setOnClickListener(this);
-        mLayoutBottom = (LinearLayout) findViewById(R.id.superplayer_ll_bottom);
-        mLayoutBottom.setOnClickListener(this);
-        mLayoutReplay = (LinearLayout) findViewById(R.id.superplayer_ll_replay);
-        mTvTitle = (TextView) findViewById(R.id.superplayer_tv_title);
-        mIvPause = (ImageView) findViewById(R.id.superplayer_iv_pause);
-        mTvCurrent = (TextView) findViewById(R.id.superplayer_tv_current);
-        mTvDuration = (TextView) findViewById(R.id.superplayer_tv_duration);
-        mSeekBarProgress = (PointSeekBar) findViewById(R.id.superplayer_seekbar_progress);
-        mSeekBarProgress.setProgress(0);
-        mSeekBarProgress.setMax(100);
-        mIvFullScreen = (ImageView) findViewById(R.id.superplayer_iv_fullscreen);
-        mTvBackToLive = (TextView) findViewById(R.id.superplayer_tv_back_to_live);
-        mPbLiveLoading = (ProgressBar) findViewById(R.id.superplayer_pb_live);
-
-        mTvBackToLive.setOnClickListener(this);
-        mIvPause.setOnClickListener(this);
-        mIvFullScreen.setOnClickListener(this);
-        mLayoutTop.setOnClickListener(this);
-        mLayoutReplay.setOnClickListener(this);
-
-        mSeekBarProgress.setOnSeekBarChangeListener(this);
-
-        mGestureVolumeBrightnessProgressLayout = (VolumeBrightnessProgressLayout)findViewById(R.id.superplayer_gesture_progress);
-
-        mGestureVideoProgressLayout = (VideoProgressLayout) findViewById(R.id.superplayer_video_progress_layout);
-
-        mBackground = (ImageView)findViewById(R.id.superplayer_small_iv_background);
-        setBackground(mBackgroundBmp);
-
-        mIvWatermark = (ImageView)findViewById(R.id.superplayer_small_iv_water_mark);
+    private fun initView(context: Context?) {
+        LayoutInflater.from(context).inflate(R.layout.superplayer_vod_player_window, this)
+        mLayoutTop = findViewById<View>(R.id.superplayer_rl_top) as LinearLayout
+        mLayoutTop!!.setOnClickListener(this)
+        mLayoutBottom = findViewById<View>(R.id.superplayer_ll_bottom) as LinearLayout
+        mLayoutBottom!!.setOnClickListener(this)
+        mLayoutReplay = findViewById<View>(R.id.superplayer_ll_replay) as LinearLayout
+        mTvTitle = findViewById<View>(R.id.superplayer_tv_title) as TextView
+        mIvPause = findViewById<View>(R.id.superplayer_iv_pause) as ImageView
+        mTvCurrent = findViewById<View>(R.id.superplayer_tv_current) as TextView
+        mTvDuration = findViewById<View>(R.id.superplayer_tv_duration) as TextView
+        mSeekBarProgress = findViewById<View>(R.id.superplayer_seekbar_progress) as PointSeekBar
+        mSeekBarProgress!!.progress = (0)
+        mSeekBarProgress!!.max = (100)
+        mIvFullScreen = findViewById<View>(R.id.superplayer_iv_fullscreen) as ImageView
+        mTvBackToLive = findViewById<View>(R.id.superplayer_tv_back_to_live) as TextView
+        mPbLiveLoading = findViewById<View>(R.id.superplayer_pb_live) as ProgressBar
+        mTvBackToLive!!.setOnClickListener(this)
+        mIvPause!!.setOnClickListener(this)
+        mIvFullScreen!!.setOnClickListener(this)
+        mLayoutTop!!.setOnClickListener(this)
+        mLayoutReplay!!.setOnClickListener(this)
+        mSeekBarProgress!!.setOnSeekBarChangeListener(this)
+        mGestureVolumeBrightnessProgressLayout =
+            findViewById<View>(R.id.superplayer_gesture_progress) as VolumeBrightnessProgressLayout
+        mGestureVideoProgressLayout =
+            findViewById<View>(R.id.superplayer_video_progress_layout) as VideoProgressLayout
+        mBackground = findViewById<View>(R.id.superplayer_small_iv_background) as ImageView
+        setBackground(mBackgroundBmp)
+        mIvWatermark = findViewById<View>(R.id.superplayer_small_iv_water_mark) as ImageView
     }
 
     /**
@@ -231,36 +249,32 @@ public class WindowPlayer extends AbsPlayer implements View.OnClickListener,
      *
      * 双击和点击播放/暂停按钮会触发此方法
      */
-    private void togglePlayState() {
-        switch (mCurrentPlayState) {
-            case PAUSE:
-            case END:
+    private fun togglePlayState() {
+        when (mCurrentPlayState) {
+            PlayerState.PAUSE, PlayerState.END -> if (mControllerCallback != null) {
+                mControllerCallback!!.onResume()
+            }
+            PlayerState.PLAYING, PlayerState.LOADING -> {
                 if (mControllerCallback != null) {
-                    mControllerCallback.onResume();
+                    mControllerCallback!!.onPause()
                 }
-                break;
-            case PLAYING:
-            case LOADING:
-                if (mControllerCallback != null) {
-                    mControllerCallback.onPause();
-                }
-                mLayoutReplay.setVisibility(View.GONE);
-                break;
+                mLayoutReplay!!.visibility = GONE
+            }
         }
-        show();
+        show()
     }
 
     /**
      * 切换自身的可见性
      */
-    private void toggle() {
+    private fun toggle() {
         if (isShowing) {
-            hide();
+            hide()
         } else {
-            show();
+            show()
             if (mHideViewRunnable != null) {
-                removeCallbacks(mHideViewRunnable);
-                postDelayed(mHideViewRunnable, 7000);
+                removeCallbacks(mHideViewRunnable)
+                postDelayed(mHideViewRunnable, 7000)
             }
         }
     }
@@ -272,86 +286,74 @@ public class WindowPlayer extends AbsPlayer implements View.OnClickListener,
      * @param x   水印的x坐标
      * @param y   水印的y坐标
      */
-    @Override
-    public void setWatermark(final Bitmap bmp, float x, float y) {
-        mWaterMarkBmp = bmp;
-        mWaterMarkBmpX = x;
-        mWaterMarkBmpY = y;
+    override fun setWatermark(bmp: Bitmap?, x: Float, y: Float) {
+        mWaterMarkBmp = bmp
+        mWaterMarkBmpX = x
+        mWaterMarkBmpY = y
         if (bmp != null) {
-            this.post(new Runnable() {
-                @Override
-                public void run() {
-                    int width = WindowPlayer.this.getWidth();
-                    int height = WindowPlayer.this.getHeight();
-
-                    int x = (int) (width * mWaterMarkBmpX) - bmp.getWidth() / 2;
-                    int y = (int) (height * mWaterMarkBmpY) - bmp.getHeight() / 2;
-
-                    mIvWatermark.setX(x);
-                    mIvWatermark.setY(y);
-
-                    mIvWatermark.setVisibility(VISIBLE);
-                    setBitmap(mIvWatermark, bmp);
-                }
-            });
+            post {
+                val width = this@WindowPlayer.width
+                val height = this@WindowPlayer.height
+                val x = (width * mWaterMarkBmpX).toInt() - bmp.width / 2
+                val y = (height * mWaterMarkBmpY).toInt() - bmp.height / 2
+                mIvWatermark!!.x = x.toFloat()
+                mIvWatermark!!.y = y.toFloat()
+                mIvWatermark!!.visibility = VISIBLE
+                setBitmap(mIvWatermark, bmp)
+            }
         } else {
-            mIvWatermark.setVisibility(GONE);
+            mIvWatermark!!.visibility = GONE
         }
     }
 
     /**
      * 显示控件
      */
-    @Override
-    public void show() {
-        isShowing = true;
-        mLayoutTop.setVisibility(View.VISIBLE);
-        mLayoutBottom.setVisibility(View.VISIBLE);
-
-        if (mPlayType == SuperPlayerDef.PlayerType.LIVE_SHIFT) {
-            mTvBackToLive.setVisibility(View.VISIBLE);
+    override fun show() {
+        isShowing = true
+        mLayoutTop!!.visibility = VISIBLE
+        mLayoutBottom!!.visibility = VISIBLE
+        if (mPlayType == PlayerType.LIVE_SHIFT) {
+            mTvBackToLive!!.visibility = VISIBLE
         }
     }
 
     /**
      * 隐藏控件
      */
-    @Override
-    public void hide() {
-        isShowing = false;
-        mLayoutTop.setVisibility(View.GONE);
-        mLayoutBottom.setVisibility(View.GONE);
-
-        if (mPlayType == SuperPlayerDef.PlayerType.LIVE_SHIFT) {
-            mTvBackToLive.setVisibility(View.GONE);
+    override fun hide() {
+        isShowing = false
+        mLayoutTop!!.visibility = GONE
+        mLayoutBottom!!.visibility = GONE
+        if (mPlayType == PlayerType.LIVE_SHIFT) {
+            mTvBackToLive!!.visibility = GONE
         }
     }
 
-    @Override
-    public void updatePlayState(SuperPlayerDef.PlayerState playState) {
-        switch (playState) {
-            case PLAYING:
-                mIvPause.setImageResource(R.drawable.superplayer_ic_vod_pause_normal);
-                toggleView(mPbLiveLoading, false);
-                toggleView(mLayoutReplay, false);
-                break;
-            case LOADING:
-                mIvPause.setImageResource(R.drawable.superplayer_ic_vod_pause_normal);
-                toggleView(mPbLiveLoading, true);
-                toggleView(mLayoutReplay, false);
-                break;
-            case PAUSE:
-                mIvPause.setImageResource(R.drawable.superplayer_ic_vod_play_normal);
-                toggleView(mPbLiveLoading, false);
-                toggleView(mLayoutReplay, false);
-                break;
-            case END:
-                mIvPause.setImageResource(R.drawable.superplayer_ic_vod_play_normal);
-                toggleView(mPbLiveLoading, false);
-                toggleView(mLayoutReplay, true);
-                break;
+    override fun updatePlayState(playState: PlayerState?) {
+        when (playState) {
+            PlayerState.PLAYING -> {
+                mIvPause!!.setImageResource(R.drawable.superplayer_ic_vod_pause_normal)
+                toggleView(mPbLiveLoading!!, false)
+                toggleView(mLayoutReplay!!, false)
+            }
+            PlayerState.LOADING -> {
+                mIvPause!!.setImageResource(R.drawable.superplayer_ic_vod_pause_normal)
+                toggleView(mPbLiveLoading!!, true)
+                toggleView(mLayoutReplay!!, false)
+            }
+            PlayerState.PAUSE -> {
+                mIvPause!!.setImageResource(R.drawable.superplayer_ic_vod_play_normal)
+                toggleView(mPbLiveLoading!!, false)
+                toggleView(mLayoutReplay!!, false)
+            }
+            PlayerState.END -> {
+                mIvPause!!.setImageResource(R.drawable.superplayer_ic_vod_play_normal)
+                toggleView(mPbLiveLoading!!, false)
+                toggleView(mLayoutReplay!!, true)
+            }
         }
-        mCurrentPlayState = playState;
+        mCurrentPlayState = playState
     }
 
     /**
@@ -359,9 +361,8 @@ public class WindowPlayer extends AbsPlayer implements View.OnClickListener,
      *
      * @param title 视频名称
      */
-    @Override
-    public void updateTitle(String title) {
-        mTvTitle.setText(title);
+    override fun updateTitle(title: String?) {
+        mTvTitle!!.text = title
     }
 
     /**
@@ -370,55 +371,51 @@ public class WindowPlayer extends AbsPlayer implements View.OnClickListener,
      * @param current  当前进度(秒)
      * @param duration 视频总时长(秒)
      */
-    @Override
-    public void updateVideoProgress(long current, long duration) {
-        mProgress = current < 0 ? 0 : current;
-        mDuration = duration < 0 ? 0 : duration;
-        mTvCurrent.setText(formattedTime(mProgress));
-
-        float percentage = mDuration > 0 ? ((float) mProgress / (float) mDuration) : 1.0f;
-        if (mProgress == 0) {
-            mLivePushDuration = 0;
-            percentage = 0;
+    override fun updateVideoProgress(current: Long, duration: Long) {
+        mProgress = if (current < 0) 0 else current
+        mDuration = if (duration < 0) 0 else duration
+        mTvCurrent!!.text = formattedTime(mProgress)
+        var percentage = if (mDuration > 0) mProgress.toFloat() / mDuration.toFloat() else 1.0f
+        if (mProgress == 0L) {
+            mLivePushDuration = 0
+            percentage = 0f
         }
-        if (mPlayType == SuperPlayerDef.PlayerType.LIVE || mPlayType == SuperPlayerDef.PlayerType.LIVE_SHIFT) {
-            mLivePushDuration = mLivePushDuration > mProgress ? mLivePushDuration : mProgress;
-            long leftTime = mDuration - mProgress;
-            mDuration = mDuration > MAX_SHIFT_TIME ? MAX_SHIFT_TIME : mDuration;
-            percentage = 1 - (float) leftTime / (float) mDuration;
+        if (mPlayType == PlayerType.LIVE || mPlayType == PlayerType.LIVE_SHIFT) {
+            mLivePushDuration = if (mLivePushDuration > mProgress) mLivePushDuration else mProgress
+            val leftTime = mDuration - mProgress
+            mDuration =
+                if (mDuration > MAX_SHIFT_TIME) MAX_SHIFT_TIME.toLong() else mDuration
+            percentage = 1 - leftTime.toFloat() / mDuration.toFloat()
         }
-
         if (percentage >= 0 && percentage <= 1) {
-            int progress = Math.round(percentage * mSeekBarProgress.getMax());
+            val progress = Math.round(percentage * mSeekBarProgress!!.max)
             if (!mIsChangingSeekBarProgress) {
-                if (mPlayType == SuperPlayerDef.PlayerType.LIVE) {
-                    mSeekBarProgress.setProgress(mSeekBarProgress.getMax());
+                if (mPlayType == PlayerType.LIVE) {
+                    mSeekBarProgress!!.progress = (mSeekBarProgress!!.max)
                 } else {
-                    mSeekBarProgress.setProgress(progress);
+                    mSeekBarProgress!!.progress = (progress)
                 }
             }
-            mTvDuration.setText(formattedTime(mDuration));
+            mTvDuration!!.text = formattedTime(mDuration)
         }
     }
 
-    @Override
-    public void updatePlayType(SuperPlayerDef.PlayerType type) {
-        mPlayType = type;
-        switch (type) {
-            case VOD:
-                mTvBackToLive.setVisibility(View.GONE);
-                mTvDuration.setVisibility(View.VISIBLE);
-                break;
-            case LIVE:
-                mTvBackToLive.setVisibility(View.GONE);
-                mTvDuration.setVisibility(View.GONE);
-                mSeekBarProgress.setProgress(100);
-                break;
-            case LIVE_SHIFT:
-                if (mLayoutBottom.getVisibility() == VISIBLE)
-                    mTvBackToLive.setVisibility(View.VISIBLE);
-                mTvDuration.setVisibility(View.GONE);
-                break;
+    override fun updatePlayType(type: PlayerType?) {
+        mPlayType = type
+        when (type) {
+            PlayerType.VOD -> {
+                mTvBackToLive!!.visibility = GONE
+                mTvDuration!!.visibility = VISIBLE
+            }
+            PlayerType.LIVE -> {
+                mTvBackToLive!!.visibility = GONE
+                mTvDuration!!.visibility = GONE
+                mSeekBarProgress!!.progress = (100)
+            }
+            PlayerType.LIVE_SHIFT -> {
+                if (mLayoutBottom!!.visibility == VISIBLE) mTvBackToLive!!.visibility = VISIBLE
+                mTvDuration!!.visibility = GONE
+            }
         }
     }
 
@@ -427,213 +424,187 @@ public class WindowPlayer extends AbsPlayer implements View.OnClickListener,
      *
      * @param bitmap 背景图
      */
-    @Override
-    public void setBackground(final Bitmap bitmap) {
-        this.post(new Runnable() {
-            @Override
-            public void run() {
-                if (bitmap == null) return;
-                if (mBackground == null) {
-                    mBackgroundBmp = bitmap;
-                } else {
-                    setBitmap(mBackground, mBackgroundBmp);
-                }
+    override fun setBackground(bitmap: Bitmap?) {
+        post(Runnable {
+            if (bitmap == null) return@Runnable
+            if (mBackground == null) {
+                mBackgroundBmp = bitmap
+            } else {
+                setBitmap(mBackground, mBackgroundBmp)
             }
-        });
+        })
     }
 
     /**
      * 设置目标ImageView显示的图片
      */
-    private void setBitmap(ImageView view, Bitmap bitmap) {
-        if (view == null || bitmap == null) return;
+    private fun setBitmap(view: ImageView?, bitmap: Bitmap?) {
+        if (view == null || bitmap == null) return
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            view.setBackground(new BitmapDrawable(getContext().getResources(), bitmap));
+            view.background = BitmapDrawable(context.resources, bitmap)
         } else {
-            view.setBackgroundDrawable(new BitmapDrawable(getContext().getResources(), bitmap));
+            view.setBackgroundDrawable(BitmapDrawable(context.resources, bitmap))
         }
     }
 
     /**
      * 显示背景
      */
-    @Override
-    public void showBackground() {
-        post(new Runnable() {
-            @Override
-            public void run() {
-                ValueAnimator alpha = ValueAnimator.ofFloat(0.0f, 1);
-                alpha.setDuration(500);
-                alpha.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator animation) {
-                        float value = (Float) animation.getAnimatedValue();
-                        mBackground.setAlpha(value);
-                        if (value == 1) {
-                            mBackground.setVisibility(VISIBLE);
-                        }
-                    }
-                });
-                alpha.start();
+    override fun showBackground() {
+        post {
+            val alpha = ValueAnimator.ofFloat(0.0f, 1f)
+            alpha.duration = 500
+            alpha.addUpdateListener { animation ->
+                val value = animation.animatedValue as Float
+                mBackground!!.alpha = value
+                if (value == 1f) {
+                    mBackground!!.visibility = VISIBLE
+                }
             }
-        });
+            alpha.start()
+        }
     }
 
     /**
      * 隐藏背景
      */
-    @Override
-    public void hideBackground() {
-        post(new Runnable() {
-            @Override
-            public void run() {
-                if (mBackground.getVisibility() != View.VISIBLE) return;
-                ValueAnimator alpha = ValueAnimator.ofFloat(1.0f, 0.0f);
-                alpha.setDuration(500);
-                alpha.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                    @Override
-                    public void onAnimationUpdate(ValueAnimator animation) {
-                        float value = (Float) animation.getAnimatedValue();
-                        mBackground.setAlpha(value);
-                        if (value == 0) {
-                            mBackground.setVisibility(GONE);
-                        }
-                    }
-                });
-                alpha.start();
+    override fun hideBackground() {
+        post(Runnable {
+            if (mBackground!!.visibility != VISIBLE) return@Runnable
+            val alpha = ValueAnimator.ofFloat(1.0f, 0.0f)
+            alpha.duration = 500
+            alpha.addUpdateListener { animation ->
+                val value = animation.animatedValue as Float
+                mBackground!!.alpha = value
+                if (value == 0f) {
+                    mBackground!!.visibility = GONE
+                }
             }
-        });
+            alpha.start()
+        })
     }
 
     /**
      * 重写触摸事件监听，实现手势调节亮度、音量以及播放进度
      */
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if (mGestureDetector != null)
-            mGestureDetector.onTouchEvent(event);
-
-        if (event.getAction() == MotionEvent.ACTION_UP && mVideoGestureDetector != null && mVideoGestureDetector.isVideoProgressModel()) {
-            int progress = mVideoGestureDetector.getVideoProgress();
-            if (progress > mSeekBarProgress.getMax()) {
-                progress = mSeekBarProgress.getMax();
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        if (mGestureDetector != null) mGestureDetector!!.onTouchEvent(event)
+        if (event.action == MotionEvent.ACTION_UP && mVideoGestureDetector != null && mVideoGestureDetector!!.isVideoProgressModel) {
+            var progress = mVideoGestureDetector!!.videoProgress
+            if (progress > mSeekBarProgress!!.max) {
+                progress = mSeekBarProgress!!.max
             }
             if (progress < 0) {
-                progress = 0;
+                progress = 0
             }
-            mSeekBarProgress.setProgress(progress);
-
-            int seekTime;
-            float percentage = progress * 1.0f / mSeekBarProgress.getMax();
-            if (mPlayType == SuperPlayerDef.PlayerType.LIVE || mPlayType == SuperPlayerDef.PlayerType.LIVE_SHIFT) {
+            mSeekBarProgress!!.progress  = (progress)
+            val seekTime: Int
+            val percentage = progress * 1.0f / mSeekBarProgress!!.max
+            seekTime = if (mPlayType == PlayerType.LIVE || mPlayType == PlayerType.LIVE_SHIFT) {
                 if (mLivePushDuration > MAX_SHIFT_TIME) {
-                    seekTime = (int) (mLivePushDuration - MAX_SHIFT_TIME *  (1 - percentage));
+                    (mLivePushDuration - MAX_SHIFT_TIME * (1 - percentage)) as Int
                 } else {
-                    seekTime  = (int) (mLivePushDuration * percentage);
+                    (mLivePushDuration * percentage).toInt()
                 }
-            }else {
-                seekTime = (int) (percentage * mDuration);
+            } else {
+                (percentage * mDuration).toInt()
             }
             if (mControllerCallback != null) {
-                mControllerCallback.onSeekTo(seekTime);
+                mControllerCallback!!.onSeekTo(seekTime)
             }
-            mIsChangingSeekBarProgress = false;
+            mIsChangingSeekBarProgress = false
         }
-
-        if(event.getAction() == MotionEvent.ACTION_DOWN) {
-            removeCallbacks(mHideViewRunnable);
-        } else if(event.getAction() == MotionEvent.ACTION_UP) {
-            postDelayed(mHideViewRunnable, 7000);
+        if (event.action == MotionEvent.ACTION_DOWN) {
+            removeCallbacks(mHideViewRunnable)
+        } else if (event.action == MotionEvent.ACTION_UP) {
+            postDelayed(mHideViewRunnable, 7000)
         }
-        return true;
+        return true
     }
 
     /**
      * 设置点击事件监听
      */
-    @Override
-    public void onClick(View view) {
+    override fun onClick(view: View) {
         if (System.currentTimeMillis() - mLastClickTime < 300) { //限制点击频率
-            return;
+            return
         }
-        mLastClickTime = System.currentTimeMillis();
-        int id = view.getId();
+        mLastClickTime = System.currentTimeMillis()
+        val id = view.id
         if (id == R.id.superplayer_rl_top) { //顶部标题栏
             if (mControllerCallback != null) {
-                mControllerCallback.onBackPressed(SuperPlayerDef.PlayerMode.WINDOW);
+                mControllerCallback!!.onBackPressed(PlayerMode.WINDOW)
             }
         } else if (id == R.id.superplayer_iv_pause) { //暂停\播放按钮
-            togglePlayState();
+            togglePlayState()
         } else if (id == R.id.superplayer_iv_fullscreen) { //全屏按钮
             if (mControllerCallback != null) {
-                mControllerCallback.onSwitchPlayMode(SuperPlayerDef.PlayerMode.FULLSCREEN);
+                mControllerCallback!!.onSwitchPlayMode(PlayerMode.FULLSCREEN)
             }
         } else if (id == R.id.superplayer_ll_replay) { //重播按钮
             if (mControllerCallback != null) {
-                mControllerCallback.onResume();
+                mControllerCallback!!.onResume()
             }
         } else if (id == R.id.superplayer_tv_back_to_live) { //返回直播按钮
             if (mControllerCallback != null) {
-                mControllerCallback.onResumeLive();
+                mControllerCallback!!.onResumeLive()
             }
         }
     }
 
-    @Override
-    public void onProgressChanged(PointSeekBar seekBar, int progress, boolean fromUser) {
+    override fun onProgressChanged(seekBar: PointSeekBar, progress: Int, fromUser: Boolean) {
         if (mGestureVideoProgressLayout != null && fromUser) {
-            mGestureVideoProgressLayout.show();
-            float percentage = ((float) progress) / seekBar.getMax();
-            float currentTime = (mDuration * percentage);
-            if (mPlayType == SuperPlayerDef.PlayerType.LIVE || mPlayType == SuperPlayerDef.PlayerType.LIVE_SHIFT) {
-                if (mLivePushDuration > MAX_SHIFT_TIME) {
-                    currentTime = (int) (mLivePushDuration - MAX_SHIFT_TIME *  (1 - percentage));
+            mGestureVideoProgressLayout!!.show()
+            val percentage = progress.toFloat() / seekBar.max
+            var currentTime = mDuration * percentage
+            if (mPlayType == PlayerType.LIVE || mPlayType == PlayerType.LIVE_SHIFT) {
+                (if (mLivePushDuration > AbsPlayer.MAX_SHIFT_TIME) {
+                    (mLivePushDuration - AbsPlayer.MAX_SHIFT_TIME * (1 - percentage))
                 } else {
-                    currentTime  = mLivePushDuration * percentage;
-                }
-                mGestureVideoProgressLayout.setTimeText(formattedTime((long) currentTime));
+                    mLivePushDuration * percentage
+                }).also { currentTime = it }
+                mGestureVideoProgressLayout!!.setTimeText(formattedTime(currentTime.toLong()))
             } else {
-                mGestureVideoProgressLayout.setTimeText(formattedTime((long) currentTime) + " / " + formattedTime((long) mDuration));
+                mGestureVideoProgressLayout!!.setTimeText(
+                    formattedTime(currentTime.toLong()) + " / " + formattedTime(
+                        mDuration
+                    )
+                )
             }
-            mGestureVideoProgressLayout.setProgress(progress);
+            mGestureVideoProgressLayout!!.setProgress(progress)
         }
     }
 
-    @Override
-    public void onStartTrackingTouch(PointSeekBar seekBar) {
-        removeCallbacks(mHideViewRunnable);
+    override fun onStartTrackingTouch(seekBar: PointSeekBar?) {
+        removeCallbacks(mHideViewRunnable)
     }
 
-    @Override
-    public void onStopTrackingTouch(PointSeekBar seekBar) {
-        int curProgress = seekBar.getProgress();
-        int maxProgress = seekBar.getMax();
-
-        switch (mPlayType) {
-            case VOD:
-                if (curProgress >= 0 && curProgress <= maxProgress) {
-                    // 关闭重播按钮
-                    toggleView(mLayoutReplay, false);
-                    float percentage = ((float) curProgress) / maxProgress;
-                    int position = (int) (mDuration * percentage);
-                    if (mControllerCallback != null) {
-                        mControllerCallback.onSeekTo(position);
-                        mControllerCallback.onResume();
-                    }
+    override fun onStopTrackingTouch(seekBar: PointSeekBar) {
+        val curProgress = seekBar.progress
+        val maxProgress = seekBar.max
+        when (mPlayType) {
+            PlayerType.VOD -> if (curProgress >= 0 && curProgress <= maxProgress) {
+                // 关闭重播按钮
+                toggleView(mLayoutReplay!!, false)
+                val percentage = curProgress.toFloat() / maxProgress
+                val position = (mDuration * percentage).toInt()
+                if (mControllerCallback != null) {
+                    mControllerCallback!!.onSeekTo(position)
+                    mControllerCallback!!.onResume()
                 }
-                break;
-            case LIVE:
-            case LIVE_SHIFT:
-                toggleView(mPbLiveLoading, true);
-                int seekTime = (int) (mLivePushDuration * curProgress * 1.0f / maxProgress);
+            }
+            PlayerType.LIVE, PlayerType.LIVE_SHIFT -> {
+                toggleView(mPbLiveLoading!!, true)
+                var seekTime = (mLivePushDuration * curProgress * 1.0f / maxProgress).toInt()
                 if (mLivePushDuration > MAX_SHIFT_TIME) {
-                    seekTime = (int) (mLivePushDuration - MAX_SHIFT_TIME *  (maxProgress - curProgress) * 1.0f / maxProgress);
+                    seekTime =
+                        (mLivePushDuration - MAX_SHIFT_TIME * (maxProgress - curProgress) * 1.0f / maxProgress) as Int
                 }
                 if (mControllerCallback != null) {
-                    mControllerCallback.onSeekTo(seekTime);
+                    mControllerCallback!!.onSeekTo(seekTime)
                 }
-                break;
+            }
         }
-        postDelayed(mHideViewRunnable, 7000);
+        postDelayed(mHideViewRunnable, 7000)
     }
 }

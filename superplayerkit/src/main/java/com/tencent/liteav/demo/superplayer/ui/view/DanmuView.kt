@@ -1,116 +1,104 @@
-package com.tencent.liteav.demo.superplayer.ui.view;
+package com.tencent.liteav.demo.superplayer.ui.view
 
-import android.content.Context;
-import android.graphics.Color;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Looper;
-import android.os.Message;
-import android.util.AttributeSet;
-
-import com.tencent.liteav.basic.log.TXCLog;
-
-import java.util.Random;
-
-import master.flame.danmaku.controller.DrawHandler;
-import master.flame.danmaku.danmaku.model.BaseDanmaku;
-import master.flame.danmaku.danmaku.model.DanmakuTimer;
-import master.flame.danmaku.danmaku.model.IDanmakus;
-import master.flame.danmaku.danmaku.model.android.DanmakuContext;
-import master.flame.danmaku.danmaku.model.android.Danmakus;
-import master.flame.danmaku.danmaku.parser.BaseDanmakuParser;
-import master.flame.danmaku.ui.widget.DanmakuView;
+import android.content.Context
+import android.graphics.Color
+import android.os.Handler
+import android.os.HandlerThread
+import android.os.Looper
+import android.os.Message
+import android.util.AttributeSet
+import com.tencent.liteav.basic.log.TXCLog
+import com.tencent.liteav.demo.superplayer.ui.view.DanmuView.Companion.MSG_SEND_DANMU
+import com.tencent.liteav.demo.superplayer.ui.view.DanmuView.DanmuHandler
+import master.flame.danmaku.controller.DrawHandler
+import master.flame.danmaku.danmaku.model.BaseDanmaku
+import master.flame.danmaku.danmaku.model.DanmakuTimer
+import master.flame.danmaku.danmaku.model.IDanmakus
+import master.flame.danmaku.danmaku.model.android.DanmakuContext
+import master.flame.danmaku.danmaku.model.android.Danmakus
+import master.flame.danmaku.danmaku.parser.BaseDanmakuParser
+import master.flame.danmaku.ui.widget.DanmakuView
+import java.util.*
 
 /**
  * Created by liyuejiao on 2018/1/29.
  *
  * 全功能播放器中的弹幕View
  *
- * 1、随机发送弹幕{@link #addDanmaku(String, boolean)}
+ * 1、随机发送弹幕[.addDanmaku]
  *
- * 2、弹幕操作所在线程的Handler{@link DanmuHandler}
+ * 2、弹幕操作所在线程的Handler[DanmuHandler]
  */
-public class DanmuView extends DanmakuView {
-    private Context         mContext;
-    private DanmakuContext  mDanmakuContext;
-    private boolean         mShowDanma;         // 弹幕是否开启
-    private HandlerThread   mHandlerThread;     // 发送弹幕的线程
-    private DanmuHandler    mDanmuHandler;      // 弹幕线程handler
+class DanmuView : DanmakuView {
+    private var mContext: Context? = null
+    private var mDanmakuContext: DanmakuContext? = null
+    private var mShowDanma // 弹幕是否开启
+            = false
+    private var mHandlerThread // 发送弹幕的线程
+            : HandlerThread? = null
+    private var mDanmuHandler // 弹幕线程handler
+            : DanmuHandler? = null
 
-    public DanmuView(Context context) {
-        super(context);
-        init(context);
+    constructor(context: Context) : super(context) {
+        init(context)
     }
 
-    public DanmuView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context);
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+        init(context)
     }
 
-    public DanmuView(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-        init(context);
+    constructor(context: Context, attrs: AttributeSet?, defStyle: Int) : super(
+        context,
+        attrs,
+        defStyle
+    ) {
+        init(context)
     }
 
-
-    private void init(Context context) {
-        mContext = context;
-        enableDanmakuDrawingCache(true);
-        setCallback(new DrawHandler.Callback() {
-            @Override
-            public void prepared() {
-                mShowDanma = true;
-                start();
-                generateDanmaku();
+    private fun init(context: Context) {
+        mContext = context
+        enableDanmakuDrawingCache(true)
+        setCallback(object : DrawHandler.Callback {
+            override fun prepared() {
+                mShowDanma = true
+                start()
+                generateDanmaku()
             }
 
-            @Override
-            public void updateTimer(DanmakuTimer timer) {
-
-            }
-
-            @Override
-            public void danmakuShown(BaseDanmaku danmaku) {
-
-            }
-
-            @Override
-            public void drawingFinished() {
-
-            }
-        });
-        mDanmakuContext = DanmakuContext.create();
-        prepare(mParser, mDanmakuContext);
+            override fun updateTimer(timer: DanmakuTimer) {}
+            override fun danmakuShown(danmaku: BaseDanmaku) {}
+            override fun drawingFinished() {}
+        })
+        mDanmakuContext = DanmakuContext.create()
+        prepare(mParser, mDanmakuContext)
     }
 
-    @Override
-    public void release() {
-        super.release();
-        mShowDanma = false;
+    override fun release() {
+        super.release()
+        mShowDanma = false
         if (mDanmuHandler != null) {
-            mDanmuHandler.removeCallbacksAndMessages(null);
-            mDanmuHandler = null;
+            mDanmuHandler!!.removeCallbacksAndMessages(null)
+            mDanmuHandler = null
         }
         if (mHandlerThread != null) {
-            mHandlerThread.quit();
-            mHandlerThread = null;
+            mHandlerThread!!.quit()
+            mHandlerThread = null
         }
     }
 
-    private BaseDanmakuParser mParser = new BaseDanmakuParser() {
-        @Override
-        protected IDanmakus parse() {
-            return new Danmakus();
+    private val mParser: BaseDanmakuParser = object : BaseDanmakuParser() {
+        override fun parse(): IDanmakus {
+            return Danmakus()
         }
-    };
+    }
 
     /**
      * 随机生成一些弹幕内容以供测试
      */
-    private void generateDanmaku() {
-        mHandlerThread = new HandlerThread("Danmu");
-        mHandlerThread.start();
-        mDanmuHandler = new DanmuHandler(mHandlerThread.getLooper());
+    private fun generateDanmaku() {
+        mHandlerThread = HandlerThread("Danmu")
+        mHandlerThread!!.start()
+        mDanmuHandler = DanmuHandler(mHandlerThread!!.looper)
     }
 
     /**
@@ -119,18 +107,18 @@ public class DanmuView extends DanmakuView {
      * @param content    弹幕的具体内容
      * @param withBorder 弹幕是否有边框
      */
-    private void addDanmaku(String content, boolean withBorder) {
-        BaseDanmaku danmaku = mDanmakuContext.mDanmakuFactory.createDanmaku(BaseDanmaku.TYPE_SCROLL_RL);
+    private fun addDanmaku(content: String, withBorder: Boolean) {
+        val danmaku = mDanmakuContext!!.mDanmakuFactory.createDanmaku(BaseDanmaku.TYPE_SCROLL_RL)
         if (danmaku != null) {
-            danmaku.text = content;
-            danmaku.padding = 5;
-            danmaku.textSize = sp2px(mContext, 20.0f);
-            danmaku.textColor = Color.WHITE;
-            danmaku.setTime(getCurrentTime());
+            danmaku.text = content
+            danmaku.padding = 5
+            danmaku.textSize = sp2px(mContext, 20.0f).toFloat()
+            danmaku.textColor = Color.WHITE
+            danmaku.time = currentTime
             if (withBorder) {
-                danmaku.borderColor = Color.GREEN;
+                danmaku.borderColor = Color.GREEN
             }
-            addDanmaku(danmaku);
+            addDanmaku(danmaku)
         }
     }
 
@@ -141,42 +129,40 @@ public class DanmuView extends DanmakuView {
      * @param spValue
      * @return
      */
-    public int sp2px(Context context, float spValue) {
-        final float scale = context.getResources().getDisplayMetrics().density;
-        return (int) (spValue * scale + 0.5f);
+    fun sp2px(context: Context?, spValue: Float): Int {
+        val scale = context!!.resources.displayMetrics.density
+        return (spValue * scale + 0.5f).toInt()
     }
 
-    public void toggle(boolean on) {
-        TXCLog.i(TAG, "onToggleControllerView on:" + on);
+    fun toggle(on: Boolean) {
+        TXCLog.i(TAG, "onToggleControllerView on:$on")
         if (on) {
-            mDanmuHandler.sendEmptyMessageAtTime(DanmuHandler.MSG_SEND_DANMU, 100);
+            mDanmuHandler!!.sendEmptyMessageAtTime(MSG_SEND_DANMU, 100)
         } else {
-            mDanmuHandler.removeMessages(DanmuHandler.MSG_SEND_DANMU);
+            mDanmuHandler!!.removeMessages(MSG_SEND_DANMU)
         }
     }
 
-    public class DanmuHandler extends Handler {
-        public static final int MSG_SEND_DANMU = 1001;
-
-        public DanmuHandler(Looper looper) {
-            super(looper);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case MSG_SEND_DANMU:
-                    sendDanmu();
-                    int time = new Random().nextInt(1000);
-                    mDanmuHandler.sendEmptyMessageDelayed(MSG_SEND_DANMU, time);
-                    break;
+    inner class DanmuHandler(looper: Looper?) : Handler(looper!!) {
+        override fun handleMessage(msg: Message) {
+            when (msg.what) {
+                Companion.MSG_SEND_DANMU -> {
+                    sendDanmu()
+                    val time = Random().nextInt(1000)
+                    mDanmuHandler!!.sendEmptyMessageDelayed(Companion.MSG_SEND_DANMU, time.toLong())
+                }
             }
         }
 
-        private void sendDanmu() {
-            int time = new Random().nextInt(300);
-            String content = "弹幕" + time + time;
-            addDanmaku(content, false);
+        private fun sendDanmu() {
+            val time = Random().nextInt(300)
+            val content = "弹幕$time$time"
+            addDanmaku(content, false)
         }
+
+    }
+
+    companion object {
+        const val MSG_SEND_DANMU = 1001
     }
 }
