@@ -38,6 +38,8 @@ class SuperPlayerGlobalConfig {
      */
     var enableHWAcceleration = true
 
+    var speed:Float = 1.0f
+
     /**
      * 时移域名 （修改为自己app的时移域名）
      */

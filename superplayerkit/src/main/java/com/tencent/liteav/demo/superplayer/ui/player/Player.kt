@@ -134,6 +134,7 @@ interface Player {
          */
         fun onSwitchPlayMode(playMode: PlayerMode)
 
+
         /**
          * 返回点击事件回调
          *

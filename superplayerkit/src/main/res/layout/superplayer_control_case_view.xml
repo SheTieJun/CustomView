@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ll_case_list"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="end"
+    android:orientation="vertical"
+    android:visibility="gone"
+    tools:visibility="visible">
+    <ScrollView
+        android:layout_width="300dp"
+        android:layout_height="match_parent"
+        android:background="#b3000000">
+
+
+        <LinearLayout
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:paddingTop="20dp"
+                android:paddingBottom="15dp"
+                android:layout_marginStart="20dp"
+                android:text="倍速"
+                android:textStyle="bold"
+                android:textColor="#FFFFFFFF"
+                android:textSize="18sp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/iRecyclerView_case_speed"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_gravity="center_horizontal"
+            />
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:paddingTop="15dp"
+                    android:layout_marginTop="10dp"
+                    android:paddingBottom="15dp"
+                    android:layout_marginStart="20dp"
+                    android:text="定时关闭"
+                    android:textStyle="bold"
+                    android:layout_gravity="center_vertical"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="18sp" />
+                <TextView
+                    android:id="@+id/time_show"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:paddingTop="20dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginTop="10dp"
+                    android:paddingBottom="15dp"
+                    android:layout_marginStart="20dp"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/iRecyclerView_case_time"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_gravity="center_horizontal"
+           />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:paddingTop="15dp"
+                android:paddingBottom="15dp"
+                android:layout_marginStart="20dp"
+                android:text="播放方式"
+                android:layout_marginTop="10dp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFFFF"
+                android:textSize="18sp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/iRecyclerView_case_play_mode"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_gravity="center_horizontal"
+                />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

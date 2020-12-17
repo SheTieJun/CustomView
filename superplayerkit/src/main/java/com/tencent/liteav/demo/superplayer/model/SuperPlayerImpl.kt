@@ -241,10 +241,12 @@ class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : SuperPl
             if (sdcardDir != null) {
                 setCacheFolderPath(sdcardDir.path + "/txcache")
             }
+            setCacheMp4ExtName("xml")
             setHeaders(config.header)
             setAutoRotate(true)
             setMaxCacheItems(config.maxCacheItem)
         }
+        mVodPlayer!!.setRate(config.speed)
         mVodPlayer!!.setConfig(mVodPlayConfig)
         mVodPlayer!!.setRenderMode(config.renderMode)
         mVodPlayer!!.setVodListener(this)

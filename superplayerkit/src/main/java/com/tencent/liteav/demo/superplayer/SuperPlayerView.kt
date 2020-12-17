@@ -26,6 +26,7 @@ import com.tencent.liteav.demo.superplayer.model.entity.PlayKeyFrameDescInfo
 import com.tencent.liteav.demo.superplayer.model.entity.VideoQuality
 import com.tencent.liteav.demo.superplayer.model.net.LogReport
 import com.tencent.liteav.demo.superplayer.model.utils.NetWatcher
+import com.tencent.liteav.demo.superplayer.ui.case.VideoCaseHelper
 import com.tencent.liteav.demo.superplayer.ui.player.*
 import com.tencent.liteav.demo.superplayer.ui.view.DanmuView
 import com.tencent.rtmp.TXLivePlayer

@@ -16,7 +16,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/superplayer_media_controller_view_height"
-            android:background="@drawable/superplayer_top_shadow"
             android:gravity="left"
             android:orientation="horizontal">
 
@@ -79,9 +78,10 @@
     <LinearLayout
         android:id="@+id/superplayer_ll_bottom"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="44dp"
+        android:gravity="center_vertical"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/superplayer_bottom_shadow"
+        android:background="@drawable/superplayer_ic_vod_cover_bottom"
         android:orientation="horizontal">
 
         <!--播放/暂停-->
@@ -90,7 +90,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_marginLeft="20dp"
+            android:paddingStart="15dp"
+            android:paddingEnd="10dp"
+            android:scaleType="centerInside"
             android:src="@drawable/superplayer_ic_vod_pause_normal" />
 
         <!--播放位置-->
@@ -101,7 +103,7 @@
             android:layout_gravity="center_vertical"
             android:text="00:00"
             android:textColor="@android:color/white"
-            android:textSize="11.0sp" />
+            android:textSize="12.0sp" />
 
         <com.tencent.liteav.demo.superplayer.ui.view.PointSeekBar
             android:id="@+id/superplayer_seekbar_progress"
@@ -126,7 +128,7 @@
             android:layout_gravity="center_vertical"
             android:text="00:00"
             android:textColor="@android:color/white"
-            android:textSize="11.0sp" />
+            android:textSize="12.0sp" />
 
         <TextView
             android:id="@+id/superplayer_tv_quality"

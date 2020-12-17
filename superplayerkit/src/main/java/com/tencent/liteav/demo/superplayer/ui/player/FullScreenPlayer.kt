@@ -214,7 +214,6 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
             override fun onBrightnessGesture(newBrightness: Float) {
                 if (mGestureVolumeBrightnessProgressLayout != null) {
                     mGestureVolumeBrightnessProgressLayout!!.setProgress((newBrightness * 100).toInt())
-                    mVodMoreView!!.setBrightProgress((newBrightness * 100).toInt())
                     mGestureVolumeBrightnessProgressLayout!!.setImageResource(R.drawable.superplayer_ic_light_max)
                     mGestureVolumeBrightnessProgressLayout!!.show()
                 }
@@ -495,13 +494,11 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
         when (type) {
             PlayerType.VOD -> {
                 mTvBackToLive!!.visibility = GONE
-                mVodMoreView!!.updatePlayType(PlayerType.VOD)
                 mTvDuration!!.visibility = VISIBLE
             }
             PlayerType.LIVE -> {
                 mTvBackToLive!!.visibility = GONE
                 mTvDuration!!.visibility = GONE
-                mVodMoreView!!.updatePlayType(PlayerType.LIVE)
                 mSeekBarProgress!!.progress = (100)
             }
             PlayerType.LIVE_SHIFT -> {
@@ -509,7 +506,6 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
                     mTvBackToLive!!.visibility = VISIBLE
                 }
                 mTvDuration!!.visibility = GONE
-                mVodMoreView!!.updatePlayType(PlayerType.LIVE_SHIFT)
             }
         }
     }
@@ -872,17 +868,6 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
         }
     }
 
-    override fun onMirrorChange(isMirror: Boolean) {
-        if (mControllerCallback != null) {
-            mControllerCallback!!.onMirrorToggle(isMirror)
-        }
-    }
-
-    override fun onHWAcceleration(isAccelerate: Boolean) {
-        if (mControllerCallback != null) {
-            mControllerCallback!!.onHWAccelerationToggle(isAccelerate)
-        }
-    }
 
     override fun onQualitySelect(quality: VideoQuality) {
         if (mControllerCallback != null) {
