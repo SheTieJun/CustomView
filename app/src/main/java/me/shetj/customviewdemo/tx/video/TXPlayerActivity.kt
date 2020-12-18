@@ -22,9 +22,17 @@ class TXPlayerActivity : BaseBindingActivity<BaseViewModel, ActivityTXPlayerBind
     }
 
     private fun initVideoInfo() {
-        val model = SuperPlayerModel()
-        model.url =
-            "https://vod2.lycheer.net/73e20c6evodtranscq1253442168/d238a8f65285890807609259635/v.f117442.mp4?t=5fdb67b0&us=ab85cd03d9&sign=2e34d0d67a2f4272d1edf3ad421bbf93"
+        val model = SuperPlayerModel().apply {
+            val url =
+                "http://200024424.vod.myqcloud.com/200024424_709ae516bdf811e6ad39991f76a4df69.f20.mp4"
+            multiURLs = ArrayList<SuperPlayerModel.SuperPlayerURL>().apply {
+                add(SuperPlayerModel.SuperPlayerURL(url,"流程"))
+                add(SuperPlayerModel.SuperPlayerURL(url,"标清"))
+                add(SuperPlayerModel.SuperPlayerURL(url,"高清"))
+            }
+        }
+//        model.url =
+//            "https://vod2.lycheer.net/73e20c6evodtranscq1253442168/d238a8f65285890807609259635/v.f117442.mp4?t=5fdb67b0&us=ab85cd03d9&sign=2e34d0d67a2f4272d1edf3ad421bbf93"
 //        model.url =
 //            "http://200024424.vod.myqcloud.com/200024424_709ae516bdf811e6ad39991f76a4df69.f20.mp4"
         mViewBinding.superVodPlayerView.playWithModel(model)

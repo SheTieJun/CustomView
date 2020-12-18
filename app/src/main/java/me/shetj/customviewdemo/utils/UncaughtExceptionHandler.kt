@@ -1,12 +1,11 @@
 package me.shetj.customviewdemo.utils
 
-import android.os.Process.killProcess
-import android.os.Process.myPid
 import android.os.SystemClock
 import android.text.TextUtils
 import me.shetj.base.tools.file.EnvironmentStorage
 import timber.log.Timber
 import java.io.*
+import kotlin.system.exitProcess
 
 internal class UncaughtExceptionHandler : Thread.UncaughtExceptionHandler {
     override fun uncaughtException(t: Thread, e: Throwable) {
@@ -15,7 +14,7 @@ internal class UncaughtExceptionHandler : Thread.UncaughtExceptionHandler {
         Timber.tag("error").e(stackTraceInfo)
         saveThrowableMessage(stackTraceInfo)
         SystemClock.sleep(1000)
-        killProcess(myPid())
+        exitProcess(0)
     }
 
     /**

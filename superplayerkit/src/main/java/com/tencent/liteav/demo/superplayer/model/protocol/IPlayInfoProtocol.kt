@@ -62,14 +62,14 @@ interface IPlayInfoProtocol {
      *
      * @return 关键帧信息数组
      */
-    val keyFrameDescInfo: List<PlayKeyFrameDescInfo?>?
+    val keyFrameDescInfo: ArrayList<PlayKeyFrameDescInfo>?
 
     /**
      * 获取画质信息
      *
      * @return 画质信息数组
      */
-    val videoQualityList: List<VideoQuality?>?
+    val videoQualityList: ArrayList<VideoQuality>?
 
     /**
      * 获取默认画质

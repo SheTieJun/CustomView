@@ -80,8 +80,13 @@ class VodMoreView : RelativeLayout {
     }
 
 
+    fun onDestroyTimeCallBack(){
+        mCaseHelper?.onDestroy()
+    }
 
-
+    fun updateSpeedChange(speedLevel: Float) {
+        mCaseHelper?.setCurSpeed(speedLevel)
+    }
 
     /**
      * 回调

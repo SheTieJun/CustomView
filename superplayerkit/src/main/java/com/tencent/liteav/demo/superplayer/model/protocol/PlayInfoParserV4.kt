@@ -31,7 +31,7 @@ class PlayInfoParserV4(  // 协议请求返回的Json数据
     private var mToken // DRM token
             : String? = null
     private var mEncryptedStreamingInfoList // 加密视频播放url 数组
-            : MutableList<EncryptedStreamingInfo>? = null
+            : ArrayList<EncryptedStreamingInfo>? = null
 
     /**
      * 获取雪碧图信息
@@ -42,9 +42,9 @@ class PlayInfoParserV4(  // 协议请求返回的Json数据
             : PlayImageSpriteInfo? = null
         private set
     private var mKeyFrameDescInfo // 关键帧信息
-            : MutableList<PlayKeyFrameDescInfo>? = null
+            : ArrayList<PlayKeyFrameDescInfo>? = null
     private var mResolutionNameList // 自适应码流画质名称匹配信息
-            : MutableList<ResolutionName?>? = null
+            : ArrayList<ResolutionName>? = null
 
     @Throws(JSONException::class)
     private fun parseSubStreams(substreams: JSONArray?) {
@@ -168,7 +168,7 @@ class PlayInfoParserV4(  // 协议请求返回的Json数据
      *
      * @return 关键帧信息数组
      */
-    override val keyFrameDescInfo: List<PlayKeyFrameDescInfo>?
+    override val keyFrameDescInfo: ArrayList<PlayKeyFrameDescInfo>?
         get() = mKeyFrameDescInfo
 
     /**
@@ -176,7 +176,7 @@ class PlayInfoParserV4(  // 协议请求返回的Json数据
      *
      * @return 画质信息数组
      */
-    override val videoQualityList: List<VideoQuality?>?
+    override val videoQualityList: ArrayList<VideoQuality>?
         get() = null
 
     /**
@@ -192,7 +192,7 @@ class PlayInfoParserV4(  // 协议请求返回的Json数据
      *
      * @return 画质别名数组
      */
-    override val resolutionNameList: List<ResolutionName?>?
+    override val resolutionNameList: ArrayList<ResolutionName>?
         get() = mResolutionNameList
 
     companion object {

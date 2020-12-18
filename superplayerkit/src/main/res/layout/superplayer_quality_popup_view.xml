@@ -14,12 +14,11 @@
         android:textColor="@color/superplayer_white"
         android:textSize="14dp" />
 
-    <ListView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/superplayer_lv_quality"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/superplayer_tv_title"
         android:layout_marginTop="50dp"
-        android:choiceMode="singleChoice"></ListView>
-
+        android:choiceMode="singleChoice"/>
 </RelativeLayout>

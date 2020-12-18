@@ -6,9 +6,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.chad.library.adapter.base.BaseQuickAdapter
+import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import com.tencent.liteav.demo.superplayer.R
 import com.tencent.liteav.demo.superplayer.model.entity.VideoQuality
+import com.tencent.liteav.demo.superplayer.ui.case.adaper.QualityAdapter
 import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * Created by yuejiaoli on 2018/7/4.
@@ -24,11 +30,9 @@ class VodQualityView : RelativeLayout {
     private var mCallback // 回调
             : Callback? = null
     private var mListView // 画质listView
-            : ListView? = null
+            : RecyclerView? = null
     private var mAdapter // 画质列表适配器
             : QualityAdapter? = null
-    private var mList // 画质列表
-            : MutableList<VideoQuality?>? = null
     private var mClickPos = -1 // 当前的画质下表
 
     constructor(context: Context) : super(context) {
@@ -49,23 +53,21 @@ class VodQualityView : RelativeLayout {
 
     private fun init(context: Context) {
         mContext = context
-        mList = ArrayList()
         LayoutInflater.from(mContext).inflate(R.layout.superplayer_quality_popup_view, this)
-        mListView = findViewById<View>(R.id.superplayer_lv_quality) as ListView
-        mListView!!.onItemClickListener =
-            AdapterView.OnItemClickListener { parent, view, position, id ->
+        mListView = findViewById(R.id.superplayer_lv_quality)
+        mAdapter = QualityAdapter(ArrayList()).apply {
+            setOnItemClickListener { adapter, view, position ->
                 if (mCallback != null) {
-                    if (mList != null && mList!!.size > 0) {
-                        val quality = mList!!.get(position)
-                        if (quality != null && position != mClickPos) {
+                        val quality = getItem(position)
+                        if (position != mClickPos) {
                             mCallback!!.onQualitySelect(quality)
                         }
-                    }
                 }
                 mClickPos = position
                 mAdapter!!.notifyDataSetChanged()
             }
-        mAdapter = QualityAdapter()
+        }
+        mListView!!.layoutManager = LinearLayoutManager(mContext)
         mListView!!.adapter = mAdapter
     }
 
@@ -81,14 +83,10 @@ class VodQualityView : RelativeLayout {
     /**
      * 设置画质列表
      *
-     * @param list
+     * @param ArrayList
      */
-    fun setVideoQualityList(list: List<VideoQuality?>?) {
-        mList!!.clear()
-        mList!!.addAll(list!!)
-        if (mAdapter != null) {
-            mAdapter!!.notifyDataSetChanged()
-        }
+    fun setVideoQualityList(list: ArrayList<VideoQuality>?) {
+        mAdapter?.setNewInstance(list)
     }
 
     /**
@@ -97,86 +95,10 @@ class VodQualityView : RelativeLayout {
      * @param position
      */
     fun setDefaultSelectedQuality(position: Int) {
-        var position = position
-        if (position < 0) position = 0
-        mClickPos = position
-        mAdapter!!.notifyDataSetChanged()
+        mAdapter?.setDefaultSelectedQuality(position)
     }
 
-    internal inner class QualityAdapter : BaseAdapter() {
-        override fun getCount(): Int {
-            return mList!!.size
-        }
 
-        override fun getItem(position: Int): Any {
-            return position
-        }
-
-        override fun getItemId(position: Int): Long {
-            return position.toLong()
-        }
-
-        override fun getView(position: Int, convertView: View, parent: ViewGroup): View {
-            var convertView: View? = convertView
-            if (convertView == null) {
-                convertView = QualityItemView(mContext)
-            }
-            val itemView = convertView as QualityItemView
-            itemView.isSelected = false
-            val quality = mList!![position]
-            itemView.setQualityName(quality!!.title)
-            if (mClickPos == position) {
-                itemView.isSelected = true
-            }
-            return itemView
-        }
-    }
-
-    /**
-     * 画质item view
-     */
-    internal inner class QualityItemView : RelativeLayout {
-        private var mTvQuality: TextView? = null
-
-        constructor(context: Context?, attrs: AttributeSet?, defStyle: Int) : super(
-            context,
-            attrs,
-            defStyle
-        ) {
-            init(context)
-        }
-
-        constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
-            init(context)
-        }
-
-        constructor(context: Context?) : super(context) {
-            init(context)
-        }
-
-        private fun init(context: Context?) {
-            LayoutInflater.from(context).inflate(R.layout.superplayer_quality_item_view, this)
-            mTvQuality = findViewById<View>(R.id.superplayer_tv_quality) as TextView
-        }
-
-        /**
-         * 设置画质名称
-         *
-         * @param qualityName
-         */
-        fun setQualityName(qualityName: String?) {
-            mTvQuality!!.text = qualityName
-        }
-
-        /**
-         * 设置画质item是否为选择状态
-         *
-         * @param isChecked
-         */
-        override fun setSelected(isChecked: Boolean) {
-            mTvQuality!!.isSelected = isChecked
-        }
-    }
 
     /**
      * 回调

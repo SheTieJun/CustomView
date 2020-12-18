@@ -6,6 +6,7 @@ import com.tencent.liteav.demo.superplayer.model.entity.ResolutionName
 import com.tencent.liteav.demo.superplayer.model.entity.VideoQuality
 import com.tencent.rtmp.TXBitrateItem
 import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * Created by yuejiaoli on 2018/7/6.
@@ -121,8 +122,8 @@ object VideoQualityUtils {
      * @param transcodeList
      * @return
      */
-    fun convertToVideoQualityList(transcodeList: HashMap<String?, PlayInfoStream?>): MutableList<VideoQuality> {
-        val videoQualities: MutableList<VideoQuality> = ArrayList()
+    fun convertToVideoQualityList(transcodeList: HashMap<String, PlayInfoStream>): ArrayList<VideoQuality> {
+        val videoQualities: ArrayList<VideoQuality> = ArrayList()
         for (classification in transcodeList.keys) {
             val videoQuality = convertToVideoQuality(transcodeList[classification])
             videoQualities.add(videoQuality)

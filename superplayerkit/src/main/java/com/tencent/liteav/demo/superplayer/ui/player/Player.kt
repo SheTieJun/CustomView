@@ -56,8 +56,12 @@ interface Player {
      *
      * @param list 画质列表
      */
-    fun setVideoQualityList(list: List<VideoQuality?>?)
+    fun setVideoQualityList(list: ArrayList<VideoQuality>?)
 
+    /**
+     * 更新倍数
+     */
+    fun updateSpeedChange(speedLevel:Float)
     /**
      * 更新视频名称
      *
@@ -118,7 +122,7 @@ interface Player {
      *
      * @param list 关键帧信息列表
      */
-    fun updateKeyFrameDescInfo(list: List<PlayKeyFrameDescInfo?>?)
+    fun updateKeyFrameDescInfo(list: ArrayList<PlayKeyFrameDescInfo>?)
 
     /**
      * 播放控制回调接口

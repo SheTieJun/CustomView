@@ -41,7 +41,7 @@ class PlayInfoParserV2(  // 协议请求返回的Json数据
      * @return 关键帧信息数组
      */
     override var keyFrameDescInfo // 关键帧打点信息
-            : List<PlayKeyFrameDescInfo>? = null
+            : ArrayList<PlayKeyFrameDescInfo>? = null
         private set
 
     /**
@@ -58,7 +58,7 @@ class PlayInfoParserV2(  // 协议请求返回的Json数据
     private var mMasterPlayList // 主播放视频流信息
             : PlayInfoStream? = null
     private var mTranscodePlayList // 转码视频信息列表
-            : LinkedHashMap<String?, PlayInfoStream?>? = null
+            : LinkedHashMap<String, PlayInfoStream>? = null
 
     /**
      * 获取视频播放url
@@ -69,7 +69,7 @@ class PlayInfoParserV2(  // 协议请求返回的Json数据
             : String? = null
         private set
     private var mVideoQualityList // 视频画质信息列表
-            : MutableList<VideoQuality>? = null
+            : ArrayList<VideoQuality>? = null
 
     /**
      * 获取默认画质信息
@@ -200,10 +200,10 @@ class PlayInfoParserV2(  // 协议请求返回的Json数据
      * @return 关键帧信息数组
      */
     @Throws(JSONException::class)
-    private fun parseKeyFrameDescInfo(keyFrameDescInfo: JSONObject): List<PlayKeyFrameDescInfo>? {
+    private fun parseKeyFrameDescInfo(keyFrameDescInfo: JSONObject): ArrayList<PlayKeyFrameDescInfo>? {
         val jsonArr = keyFrameDescInfo.getJSONArray("keyFrameDescList")
         if (jsonArr != null) {
-            val infoList: MutableList<PlayKeyFrameDescInfo> = ArrayList()
+            val infoList: ArrayList<PlayKeyFrameDescInfo> = ArrayList()
             for (i in 0 until jsonArr.length()) {
                 val content = jsonArr.getJSONObject(i).getString("content")
                 val time = jsonArr.getJSONObject(i).getLong("timeOffset")
@@ -287,7 +287,7 @@ class PlayInfoParserV2(  // 协议请求返回的Json数据
      * @return 转码视频信息列表 key: 清晰度名称 value: 视频流信息
      */
     @Throws(JSONException::class)
-    private fun parseTranscodePlayList(videoInfo: JSONObject): LinkedHashMap<String?, PlayInfoStream?>? {
+    private fun parseTranscodePlayList(videoInfo: JSONObject): LinkedHashMap<String, PlayInfoStream>? {
         val transcodeList = parseStreamList(videoInfo)
             ?: return mTranscodePlayList
         for (i in transcodeList.indices) {
@@ -305,11 +305,11 @@ class PlayInfoParserV2(  // 协议请求返回的Json数据
             }
         }
         //清晰度去重
-        val idList = LinkedHashMap<String?, PlayInfoStream?>()
+        val idList = LinkedHashMap<String, PlayInfoStream>()
         for (i in transcodeList.indices) {
             val stream = transcodeList[i]
             if (!idList.containsKey(stream.id)) {
-                idList[stream.id] = stream
+                idList[stream.id!!] = stream
             } else {
                 val copy = idList[stream.id]
                 if (copy?.url?.endsWith("mp4") == true) {  // 列表中url是mp4，则进行下一步
@@ -317,7 +317,7 @@ class PlayInfoParserV2(  // 协议请求返回的Json数据
                 }
                 if (stream?.url?.endsWith("mp4") == true) { // 新判断的url是mp4，则替换列表中
                     idList.remove(copy!!.id)
-                    idList[stream.id] = stream
+                    idList[stream.id!!] = stream
                 }
             }
         }
@@ -415,7 +415,7 @@ class PlayInfoParserV2(  // 协议请求返回的Json数据
      *
      * @return 画质信息数组
      */
-    override val videoQualityList: List<VideoQuality?>?
+    override val videoQualityList: ArrayList<VideoQuality>?
         get() = mVideoQualityList
 
     /**
@@ -423,7 +423,7 @@ class PlayInfoParserV2(  // 协议请求返回的Json数据
      *
      * @return 画质别名数组
      */
-    override val resolutionNameList: List<ResolutionName?>?
+    override val resolutionNameList: ArrayList<ResolutionName>?
         get() = null
 
     companion object {

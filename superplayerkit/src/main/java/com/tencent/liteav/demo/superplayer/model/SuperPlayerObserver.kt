@@ -46,14 +46,14 @@ abstract class SuperPlayerObserver {
     open fun onPlayerTypeChange(playType: PlayerType?) {}
     open fun onPlayTimeShiftLive(player: TXLivePlayer?, url: String?) {}
     open fun onVideoQualityListChange(
-        videoQualities: List<VideoQuality?>?,
+        videoQualities: ArrayList<VideoQuality>?,
         defaultVideoQuality: VideoQuality?
     ) {
     }
 
     open fun onVideoImageSpriteAndKeyFrameChanged(
         info: PlayImageSpriteInfo?,
-        list: List<PlayKeyFrameDescInfo?>?
+        list: ArrayList<PlayKeyFrameDescInfo>?
     ) {
     }
 }

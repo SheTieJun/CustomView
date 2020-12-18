@@ -26,7 +26,7 @@ import com.tencent.liteav.demo.superplayer.model.entity.PlayKeyFrameDescInfo
 import com.tencent.liteav.demo.superplayer.model.entity.VideoQuality
 import com.tencent.liteav.demo.superplayer.model.net.LogReport
 import com.tencent.liteav.demo.superplayer.model.utils.NetWatcher
-import com.tencent.liteav.demo.superplayer.ui.case.VideoCaseHelper
+import com.tencent.liteav.demo.superplayer.ui.case.TipHelper
 import com.tencent.liteav.demo.superplayer.ui.player.*
 import com.tencent.liteav.demo.superplayer.ui.view.DanmuView
 import com.tencent.rtmp.TXLivePlayer
@@ -80,6 +80,8 @@ class SuperPlayerView : RelativeLayout {
             : NetWatcher? = null
     private var mSuperPlayer: SuperPlayer? = null
 
+    private var mTipHelper: TipHelper? = null
+
     constructor(context: Context) : super(context) {
         initialize(context)
     }
@@ -132,6 +134,7 @@ class SuperPlayerView : RelativeLayout {
         mRootView!!.removeView(mFloatPlayer)
         addView(mTXCloudVideoView)
         addView(mDanmuView)
+        mTipHelper = TipHelper(mRootView!!)
     }
 
     private fun initPlayer() {
@@ -503,6 +506,8 @@ class SuperPlayerView : RelativeLayout {
         }
 
         override fun onSpeedChange(speedLevel: Float) {
+            mWindowPlayer!!.updateSpeedChange(speedLevel)
+            mFullScreenPlayer!!.updateSpeedChange(speedLevel)
             mSuperPlayer!!.setRate(speedLevel)
         }
 
@@ -749,7 +754,7 @@ class SuperPlayerView : RelativeLayout {
         }
 
         override fun onVideoQualityListChange(
-            videoQualities: List<VideoQuality?>?,
+            videoQualities: ArrayList<VideoQuality>?,
             defaultVideoQuality: VideoQuality?
         ) {
             if (videoQualities != null && !videoQualities.isEmpty()) {
@@ -762,7 +767,7 @@ class SuperPlayerView : RelativeLayout {
 
         override fun onVideoImageSpriteAndKeyFrameChanged(
             info: PlayImageSpriteInfo?,
-            list: List<PlayKeyFrameDescInfo?>?
+            list: ArrayList<PlayKeyFrameDescInfo>?
         ) {
             mFullScreenPlayer!!.updateImageSpriteInfo(info)
             mFullScreenPlayer!!.updateKeyFrameDescInfo(list)
@@ -779,6 +784,11 @@ class SuperPlayerView : RelativeLayout {
 
     private fun showToast(resId: Int) {
         Toast.makeText(mContext, resId, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        mFullScreenPlayer?.onDestroyCallBack()
     }
 
     companion object {

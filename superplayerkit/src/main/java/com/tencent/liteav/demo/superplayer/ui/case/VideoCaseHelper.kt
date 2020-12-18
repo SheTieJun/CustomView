@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.TextView
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.tencent.liteav.demo.superplayer.R
@@ -21,29 +22,27 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 /**
- * 视频的[CustomVideoView2]的菜单按钮操作
+ * 视频的[SuperPlayerView]的菜单按钮操作
  * 1.倍数切换
  * 2.定时功能
  * 3.循环功能
  */
 
-class VideoCaseHelper(val vodMoreView: VodMoreView): TimerConfigure.CallBack{
+class VideoCaseHelper(private val mVodMoreView: VodMoreView): TimerConfigure.CallBack{
 
     private var adapter: VideoFullSpeedListAdapter? =null
-    private var context :Context   = vodMoreView.context
+    private var context :Context   = mVodMoreView.context
     private var iRecyclerViewSpeed :  RecyclerView? =null
     private var iRecyclerViewTime :  RecyclerView? =null
     private var iRecyclerViewPlayMode :  RecyclerView? =null
     private var content:View ?= null
     private var timeShow :TextView ?= null
 
-
-
     private var playMode = "单课循环"
 
     init {
         TimerConfigure.instance.addCallBack(this)
-        initView(vodMoreView)
+        initView(mVodMoreView)
     }
 
     private fun initView(rootView: ViewGroup?) {
@@ -83,7 +82,7 @@ class VideoCaseHelper(val vodMoreView: VodMoreView): TimerConfigure.CallBack{
         mAdapter.setCurPlayMode(playMode)
         iRecyclerViewPlayMode?.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context, androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL, false)
         mAdapter.setOnItemClickListener { _: BaseQuickAdapter<*, *>?, _: View?, position: Int ->
-            mAdapter.getItem(position)?.let {
+            mAdapter.getItem(position).let {
                 if (playMode != it) {
                     mAdapter.setCurPlayMode(it)
                     TimerConfigure.instance.changePlayMode(context)
@@ -96,7 +95,7 @@ class VideoCaseHelper(val vodMoreView: VodMoreView): TimerConfigure.CallBack{
     private fun initTime() {
         val mAdapter = VideoFullTimeTypeListAdapter(getTimeTypeList2())
         mAdapter.setPosition(TimerConfigure.instance.getTimeTypePosition())
-        iRecyclerViewTime?.layoutManager = androidx.recyclerview.widget.GridLayoutManager(context, 4)
+        iRecyclerViewTime?.layoutManager =  GridLayoutManager(context, 4)
         mAdapter.setOnItemClickListener { _: BaseQuickAdapter<*, *>?, _: View?, position: Int ->
             mAdapter.setPosition(position)
             TimerConfigure.instance.setTimeType(mAdapter.getItem(position), context, position)
@@ -106,13 +105,13 @@ class VideoCaseHelper(val vodMoreView: VodMoreView): TimerConfigure.CallBack{
 
 
     private fun initSpeed() {
-        val speedList = arrayListOf<Float>(0.5f, 0.75f, 1.0f, 1.25f, 1.5f, 1.75f, 2.0f)
+        val speedList = arrayListOf(0.5f, 0.75f, 1.0f, 1.25f, 1.5f, 1.75f, 2.0f)
         adapter = VideoFullSpeedListAdapter(speedList)
 //        adapter?.setCurSpeed(videoView.speed)
-        iRecyclerViewSpeed?.layoutManager = androidx.recyclerview.widget.GridLayoutManager(context, 5)
+        iRecyclerViewSpeed?.layoutManager = GridLayoutManager(context, 5)
         adapter?.setOnItemClickListener { adapter1, _, position ->
             val speedRate = adapter1.getItem(position) as Float
-            vodMoreView.onCheckedChanged(speedRate)
+            mVodMoreView.onCheckedChanged(speedRate)
             setCurSpeed(speedRate)
         }
         iRecyclerViewSpeed?.adapter = adapter

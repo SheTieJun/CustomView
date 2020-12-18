@@ -23,6 +23,7 @@ import com.tencent.rtmp.TXLiveConstants.NET_STATUS_VIDEO_WIDTH
 import com.tencent.rtmp.downloader.TXVodDownloadManager
 import com.tencent.rtmp.ui.TXCloudVideoView
 import java.util.*
+import kotlin.collections.ArrayList
 
 class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : SuperPlayer,
     ITXVodPlayListener, ITXLivePlayListener {
@@ -160,7 +161,7 @@ class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : SuperPl
                         return
                     }
                     Collections.sort(bitrateItems) //masterPlaylist多清晰度，按照码率排序，从低到高
-                    val videoQualities: MutableList<VideoQuality?> = ArrayList()
+                    val videoQualities: ArrayList<VideoQuality> = ArrayList()
                     val size = bitrateItems.size
                     val resolutionNames =
                         if (mCurrentProtocol != null) mCurrentProtocol!!.resolutionNameList else null
@@ -315,7 +316,7 @@ class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : SuperPl
             })
         } else { // 根据URL播放
             var videoURL: String? = null
-            val videoQualities: MutableList<VideoQuality?> = ArrayList()
+            val videoQualities: ArrayList<VideoQuality> = ArrayList()
             var defaultVideoQuality: VideoQuality? = null
             if (model.multiURLs != null && !model.multiURLs!!.isEmpty()) { // 多码率URL播放
                 var i = 0
@@ -563,7 +564,7 @@ class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : SuperPl
     }
 
     private fun updateVideoQualityList(
-        videoQualities: List<VideoQuality?>?,
+        videoQualities: ArrayList<VideoQuality>?,
         defaultVideoQuality: VideoQuality?
     ) {
         if (mObserver != null) {
@@ -573,7 +574,7 @@ class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : SuperPl
 
     private fun updateVideoImageSpriteAndKeyFrame(
         info: PlayImageSpriteInfo?,
-        list: List<PlayKeyFrameDescInfo?>?
+        list: ArrayList<PlayKeyFrameDescInfo>?
     ) {
         if (mObserver != null) {
             mObserver!!.onVideoImageSpriteAndKeyFrameChanged(info, list)

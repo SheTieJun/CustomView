@@ -10,7 +10,9 @@ import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
+import android.view.animation.AnimationUtils
 import android.widget.*
+import androidx.core.view.isVisible
 import com.tencent.liteav.demo.superplayer.R
 import com.tencent.liteav.demo.superplayer.SuperPlayerDef.*
 import com.tencent.liteav.demo.superplayer.model.entity.PlayImageSpriteInfo
@@ -25,6 +27,8 @@ import com.tencent.liteav.demo.superplayer.ui.view.PointSeekBar.PointParams
 import com.tencent.rtmp.TXImageSprite
 import java.lang.ref.WeakReference
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.math.roundToInt
 
 /**
  * 全屏模式播放控件
@@ -131,12 +135,12 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
     private var mTXImageSprite // 雪碧图信息
             : TXImageSprite? = null
     private var mTXPlayKeyFrameDescInfoList // 关键帧信息
-            : List<PlayKeyFrameDescInfo?>? = null
+            : ArrayList<PlayKeyFrameDescInfo>? = null
     private var mSelectedPos = -1 // 点击的关键帧时间点
     private var mDefaultVideoQuality // 默认画质
             : VideoQuality? = null
     private var mVideoQualityList // 画质列表
-            : List<VideoQuality?>? = null
+            : ArrayList<VideoQuality>? = null
     private var mFirstShowQuality // 是都是首次显示画质信息
             = false
 
@@ -286,12 +290,12 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
         mSeekBarProgress!!.progress = (0)
         mSeekBarProgress!!.setOnPointClickListener(this)
         mSeekBarProgress!!.setOnSeekBarChangeListener(this)
-        mTvQuality = findViewById<View>(R.id.superplayer_tv_quality) as TextView
-        mTvBackToLive = findViewById<View>(R.id.superplayer_tv_back_to_live) as TextView
-        mPbLiveLoading = findViewById<View>(R.id.superplayer_pb_live) as ProgressBar
-        mVodQualityView = findViewById<View>(R.id.superplayer_vod_quality) as VodQualityView
+        mTvQuality = findViewById(R.id.superplayer_tv_quality)
+        mTvBackToLive = findViewById(R.id.superplayer_tv_back_to_live)
+        mPbLiveLoading = findViewById(R.id.superplayer_pb_live)
+        mVodQualityView = findViewById(R.id.superplayer_vod_quality)
         mVodQualityView!!.setCallback(this)
-        mVodMoreView = findViewById<View>(R.id.superplayer_vod_more) as VodMoreView
+        mVodMoreView = findViewById(R.id.superplayer_vod_more)
         mVodMoreView!!.setCallback(this)
         mTvBackToLive!!.setOnClickListener(this)
         mLayoutReplay!!.setOnClickListener(this)
@@ -355,10 +359,37 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
                 postDelayed(mHideLockViewRunnable, 7000)
             }
         }
-        if (mVodMoreView!!.visibility == VISIBLE) {
-            mVodMoreView!!.visibility = GONE
+        moreView(false)
+    }
+
+    private fun moreView(isShow:Boolean){
+        if (isShow) {
+            if( mVodMoreView?.visibility == View.GONE) {
+                mVodMoreView?.visibility = View.VISIBLE
+                mVodMoreView?.animation = AnimationUtils.loadAnimation(context, R.anim.slide_right_in)
+            }
+        } else {
+            if( mVodMoreView?.visibility == View.VISIBLE) {
+                mVodMoreView?.visibility = View.GONE
+                mVodMoreView?.animation = AnimationUtils.loadAnimation(context, R.anim.slide_right_exit)
+            }
         }
     }
+
+    private fun showQualityView(isShow:Boolean){
+        if (isShow) {
+            if( mVodQualityView?.visibility == View.GONE) {
+                mVodQualityView?.visibility = View.VISIBLE
+                mVodQualityView?.animation = AnimationUtils.loadAnimation(context, R.anim.slide_right_in)
+            }
+        } else {
+            if( mVodQualityView?.visibility == View.VISIBLE) {
+                mVodQualityView?.visibility = View.GONE
+                mVodQualityView?.animation = AnimationUtils.loadAnimation(context, R.anim.slide_right_exit)
+            }
+        }
+    }
+
 
     /**
      * 设置水印
@@ -378,8 +409,7 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
      */
     override fun show() {
         isShowing = true
-        mLayoutTop!!.visibility = VISIBLE
-        mLayoutBottom!!.visibility = VISIBLE
+       isShowControl(true)
         if (mHideLockViewRunnable != null) {
             removeCallbacks(mHideLockViewRunnable)
         }
@@ -400,15 +430,30 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
      */
     override fun hide() {
         isShowing = false
-        mLayoutTop!!.visibility = GONE
-        mLayoutBottom!!.visibility = GONE
-        mVodQualityView!!.visibility = GONE
+        isShowControl(false)
+        showQualityView(false)
         mTvVttText!!.visibility = GONE
         mIvLock!!.visibility = GONE
         if (mPlayType == PlayerType.LIVE_SHIFT) {
             mTvBackToLive!!.visibility = GONE
         }
     }
+
+    private fun isShowControl(isShow:Boolean){
+        mLayoutTop!!.isVisible = isShow
+        mLayoutBottom!!.isVisible = isShow
+        if (mPlayType == PlayerType.LIVE_SHIFT) {
+            mTvBackToLive!!.isVisible = isShow
+        }
+        if (isShow) {
+            mLayoutTop?.animation = AnimationUtils.loadAnimation(context, R.anim.push_top_in)
+            mLayoutBottom?.animation = AnimationUtils.loadAnimation(context, R.anim.push_bottom_in)
+        }else{
+            mLayoutTop?.animation = AnimationUtils.loadAnimation(context, R.anim.push_top_out)
+            mLayoutBottom?.animation = AnimationUtils.loadAnimation(context, R.anim.push_bottom_out)
+        }
+    }
+
 
     /**
      * 释放控件的内存
@@ -444,10 +489,10 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
     /**
      * 设置视频画质信息
      *
-     * @param list 画质列表
+     * @param ArrayList 画质列表
      */
-    override fun setVideoQualityList(list: List<VideoQuality?>?) {
-        mVideoQualityList = list
+    override fun setVideoQualityList(ArrayList: ArrayList<VideoQuality>?) {
+        mVideoQualityList = ArrayList
         mFirstShowQuality = false
     }
 
@@ -482,8 +527,8 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
                 if (mDuration > Companion.MAX_SHIFT_TIME) Companion.MAX_SHIFT_TIME.toLong() else mDuration
             percentage = 1 - leftTime.toFloat() / mDuration.toFloat()
         }
-        if (percentage >= 0 && percentage <= 1) {
-            val progress = Math.round(percentage * mSeekBarProgress!!.max)
+        if (0.0 <= percentage && percentage <= 1.0) {
+            val progress = (percentage * mSeekBarProgress!!.max).roundToInt()
             if (!mIsChangingSeekBarProgress) mSeekBarProgress!!.progress = (progress)
             mTvDuration!!.text = formattedTime(mDuration)
         }
@@ -524,10 +569,10 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
         if (mTvQuality != null) {
             mTvQuality!!.text = videoQuality.title
         }
-        if (mVideoQualityList != null && mVideoQualityList!!.size != 0) {
+        if (mVideoQualityList != null && mVideoQualityList!!.isNotEmpty()) {
             for (i in mVideoQualityList!!.indices) {
                 val quality = mVideoQualityList!![i]
-                if (quality != null && quality.title != null && quality.title == mDefaultVideoQuality!!.title) {
+                if (quality?.title != null && quality.title == mDefaultVideoQuality!!.title) {
                     mVodQualityView!!.setDefaultSelectedQuality(i)
                     break
                 }
@@ -569,9 +614,9 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
     /**
      * 更新关键帧信息
      *
-     * @param list 关键帧信息列表
+     * @param ArrayList 关键帧信息列表
      */
-    override fun updateKeyFrameDescInfo(list: List<PlayKeyFrameDescInfo?>?) {
+    override fun updateKeyFrameDescInfo(list: ArrayList<PlayKeyFrameDescInfo>?) {
         mTXPlayKeyFrameDescInfoList = list
     }
 
@@ -610,6 +655,10 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
             postDelayed(mHideViewRunnable, 7000)
         }
         return true
+    }
+
+    override fun updateSpeedChange(speedLevel: Float) {
+        mVodMoreView?.updateSpeedChange(speedLevel)
     }
 
     /**
@@ -666,7 +715,7 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
      */
     private fun showMoreView() {
         hide()
-        mVodMoreView!!.visibility = VISIBLE
+        moreView(true)
     }
 
     /**
@@ -683,7 +732,7 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
             return
         }
         // 设置默认显示分辨率文字
-        mVodQualityView!!.visibility = VISIBLE
+        showQualityView(true)
         if (!mFirstShowQuality && mDefaultVideoQuality != null) {
             for (i in mVideoQualityList!!.indices) {
                 val quality = mVideoQualityList!![i]
@@ -873,7 +922,7 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
         if (mControllerCallback != null) {
             mControllerCallback!!.onQualityChange(quality)
         }
-        mVodQualityView!!.visibility = GONE
+        showQualityView(false)
     }
 
     /**
@@ -890,5 +939,9 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
         init {
             mWefControllerFullScreen = WeakReference(controller)
         }
+    }
+
+    fun onDestroyCallBack(){
+        mVodMoreView?.onDestroyTimeCallBack()
     }
 }

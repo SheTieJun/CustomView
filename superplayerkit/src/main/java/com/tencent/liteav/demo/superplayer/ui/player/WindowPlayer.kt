@@ -8,7 +8,9 @@ import android.os.Build
 import android.util.AttributeSet
 import android.view.*
 import android.view.GestureDetector.SimpleOnGestureListener
+import android.view.animation.AnimationUtils
 import android.widget.*
+import androidx.appcompat.widget.AppCompatSeekBar
 import com.tencent.liteav.demo.superplayer.*
 import com.tencent.liteav.demo.superplayer.SuperPlayerDef.*
 import com.tencent.liteav.demo.superplayer.model.utils.VideoGestureDetector
@@ -17,6 +19,7 @@ import com.tencent.liteav.demo.superplayer.ui.player.AbsPlayer
 import com.tencent.liteav.demo.superplayer.ui.view.PointSeekBar
 import com.tencent.liteav.demo.superplayer.ui.view.VideoProgressLayout
 import com.tencent.liteav.demo.superplayer.ui.view.VolumeBrightnessProgressLayout
+import androidx.core.view.isVisible as isVisible
 
 /**
  * 窗口模式播放控件
@@ -310,11 +313,22 @@ class WindowPlayer : AbsPlayer, View.OnClickListener, PointSeekBar.OnSeekBarChan
      * 显示控件
      */
     override fun show() {
-        isShowing = true
-        mLayoutTop!!.visibility = VISIBLE
-        mLayoutBottom!!.visibility = VISIBLE
+        isShowControl(true)
+    }
+
+    private fun isShowControl(isShow:Boolean){
+        isShowing = isShow
+        mLayoutTop!!.isVisible = isShow
+        mLayoutBottom!!.isVisible = isShow
         if (mPlayType == PlayerType.LIVE_SHIFT) {
-            mTvBackToLive!!.visibility = VISIBLE
+            mTvBackToLive!!.isVisible = isShow
+        }
+        if (isShow) {
+            mLayoutTop?.animation = AnimationUtils.loadAnimation(context, R.anim.push_top_in)
+            mLayoutBottom?.animation = AnimationUtils.loadAnimation(context, R.anim.push_bottom_in)
+        }else{
+            mLayoutTop?.animation = AnimationUtils.loadAnimation(context, R.anim.push_top_out)
+            mLayoutBottom?.animation = AnimationUtils.loadAnimation(context, R.anim.push_bottom_out)
         }
     }
 
@@ -322,12 +336,7 @@ class WindowPlayer : AbsPlayer, View.OnClickListener, PointSeekBar.OnSeekBarChan
      * 隐藏控件
      */
     override fun hide() {
-        isShowing = false
-        mLayoutTop!!.visibility = GONE
-        mLayoutBottom!!.visibility = GONE
-        if (mPlayType == PlayerType.LIVE_SHIFT) {
-            mTvBackToLive!!.visibility = GONE
-        }
+        isShowControl(false)
     }
 
     override fun updatePlayState(playState: PlayerState?) {
@@ -522,6 +531,11 @@ class WindowPlayer : AbsPlayer, View.OnClickListener, PointSeekBar.OnSeekBarChan
         return true
     }
 
+    override fun updateSpeedChange(speedLevel: Float) {
+
+
+    }
+
     /**
      * 设置点击事件监听
      */
@@ -577,6 +591,7 @@ class WindowPlayer : AbsPlayer, View.OnClickListener, PointSeekBar.OnSeekBarChan
 
     override fun onStartTrackingTouch(seekBar: PointSeekBar?) {
         removeCallbacks(mHideViewRunnable)
+
     }
 
     override fun onStopTrackingTouch(seekBar: PointSeekBar) {

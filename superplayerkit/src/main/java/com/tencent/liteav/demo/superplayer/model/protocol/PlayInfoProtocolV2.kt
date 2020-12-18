@@ -10,7 +10,6 @@ import com.tencent.liteav.demo.superplayer.model.entity.VideoQuality
 import com.tencent.liteav.demo.superplayer.model.net.HttpURLClient
 import com.tencent.liteav.demo.superplayer.model.net.HttpURLClient.OnHttpCallback
 import com.tencent.liteav.demo.superplayer.model.protocol.PlayInfoConstant.EncryptedURLType
-import com.tencent.liteav.demo.superplayer.model.protocol.PlayInfoProtocolV2
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -67,9 +66,7 @@ class PlayInfoProtocolV2(  // 协议请求输入的参数
                 mParams.videoIdV2!!.exper,
                 mParams.videoIdV2!!.sign
             )
-            if (query != null) {
-                urlStr = "$urlStr?$query"
-            }
+            urlStr = "$urlStr?$query"
         }
         return urlStr
     }
@@ -144,7 +141,7 @@ class PlayInfoProtocolV2(  // 协议请求输入的参数
      *
      * @return 关键帧信息数组
      */
-    override val keyFrameDescInfo: List<PlayKeyFrameDescInfo?>?
+    override val keyFrameDescInfo: ArrayList<PlayKeyFrameDescInfo>?
         get() = if (mParser == null) null else mParser!!.keyFrameDescInfo
 
     /**
@@ -152,7 +149,7 @@ class PlayInfoProtocolV2(  // 协议请求输入的参数
      *
      * @return 画质信息数组
      */
-    override val videoQualityList: List<VideoQuality?>?
+    override val videoQualityList: ArrayList<VideoQuality>?
         get() = if (mParser == null) null else mParser!!.videoQualityList
 
     /**
@@ -214,7 +211,7 @@ class PlayInfoProtocolV2(  // 协议请求输入的参数
      *
      * @return 画质别名数组
      */
-    override val resolutionNameList: List<ResolutionName?>?
+    override val resolutionNameList: List<ResolutionName>?
         get() = if (mParser == null) null else mParser!!.resolutionNameList
     override val penetrateContext: String?
         get() = null

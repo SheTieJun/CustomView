@@ -51,6 +51,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="20dp"
                 android:gravity="right"
+                android:visibility="gone"
                 android:src="@drawable/superplayer_ic_danmuku_off" />
 
             <ImageView
@@ -60,6 +61,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="20dp"
                 android:gravity="right"
+                android:visibility="gone"
                 android:src="@drawable/superplayer_ic_vod_snapshot_normal" />
 
             <ImageView
@@ -113,10 +115,10 @@
             android:layout_marginLeft="5.0dip"
             android:layout_marginRight="5.0dip"
             android:layout_weight="1.0"
-            app:psb_backgroundColor="@color/superplayer_biz_audio_progress_second"
+            app:psb_backgroundColor="#4DFFFFFF"
             app:psb_max="100"
             app:psb_progress="0"
-            app:psb_progressColor="#FF584C"
+            app:psb_progressColor="#8F6BD7"
             app:psb_progressHeight="2dp"
             app:psb_thumbBackground="@drawable/superplayer_ic_vod_thumb" />
 

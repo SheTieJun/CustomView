@@ -21,7 +21,7 @@ class APP : Application()   {
     override fun onCreate() {
         super.onCreate()
         S.init(this, true,null)
-        Thread.setDefaultUncaughtExceptionHandler(UncaughtExceptionHandler())
+//        Thread.setDefaultUncaughtExceptionHandler(UncaughtExceptionHandler())
     }
 
     override fun attachBaseContext(base: Context?) {

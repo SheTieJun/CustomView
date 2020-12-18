@@ -29,4 +29,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+
+    <TextView
+        android:id="@+id/tv_tip"
+        android:layout_width="wrap_content"
+        android:layout_height="38dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:text="播放将消耗36M流量，建议连接Wi-Fi观看"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        android:background="@drawable/superplayer_tip_bg"/>
 </RelativeLayout>

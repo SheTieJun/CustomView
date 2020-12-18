@@ -37,7 +37,7 @@ abstract class AbsPlayer : RelativeLayout, Player {
     override fun hide() {}
     override fun release() {}
     override fun updatePlayState(playState: PlayerState?) {}
-    override fun setVideoQualityList(list: List<VideoQuality?>?) {}
+    override fun setVideoQualityList(list: ArrayList<VideoQuality>?) {}
     override fun updateTitle(title: String?) {}
     override fun updateVideoProgress(current: Long, duration: Long) {}
     override fun updatePlayType(type: PlayerType?) {}
@@ -46,8 +46,8 @@ abstract class AbsPlayer : RelativeLayout, Player {
     override fun hideBackground() {}
     override fun updateVideoQuality(videoQuality: VideoQuality?) {}
     override fun updateImageSpriteInfo(info: PlayImageSpriteInfo?) {}
-    override fun updateKeyFrameDescInfo(list: List<PlayKeyFrameDescInfo?>?) {}
-
+    override fun updateKeyFrameDescInfo(list: ArrayList<PlayKeyFrameDescInfo>?) {}
+    override fun updateSpeedChange(speedLevel: Float) {}
     /**
      * 设置控件的可见性
      *

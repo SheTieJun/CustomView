@@ -12,7 +12,7 @@
 
 
     <color name="superplayer_default_bg">#aa000000</color>
-    <color name="orange">#FFFF5A31</color>
+    <color name="orange">#FFA200 </color>
     <!-- 裁剪范围颜色 -->
     <color name="superplayer_color_tint_red">#FF4C58</color>
 

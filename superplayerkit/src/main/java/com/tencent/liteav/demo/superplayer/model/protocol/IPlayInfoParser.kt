@@ -50,14 +50,14 @@ interface IPlayInfoParser {
      *
      * @return 关键帧信息数组
      */
-    val keyFrameDescInfo: List<PlayKeyFrameDescInfo>?
+    val keyFrameDescInfo: ArrayList<PlayKeyFrameDescInfo>?
 
     /**
      * 获取画质信息
      *
      * @return 画质信息数组
      */
-    val videoQualityList: List<VideoQuality?>?
+    val videoQualityList: ArrayList<VideoQuality>?
 
     /**
      * 获取默认画质信息
@@ -71,5 +71,5 @@ interface IPlayInfoParser {
      *
      * @return 画质别名数组
      */
-    val resolutionNameList: List<ResolutionName?>?
+    val resolutionNameList: ArrayList<ResolutionName>?
 }
