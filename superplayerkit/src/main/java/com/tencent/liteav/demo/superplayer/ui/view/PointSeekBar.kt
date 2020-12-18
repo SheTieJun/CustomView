@@ -345,13 +345,16 @@ class PointSeekBar : RelativeLayout {
     private fun handleDownEvent(event: MotionEvent): Boolean {
         val x = event.x
         val y = event.y
-        if (x >= mThumbLeft - 100 && x <= mThumbRight + 100) {
-            if (mListener != null) mListener!!.onStartTrackingTouch(this)
-            mIsOnDrag = true
-            mLastX = x
-            return true
-        }
-        return false
+//        if (x >= mThumbLeft - 100 && x <= mThumbRight + 100) {
+//            if (mListener != null) mListener!!.onStartTrackingTouch(this)
+//            mIsOnDrag = true
+//            mLastX = x
+//            return true
+//        }
+        mLastX = mThumbLeft
+        mIsOnDrag = true
+        handleMoveEvent(event)
+        return true
     }
 
     private fun calculatePointerRect() {
