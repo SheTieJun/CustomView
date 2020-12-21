@@ -2,18 +2,20 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@android:id/background">
         <shape>
+            <corners android:radius="3dp"/>
             <gradient
-                android:endColor="@color/superplayer_biz_audio_progress_second"
-                android:startColor="@color/superplayer_biz_audio_progress_second" />
+                android:endColor="@color/white"
+                android:startColor="@color/white" />
         </shape>
     </item>
 
     <item android:id="@android:id/progress">
         <clip>
             <shape>
+                <corners android:radius="3dp"/>
                 <gradient
-                    android:endColor="@color/superplayer_white"
-                    android:startColor="@color/superplayer_white" />
+                    android:endColor="@color/orange"
+                    android:startColor="@color/orange" />
             </shape>
         </clip>
     </item>

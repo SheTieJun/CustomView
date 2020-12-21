@@ -1,7 +1,11 @@
 package me.shetj.customviewdemo.recorder
 
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.media.AudioFocusRequest
+import android.media.AudioManager
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.PopupWindow
@@ -35,6 +39,28 @@ abstract class BasePopupWindow<VB : ViewBinding>(private val mContext: AppCompat
     private val lazyScope = lazy { AbLoadingDialog.LoadingScope() }
     protected val coroutineScope: AbLoadingDialog.LoadingScope by lazyScope
 
+
+    private var mAudioManager: AudioManager? = null
+    private var focusChangeListener: AudioManager.OnAudioFocusChangeListener = AudioManager.OnAudioFocusChangeListener {
+        focusChange ->
+        when (focusChange) {
+            AudioManager.AUDIOFOCUS_LOSS ->
+                //长时间丢失焦点,当其他应用申请的焦点为AUDIOFOCUS_GAIN时，
+                audioLoss()
+            AudioManager.AUDIOFOCUS_LOSS_TRANSIENT ->
+                //短暂性丢失焦点，当其他应用申请AUDIOFOCUS_GAIN_TRANSIENT或AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE时，
+                audioLoss()
+            AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK,
+            AudioManager.AUDIOFOCUS_GAIN -> {
+            }
+        }
+    }
+
+    open fun audioLoss() {
+
+    }
+
+
     init {
         width = ViewGroup.LayoutParams.MATCH_PARENT
         height = ViewGroup.LayoutParams.WRAP_CONTENT
@@ -48,6 +74,29 @@ abstract class BasePopupWindow<VB : ViewBinding>(private val mContext: AppCompat
 
         }
     }
+
+    fun requestAudioFocus() {
+        if (mAudioManager == null) return
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {            //Android 8.0+
+            val audioFocusRequest =
+                    AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK)
+                            .setOnAudioFocusChangeListener(focusChangeListener).build()
+            audioFocusRequest.acceptsDelayedFocusGain()
+            mAudioManager!!.requestAudioFocus(audioFocusRequest)
+        } else {
+            mAudioManager!!.requestAudioFocus(
+                    focusChangeListener,
+                    AudioManager.STREAM_MUSIC,
+                    AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK
+            )
+        }
+    }
+
+    private fun setAudioManager(context: Context) {
+        mAudioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+    }
+
+
 
     private fun initViewBinding(): VB {
         return getClazz<VB>(this, 0).getMethod("inflate", LayoutInflater::class.java)

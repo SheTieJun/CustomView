@@ -12,7 +12,7 @@
 
 
     <color name="superplayer_default_bg">#aa000000</color>
-    <color name="orange">#FFA200 </color>
+    <color name="orange">#FFA200</color>
     <!-- 裁剪范围颜色 -->
     <color name="superplayer_color_tint_red">#FF4C58</color>
 
@@ -24,4 +24,5 @@
 
     <color name="superplayer_default_progress_color">#FF4081</color>
     <color name="superplayer_default_progress_background_color">#BBBBBB</color>
+    <color name="transparent_70">#B3000000</color>
 </resources>

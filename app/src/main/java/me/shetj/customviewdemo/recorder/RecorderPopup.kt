@@ -7,9 +7,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import me.shetj.base.ktx.hasPermission
-import me.shetj.base.ktx.logi
 import me.shetj.customviewdemo.R
 import me.shetj.customviewdemo.databinding.RecordLayoutPopupBinding
+import me.shetj.dialog.OrangeDialog
 import me.shetj.recorder.core.SimRecordListener
 import java.util.concurrent.TimeUnit
 
@@ -17,10 +17,11 @@ import java.util.concurrent.TimeUnit
 typealias Success = (file: String) -> Unit
 
 
-class RecorderPopup(private val mContext: AppCompatActivity, private val onSuccess: Success) :
-    BasePopupWindow<RecordLayoutPopupBinding>(mContext) {
+class RecorderPopup(private val mContext: AppCompatActivity, private var onSuccess: Success? = null) :
+        BasePopupWindow<RecordLayoutPopupBinding>(mContext) {
 
-    private val maxTime = (2 * 60 * 1000).toLong()
+    private var remindDialog: OrangeDialog? =null
+    private val maxTime = (30 * 60 * 1000).toLong()
 
     private var isComplete = false
 
@@ -66,8 +67,9 @@ class RecorderPopup(private val mContext: AppCompatActivity, private val onSucce
             mViewBinding.tvReRecord.isVisible = true
             mViewBinding.tvSaveRecord.isVisible = true
             mViewBinding.llTime.isVisible = true
-            mViewBinding.tvTips.isVisible = false
+            mViewBinding.tvTips.text = "录音中，30分钟后自动保存"
             mViewBinding.ivRecordState.setImageResource(R.drawable.ic_record_pause)
+//            mViewBinding.spreadView.start = true
         }
 
         override fun autoComplete(file: String, time: Long) {
@@ -106,16 +108,13 @@ class RecorderPopup(private val mContext: AppCompatActivity, private val onSucce
         override fun needPermission() {
             super.needPermission()
             mContext.hasPermission(
-                Manifest.permission.RECORD_AUDIO,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE, isRequest = true
+                    Manifest.permission.RECORD_AUDIO,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE, isRequest = true
             )
         }
 
         override fun onRemind(duration: Long) {
             super.onRemind(duration)
-            "录音中，60秒后自动保存".logi()
-            mViewBinding.tvTips.isVisible = true
-            mViewBinding.tvTips.text = "录音中，60秒后自动保存"
         }
 
         override fun onError(e: Exception) {
@@ -124,14 +123,26 @@ class RecorderPopup(private val mContext: AppCompatActivity, private val onSucce
         }
     }
 
-    private val recordUtils by lazy { MixRecordUtils(maxTime,listener)}
+    private val recordUtils by lazy { MixRecordUtils(maxTime, listener) }
 
     private val player: AudioPlayer by lazy { AudioPlayer() }
+
+
+    fun setOnSuccess(onSuccess: Success?) {
+        this.onSuccess = onSuccess
+    }
+
+    override fun audioLoss() {
+        super.audioLoss()
+        player.pause()
+        recordUtils.stopFullRecord()
+    }
 
     override fun RecordLayoutPopupBinding.initUI() {
         ivRecordState.setOnClickListener {
             if (!isComplete) {
                 recordUtils.startOrComplete()
+                requestAudioFocus()
             } else {
                 player.playOrPause(recordUtils.saveFile, playerListener)
             }
@@ -152,26 +163,63 @@ class RecorderPopup(private val mContext: AppCompatActivity, private val onSucce
             recordUtils.reset()
         }
         mViewBinding.tvCancel.setOnClickListener {
-            recordUtils.cleanPath()
-            recordUtils.stopFullRecord()
-            realDismiss()
+            if (isComplete||recordUtils.hasRecord()) {
+                showRemindTip()
+            }else{
+                dismiss()
+            }
         }
+    }
+
+    /**
+     * activity 返回键判断
+     */
+    fun onBackPress(): Boolean {
+        return if (recordUtils.hasRecord()||isComplete ) {
+            showRemindTip()
+            false
+        }else{
+            true
+        }
+    }
+
+    private fun showRemindTip() {
+        (remindDialog ?: OrangeDialog.Builder(mViewBinding.root.context)
+                .setTitle("是否保存录音")
+                .setNegativeText("取消")
+                .setOnNegativeCallBack {  _, _ ->
+                    recordUtils.cleanPath()
+                    recordUtils.stopFullRecord()
+                    realDismiss()
+                }
+                .setPositiveText("保存")
+                .setonPositiveCallBack {  _, _ ->
+                    if (!isComplete) {
+                        isComplete = true
+                        recordUtils.stopFullRecord()
+                    }
+                    realDismiss()
+                }.build().also {
+                    remindDialog = it
+                }).show()
     }
 
     override fun showPop() {
         recordUtils.onReset()
         setOnDismissListener {
             if (isComplete) {
-                recordUtils.saveFile?.let { onSuccess.invoke(it) }
+                recordUtils.saveFile?.let { onSuccess?.invoke(it) }
             }
+            isComplete = false
         }
         showAtLocation(mContext.window.decorView, Gravity.BOTTOM, 0, 0)
     }
 
     private fun onShowSuccessView() {
-        isComplete = true
-        mViewBinding.tvRecordTime.text = formatSeconds(maxTime)
-        mViewBinding.tvRecordDuration.text = "/" + formatSeconds(maxTime)
+        if (isShowing) {
+            isComplete = true
+        }
+//        mViewBinding.spreadView.start = false
         mViewBinding.tvTips.isVisible = false
         mViewBinding.ivRecordState.setImageResource(R.drawable.ic_record_audition)
         mViewBinding.tvState.text = "试听"
@@ -182,7 +230,13 @@ class RecorderPopup(private val mContext: AppCompatActivity, private val onSucce
     private fun realDismiss() {
         AndroidSchedulers.mainThread().scheduleDirect({
             dismiss()
-        }, 200, TimeUnit.MILLISECONDS)
+        }, 50, TimeUnit.MILLISECONDS)
+    }
+
+    override fun dismissStop() {
+        player.pause()
+        recordUtils.stopFullRecord()
+//        super.dismissStop()
     }
 
     override fun dismissOnDestroy() {

@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <!--标题-->
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/superplayer_rl_top"
         android:layout_width="match_parent"
         android:layout_height="@dimen/superplayer_media_controller_view_height"
@@ -19,7 +19,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
-            android:layout_centerVertical="true"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             android:visibility="gone"
             android:src="@drawable/superplayer_btn_back_play"
            />
@@ -28,8 +30,10 @@
             android:id="@+id/superplayer_tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
             android:textColor="@android:color/white"
+            app:layout_constraintStart_toEndOf="@id/superplayer_iv_back"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             android:layout_toRightOf="@id/superplayer_iv_back"
             android:textSize="11dp" />
 
@@ -41,8 +45,13 @@
             android:padding="4dp"
             android:text="高清"
             android:gravity="center"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/iv_tv"
             android:background="@drawable/weike_bg_video_list"
             android:layout_marginEnd="8dp"
+            app:layout_goneMarginEnd="15dp"
+            android:visibility="gone"
             android:layout_centerVertical="true"
             android:textColor="@color/white"
             android:includeFontPadding="false"
@@ -52,16 +61,21 @@
 
         <ImageView
             android:id="@+id/iv_tv"
-            android:layout_width="40dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:scaleType="centerInside"
             android:layout_gravity="end"
+            android:padding="15dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="10dp"
             android:layout_alignParentEnd="true"
             android:src="@drawable/icon_dlna_tv"
             />
-    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
         android:id="@+id/superplayer_ll_bottom"
@@ -91,7 +105,7 @@
             android:textColor="@android:color/white"
             android:textSize="12.0sp" />
 
-        <com.tencent.liteav.demo.superplayer.ui.view.PointSeekBar
+        <com.tencent.liteav.superplayer.ui.view.PointSeekBar
             android:id="@+id/superplayer_seekbar_progress"
             android:layout_width="0.0dip"
             android:layout_height="wrap_content"
@@ -173,13 +187,13 @@
         android:layout_centerInParent="true"
         android:visibility="gone" />
 
-    <com.tencent.liteav.demo.superplayer.ui.view.VolumeBrightnessProgressLayout
+    <com.tencent.liteav.superplayer.ui.view.VolumeBrightnessProgressLayout
         android:id="@+id/superplayer_gesture_progress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true" />
 
-    <com.tencent.liteav.demo.superplayer.ui.view.VideoProgressLayout
+    <com.tencent.liteav.superplayer.ui.view.VideoProgressLayout
         android:id="@+id/superplayer_video_progress_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -200,7 +214,7 @@
 
     <include layout="@layout/superplayer_vod_speedlist" />
 
-    <com.tencent.liteav.demo.superplayer.ui.view.VodQualityView
+    <com.tencent.liteav.superplayer.ui.view.VodQualityView
         android:id="@+id/superplayer_vod_quality"
         android:layout_width="108dp"
         android:layout_height="match_parent"
