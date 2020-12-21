@@ -1,4 +1,4 @@
-package com.tencent.liteav.demo.superplayer.ui.case.adaper
+package com.tencent.liteav.demo.superplayer.ui.casehelper.adaper
 
 import android.graphics.Typeface
 import android.widget.TextView

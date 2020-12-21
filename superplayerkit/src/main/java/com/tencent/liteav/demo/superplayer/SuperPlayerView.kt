@@ -26,7 +26,7 @@ import com.tencent.liteav.demo.superplayer.model.entity.PlayKeyFrameDescInfo
 import com.tencent.liteav.demo.superplayer.model.entity.VideoQuality
 import com.tencent.liteav.demo.superplayer.model.net.LogReport
 import com.tencent.liteav.demo.superplayer.model.utils.NetWatcher
-import com.tencent.liteav.demo.superplayer.ui.case.TipHelper
+import com.tencent.liteav.demo.superplayer.ui.casehelper.TipHelper
 import com.tencent.liteav.demo.superplayer.ui.player.*
 import com.tencent.liteav.demo.superplayer.ui.view.DanmuView
 import com.tencent.rtmp.TXLivePlayer
@@ -166,7 +166,7 @@ class SuperPlayerView : RelativeLayout {
             }
         }
         LogReport.instance.setAppName(mContext)
-        LogReport.Companion.instance.setPackageName(mContext)
+        LogReport.instance.setPackageName(mContext)
         if (mWatcher == null) {
             mWatcher = NetWatcher(mContext)
         }
@@ -229,6 +229,9 @@ class SuperPlayerView : RelativeLayout {
         mSuperPlayer!!.play(appId, superPlayerURLS, defaultIndex)
     }
 
+    fun setPlayToSeek(position: Int){
+        mSuperPlayer!!.setPlayToSeek(position)
+    }
     /**
      * 更新标题
      *
@@ -502,6 +505,7 @@ class SuperPlayerView : RelativeLayout {
 
         override fun onQualityChange(quality: VideoQuality) {
             mFullScreenPlayer!!.updateVideoQuality(quality)
+            mWindowPlayer!!.updateVideoQuality(quality)
             mSuperPlayer!!.switchStream(quality)
         }
 
@@ -759,9 +763,11 @@ class SuperPlayerView : RelativeLayout {
         ) {
             if (videoQualities != null && !videoQualities.isEmpty()) {
                 mFullScreenPlayer!!.setVideoQualityList(videoQualities)
+                mWindowPlayer!!.setVideoQualityList(videoQualities)
             }
             if (defaultVideoQuality != null) {
                 mFullScreenPlayer!!.updateVideoQuality(defaultVideoQuality)
+                mWindowPlayer!!.updateVideoQuality(defaultVideoQuality)
             }
         }
 

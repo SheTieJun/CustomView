@@ -595,7 +595,7 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
             mTXImageSprite = TXImageSprite(context)
             if (info != null) {
                 // 雪碧图ELK上报
-                LogReport.Companion.instance
+                LogReport.instance
                     .uploadLogs(LogReport.ELK_ACTION_IMAGE_SPRITE, 0, 0)
                 mTXImageSprite!!.setVTTUrlAndImageUrls(info.webVttUrl, info.imageUrls)
             } else {

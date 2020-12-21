@@ -1,4 +1,4 @@
-package com.tencent.liteav.demo.superplayer.ui.case
+package com.tencent.liteav.demo.superplayer.ui.casehelper
 
 import android.content.Context
 import android.view.View
@@ -14,9 +14,9 @@ import com.tencent.liteav.demo.superplayer.timer.TimeType.Companion.getTimeTypeL
 import com.tencent.liteav.demo.superplayer.timer.TimerConfigure
 import com.tencent.liteav.demo.superplayer.timer.TimerConfigure.Companion.REPEAT_MODE_ALL
 import com.tencent.liteav.demo.superplayer.timer.TimerConfigure.Companion.REPEAT_MODE_ONE
-import com.tencent.liteav.demo.superplayer.ui.case.adaper.VideoFullPlayModeListAdapter
-import com.tencent.liteav.demo.superplayer.ui.case.adaper.VideoFullSpeedListAdapter
-import com.tencent.liteav.demo.superplayer.ui.case.adaper.VideoFullTimeTypeListAdapter
+import com.tencent.liteav.demo.superplayer.ui.casehelper.adaper.VideoFullPlayModeListAdapter
+import com.tencent.liteav.demo.superplayer.ui.casehelper.adaper.VideoFullSpeedListAdapter
+import com.tencent.liteav.demo.superplayer.ui.casehelper.adaper.VideoFullTimeTypeListAdapter
 import com.tencent.liteav.demo.superplayer.ui.view.VodMoreView
 import java.text.SimpleDateFormat
 import java.util.*

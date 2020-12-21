@@ -57,6 +57,8 @@ class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : SuperPl
         private set
     private var mSeekPos // 记录切换硬解时的播放时间
             = 0
+    private var mPlaySeekPos // 开始播放直接到对应位置
+            = 0
     private var mReportLiveStartTime: Long = -1 // 直播开始时间，用于上报使用时长
     private var mReportVodStartTime: Long = -1 // 点播开始时间，用于上报使用时长
     private var mMaxLiveProgressTime // 观看直播的最大时长
@@ -186,6 +188,10 @@ class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : SuperPl
                         mDefaultQualitySet = true
                     }
                     updateVideoQualityList(videoQualities, null)
+                    if (mPlaySeekPos > 0 ){
+                        seek(mPlaySeekPos)
+                        mPlaySeekPos = 0
+                    }
                 }
             }
             TXLiveConstants.PLAY_EVT_CHANGE_RESOLUTION ->{
@@ -757,6 +763,15 @@ class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : SuperPl
             mVodPlayer!!.setPlayerView(videoView)
         } else {
             mLivePlayer!!.setPlayerView(videoView)
+        }
+    }
+
+    /**
+     * 只有播放前设置有效
+     */
+    override fun setPlayToSeek(position: Int){
+        if (playerState == PlayerState.END) {
+            mPlaySeekPos = position
         }
     }
 

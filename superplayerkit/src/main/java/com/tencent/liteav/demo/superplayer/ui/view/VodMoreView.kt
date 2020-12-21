@@ -6,7 +6,7 @@ import android.util.AttributeSet
 import android.view.*
 import android.widget.*
 import com.tencent.liteav.demo.superplayer.*
-import com.tencent.liteav.demo.superplayer.ui.case.VideoCaseHelper
+import com.tencent.liteav.demo.superplayer.ui.casehelper.VideoCaseHelper
 
 /**
  * Created by yuejiaoli on 2018/7/4.

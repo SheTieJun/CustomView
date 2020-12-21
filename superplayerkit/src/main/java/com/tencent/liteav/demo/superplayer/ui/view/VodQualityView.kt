@@ -3,16 +3,13 @@ package com.tencent.liteav.demo.superplayer.ui.view
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.chad.library.adapter.base.BaseQuickAdapter
-import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import com.tencent.liteav.demo.superplayer.R
 import com.tencent.liteav.demo.superplayer.model.entity.VideoQuality
-import com.tencent.liteav.demo.superplayer.ui.case.adaper.QualityAdapter
+import com.tencent.liteav.demo.superplayer.ui.casehelper.adaper.QualityAdapter
+import com.tencent.liteav.demo.superplayer.ui.player.WindowPlayer
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -76,7 +73,7 @@ class VodQualityView : RelativeLayout {
      *
      * @param callback
      */
-    fun setCallback(callback: Callback?) {
+    fun setCallback(callback: Callback) {
         mCallback = callback
     }
 

@@ -89,6 +89,7 @@ interface SuperPlayer {
     fun enableHardwareDecode(enable: Boolean)
     fun setPlayerView(videoView: TXCloudVideoView?)
     fun seek(position: Int)
+    fun setPlayToSeek(position: Int)
     fun snapshot(listener: TXLivePlayer.ITXSnapshotListener)
     fun setRate(speedLevel: Float)
     fun setMirror(isMirror: Boolean)

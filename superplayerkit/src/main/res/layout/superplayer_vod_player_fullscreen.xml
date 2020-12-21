@@ -165,7 +165,7 @@
 
     <com.tencent.liteav.demo.superplayer.ui.view.VodQualityView
         android:id="@+id/superplayer_vod_quality"
-        android:layout_width="300dp"
+        android:layout_width="108dp"
         android:layout_height="match_parent"
         android:layout_alignParentRight="true"
         android:visibility="gone" />

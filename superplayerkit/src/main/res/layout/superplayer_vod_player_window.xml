@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:layout_height="match_parent">
 
     <!--标题-->
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/superplayer_rl_top"
         android:layout_width="match_parent"
         android:layout_height="@dimen/superplayer_media_controller_view_height"
@@ -18,9 +18,11 @@
             android:id="@+id/superplayer_iv_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="20dp"
-            android:src="@drawable/superplayer_btn_back_play" />
+            android:layout_marginLeft="15dp"
+            android:layout_centerVertical="true"
+            android:visibility="gone"
+            android:src="@drawable/superplayer_btn_back_play"
+           />
 
         <TextView
             android:id="@+id/superplayer_tv_title"
@@ -28,8 +30,38 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:textColor="@android:color/white"
+            android:layout_toRightOf="@id/superplayer_iv_back"
             android:textSize="11dp" />
-    </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/superplayer_tv_quality"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:padding="4dp"
+            android:text="高清"
+            android:gravity="center"
+            android:background="@drawable/weike_bg_video_list"
+            android:layout_marginEnd="8dp"
+            android:layout_centerVertical="true"
+            android:textColor="@color/white"
+            android:includeFontPadding="false"
+            android:layout_toLeftOf="@id/iv_tv"
+            android:textSize="10sp"/>
+
+
+        <ImageView
+            android:id="@+id/iv_tv"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:scaleType="centerInside"
+            android:layout_gravity="end"
+            android:layout_marginEnd="10dp"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/icon_dlna_tv"
+            />
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/superplayer_ll_bottom"
@@ -85,14 +117,22 @@
             android:textSize="12.0sp" />
 
         <ImageView
+            android:id="@+id/iv_speed"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:padding="8dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/superplayer_1_0_speed" />
+
+        <ImageView
             android:id="@+id/superplayer_iv_fullscreen"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:scaleType="centerInside"
-            android:layout_centerInParent="true"
             android:layout_gravity="center_vertical"
-            android:paddingEnd="15dp"
             android:paddingStart="10dp"
+            android:paddingEnd="15dp"
+            android:scaleType="centerInside"
             android:src="@drawable/superplayer_ic_vod_fullscreen" />
     </LinearLayout>
 
@@ -156,5 +196,14 @@
         android:id="@+id/superplayer_small_iv_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <include layout="@layout/superplayer_vod_speedlist" />
+
+    <com.tencent.liteav.demo.superplayer.ui.view.VodQualityView
+        android:id="@+id/superplayer_vod_quality"
+        android:layout_width="108dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
         android:visibility="gone" />
 </RelativeLayout>

@@ -5,20 +5,19 @@ import android.content.*
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
+import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.*
 import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.animation.AnimationUtils
 import android.widget.*
-import androidx.appcompat.widget.AppCompatSeekBar
 import com.tencent.liteav.demo.superplayer.*
 import com.tencent.liteav.demo.superplayer.SuperPlayerDef.*
+import com.tencent.liteav.demo.superplayer.model.entity.VideoQuality
 import com.tencent.liteav.demo.superplayer.model.utils.VideoGestureDetector
 import com.tencent.liteav.demo.superplayer.model.utils.VideoGestureDetector.VideoGestureListener
-import com.tencent.liteav.demo.superplayer.ui.player.AbsPlayer
-import com.tencent.liteav.demo.superplayer.ui.view.PointSeekBar
-import com.tencent.liteav.demo.superplayer.ui.view.VideoProgressLayout
-import com.tencent.liteav.demo.superplayer.ui.view.VolumeBrightnessProgressLayout
+import com.tencent.liteav.demo.superplayer.ui.casehelper.WinSpeedHelper
+import com.tencent.liteav.demo.superplayer.ui.view.*
 import androidx.core.view.isVisible as isVisible
 
 /**
@@ -34,10 +33,10 @@ import androidx.core.view.isVisible as isVisible
  * [.onStartTrackingTouch]
  * [.onStopTrackingTouch]
  */
-class WindowPlayer : AbsPlayer, View.OnClickListener, PointSeekBar.OnSeekBarChangeListener {
+class WindowPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,VodQualityView.Callback, PointSeekBar.OnSeekBarChangeListener {
     // UI控件
     private var mLayoutTop // 顶部标题栏布局
-            : LinearLayout? = null
+            : View? = null
     private var mLayoutBottom // 底部进度条所在布局
             : LinearLayout? = null
     private var mIvPause // 暂停播放按钮
@@ -93,6 +92,19 @@ class WindowPlayer : AbsPlayer, View.OnClickListener, PointSeekBar.OnSeekBarChan
             = 0f
     private var mLastClickTime // 上次点击事件的时间
             : Long = 0
+    private var mSpeedHelper:WinSpeedHelper? =null
+    private var mVodQualityView // 画质列表弹窗
+            : VodQualityView? = null
+
+    private var mDefaultVideoQuality // 默认画质
+            : VideoQuality? = null
+    private var mVideoQualityList // 画质列表
+            : ArrayList<VideoQuality>? = null
+
+    private var mTvQuality: TextView ? =null
+
+    private var mFirstShowQuality // 是都是首次显示画质信息
+            = false
 
     constructor(context: Context?) : super(context) {
         initialize(context)
@@ -217,7 +229,7 @@ class WindowPlayer : AbsPlayer, View.OnClickListener, PointSeekBar.OnSeekBarChan
      */
     private fun initView(context: Context?) {
         LayoutInflater.from(context).inflate(R.layout.superplayer_vod_player_window, this)
-        mLayoutTop = findViewById<View>(R.id.superplayer_rl_top) as LinearLayout
+        mLayoutTop = findViewById(R.id.superplayer_rl_top)
         mLayoutTop!!.setOnClickListener(this)
         mLayoutBottom = findViewById<View>(R.id.superplayer_ll_bottom) as LinearLayout
         mLayoutBottom!!.setOnClickListener(this)
@@ -245,6 +257,14 @@ class WindowPlayer : AbsPlayer, View.OnClickListener, PointSeekBar.OnSeekBarChan
         mBackground = findViewById<View>(R.id.superplayer_small_iv_background) as ImageView
         setBackground(mBackgroundBmp)
         mIvWatermark = findViewById<View>(R.id.superplayer_small_iv_water_mark) as ImageView
+        mSpeedHelper = WinSpeedHelper(this)
+        mVodQualityView = findViewById(R.id.superplayer_vod_quality)
+        mVodQualityView!!.setCallback(this)
+        mTvQuality = findViewById(R.id.superplayer_tv_quality)
+        if (mDefaultVideoQuality != null) {
+            mTvQuality!!.text = mDefaultVideoQuality!!.title
+        }
+        mTvQuality!!.setOnClickListener(this)
     }
 
     /**
@@ -337,6 +357,7 @@ class WindowPlayer : AbsPlayer, View.OnClickListener, PointSeekBar.OnSeekBarChan
      */
     override fun hide() {
         isShowControl(false)
+        showQualityView(false)
     }
 
     override fun updatePlayState(playState: PlayerState?) {
@@ -532,8 +553,14 @@ class WindowPlayer : AbsPlayer, View.OnClickListener, PointSeekBar.OnSeekBarChan
     }
 
     override fun updateSpeedChange(speedLevel: Float) {
+        mSpeedHelper?.showSpeedImage()
+    }
 
 
+    override fun onSpeedChange(speedLevel: Float) {
+        if (mControllerCallback != null) {
+            mControllerCallback!!.onSpeedChange(speedLevel)
+        }
     }
 
     /**
@@ -563,6 +590,8 @@ class WindowPlayer : AbsPlayer, View.OnClickListener, PointSeekBar.OnSeekBarChan
             if (mControllerCallback != null) {
                 mControllerCallback!!.onResumeLive()
             }
+        }else if (id == R.id.superplayer_tv_quality){
+            showQualityView()
         }
     }
 
@@ -621,5 +650,81 @@ class WindowPlayer : AbsPlayer, View.OnClickListener, PointSeekBar.OnSeekBarChan
             }
         }
         postDelayed(mHideViewRunnable, 7000)
+    }
+
+    override fun onQualitySelect(quality: VideoQuality) {
+        if (mControllerCallback != null) {
+            mControllerCallback!!.onQualityChange(quality)
+        }
+        showQualityView(false)
+    }
+    private fun showQualityView(isShow:Boolean){
+        if (isShow) {
+            if( mVodQualityView?.visibility == View.GONE) {
+                mVodQualityView?.visibility = View.VISIBLE
+                mVodQualityView?.animation = AnimationUtils.loadAnimation(context, R.anim.slide_right_in)
+            }
+        } else {
+            if( mVodQualityView?.visibility == View.VISIBLE) {
+                mVodQualityView?.visibility = View.GONE
+                mVodQualityView?.animation = AnimationUtils.loadAnimation(context, R.anim.slide_right_exit)
+            }
+        }
+    }
+
+
+    /**
+     * 设置视频画质信息
+     *
+     * @param ArrayList 画质列表
+     */
+    override fun setVideoQualityList(ArrayList: ArrayList<VideoQuality>?) {
+        mVideoQualityList = ArrayList
+        mFirstShowQuality = false
+    }
+
+    override fun updateVideoQuality(videoQuality: VideoQuality?) {
+        if (videoQuality == null) {
+            mTvQuality!!.text = ""
+            return
+        }
+        mDefaultVideoQuality = videoQuality
+        if (mTvQuality != null) {
+            mTvQuality!!.text = videoQuality.title
+        }
+        if (mVideoQualityList != null && mVideoQualityList!!.isNotEmpty()) {
+            for (i in mVideoQualityList!!.indices) {
+                val quality = mVideoQualityList!![i]
+                if (quality?.title != null && quality.title == mDefaultVideoQuality!!.title) {
+                    mVodQualityView!!.setDefaultSelectedQuality(i)
+                    break
+                }
+            }
+        }
+    }
+
+    private fun showQualityView() {
+        if (mVideoQualityList == null || mVideoQualityList!!.size == 0) {
+            return
+        }
+        if (mVideoQualityList!!.size == 1 && (mVideoQualityList!![0] == null || TextUtils.isEmpty(
+                        mVideoQualityList!![0]!!.title
+                ))
+        ) {
+            return
+        }
+        // 设置默认显示分辨率文字
+        showQualityView(true)
+        if (!mFirstShowQuality && mDefaultVideoQuality != null) {
+            for (i in mVideoQualityList!!.indices) {
+                val quality = mVideoQualityList!![i]
+                if (quality != null && quality.title != null && quality.title == mDefaultVideoQuality!!.title) {
+                    mVodQualityView!!.setDefaultSelectedQuality(i)
+                    break
+                }
+            }
+            mFirstShowQuality = true
+        }
+        mVodQualityView!!.setVideoQualityList(mVideoQualityList)
     }
 }

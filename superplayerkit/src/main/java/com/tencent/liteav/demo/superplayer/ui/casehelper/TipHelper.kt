@@ -1,4 +1,4 @@
-package com.tencent.liteav.demo.superplayer.ui.case
+package com.tencent.liteav.demo.superplayer.ui.casehelper
 
 import android.text.SpannableStringBuilder
 import android.view.View
