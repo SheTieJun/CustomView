@@ -22,13 +22,12 @@ class TimeType {
         fun getTimeTypeList(): ArrayList<TimeType>{
            val timeTypes =  ArrayList<TimeType>(7)
             timeTypes.add(TimeType("不开启",0))
-            timeTypes.add(TimeType("播放完当前课程",0,true))
+            timeTypes.add(TimeType("播放完当前",0,true))
             timeTypes.add(TimeType("10分钟",10*60*1000))
             timeTypes.add(TimeType("20分钟",20*60*1000))
             timeTypes.add(TimeType("30分钟",30*60*1000))
             timeTypes.add(TimeType("60分钟",60*60*1000))
             timeTypes.add(TimeType("90分钟",90*60*1000))
-//            timeTypes.add(TimeType("自定义",0))
             return timeTypes
         }
 
@@ -42,7 +41,6 @@ class TimeType {
             timeTypes.add(TimeType("30分钟",30*60*1000))
             timeTypes.add(TimeType("60分钟",60*60*1000))
             timeTypes.add(TimeType("90分钟",90*60*1000))
-//            timeTypes.add(TimeType("自定义",0))
             return timeTypes
         }
 

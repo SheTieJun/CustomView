@@ -22,7 +22,7 @@ import com.tencent.rtmp.ui.TXCloudVideoView
 import java.util.*
 import kotlin.collections.ArrayList
 
-class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : SuperPlayer,
+open class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : SuperPlayer,
     ITXVodPlayListener, ITXLivePlayListener {
     private var mWidth: Int = -1
     private var mHeight :Int = -1
@@ -44,14 +44,10 @@ class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : SuperPl
     private var mObserver: SuperPlayerObserver? = null
     private var mVideoQuality: VideoQuality? = null
     override var playerType = PlayerType.VOD // 当前播放类型
-        private set
     override var playerMode = PlayerMode.WINDOW // 当前播放模式
-        private set
     override var playerState = PlayerState.END // 当前播放状态
-        private set
     override var playURL // 当前播放的URL
             : String? = null
-        private set
     private var mSeekPos // 记录切换硬解时的播放时间
             = 0
     private var mPlaySeekPos // 开始播放直接到对应位置

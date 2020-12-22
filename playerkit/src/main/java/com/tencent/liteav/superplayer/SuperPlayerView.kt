@@ -16,6 +16,7 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.*
 import android.widget.*
+import androidx.core.content.ContextCompat
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.tencent.liteav.basic.log.TXCLog
 import com.tencent.liteav.superplayer.SuperPlayerDef.*
@@ -51,7 +52,7 @@ import java.io.IOException
  * 3、controller回调实现[.mControllerCallback]
  * 4、退出播放释放内存[.resetPlayer]
  */
-class SuperPlayerView : RelativeLayout {
+open class SuperPlayerView : RelativeLayout {
     private val OP_SYSTEM_ALERT_WINDOW = 24 // 支持TYPE_TOAST悬浮窗的最高API版本
     private var mContext: Context? = null
     private var mRootView // SuperPlayerView的根view
@@ -147,7 +148,14 @@ class SuperPlayerView : RelativeLayout {
         }
     }
 
-    private fun initPlayer() {
+    open fun getPlayer(): SuperPlayer {
+        if (mSuperPlayer == null){
+            initPlayer()
+        }
+        return  mSuperPlayer!!
+    }
+
+    open fun initPlayer() {
         mSuperPlayer = SuperPlayerImpl(mContext, mTXCloudVideoView)
         mSuperPlayer!!.setObserver(mSuperPlayerObserver)
         if (mSuperPlayer!!.playerMode == PlayerMode.FULLSCREEN) {
@@ -187,7 +195,7 @@ class SuperPlayerView : RelativeLayout {
      *
      * @param model
      */
-    fun playWithModel(model: SuperPlayerModel) {
+    open fun playWithModel(model: SuperPlayerModel) {
         if (model.videoId != null) {
             mSuperPlayer!!.play(model.appId, model.videoId!!.fileId, model.videoId!!.pSign)
         } else if (model.videoIdV2 != null) {
@@ -203,7 +211,7 @@ class SuperPlayerView : RelativeLayout {
      *
      * @param url 视频地址
      */
-    fun play(url: String?) {
+    open  fun play(url: String?) {
         mSuperPlayer!!.play(url)
     }
 
@@ -213,7 +221,7 @@ class SuperPlayerView : RelativeLayout {
      * @param appId 腾讯云视频appId
      * @param url   直播播放地址
      */
-    fun play(appId: Int, url: String?) {
+    open  fun play(appId: Int, url: String?) {
         mSuperPlayer!!.play(appId, url)
     }
 
@@ -224,7 +232,7 @@ class SuperPlayerView : RelativeLayout {
      * @param fileId 腾讯云视频fileId
      * @param psign  防盗链签名，开启防盗链的视频必填，非防盗链视频可不填
      */
-    fun play(appId: Int, fileId: String?, psign: String?) {
+    open  fun play(appId: Int, fileId: String?, psign: String?) {
         mSuperPlayer!!.play(appId, fileId, psign)
     }
 
@@ -235,15 +243,15 @@ class SuperPlayerView : RelativeLayout {
      * @param superPlayerURLS 不同分辨率数据
      * @param defaultIndex    默认播放Index
      */
-    fun play(appId: Int, superPlayerURLS: List<SuperPlayerURL?>?, defaultIndex: Int) {
+    open fun play(appId: Int, superPlayerURLS: List<SuperPlayerURL?>?, defaultIndex: Int) {
         mSuperPlayer!!.play(appId, superPlayerURLS, defaultIndex)
     }
 
-    fun setPlayToSeek(position: Int) {
+    open  fun setPlayToSeek(position: Int) {
         mSuperPlayer!!.setPlayToSeek(position)
     }
 
-    fun setKeyList(
+    open  fun setKeyList(
         name: String?,
         adapter: BaseQuickAdapter<*, *>?,
         position: Int = 0,
@@ -257,7 +265,7 @@ class SuperPlayerView : RelativeLayout {
      *
      * @param title 视频名称
      */
-    private fun updateTitle(title: String?) {
+    open fun updateTitle(title: String?) {
         mWindowPlayer!!.updateTitle(title)
         mFullScreenPlayer!!.updateTitle(title)
     }
@@ -265,7 +273,7 @@ class SuperPlayerView : RelativeLayout {
     /**
      * resume生命周期回调
      */
-    fun onResume() {
+    open fun onResume() {
         if (mDanmuView != null && mDanmuView!!.isPrepared && mDanmuView!!.isPaused) {
             mDanmuView!!.resume()
         }
@@ -275,7 +283,7 @@ class SuperPlayerView : RelativeLayout {
     /**
      * pause生命周期回调
      */
-    fun onPause() {
+    open fun onPause() {
         if (mDanmuView != null && mDanmuView!!.isPrepared) {
             mDanmuView!!.pause()
         }
@@ -285,7 +293,7 @@ class SuperPlayerView : RelativeLayout {
     /**
      * 重置播放器
      */
-    fun resetPlayer() {
+    open fun resetPlayer() {
         if (mDanmuView != null) {
             mDanmuView!!.release()
             mDanmuView = null
@@ -308,14 +316,14 @@ class SuperPlayerView : RelativeLayout {
      *
      * @param callback
      */
-    fun setPlayerViewCallback(callback: OnSuperPlayerViewCallback?) {
+    open fun setPlayerViewCallback(callback: OnSuperPlayerViewCallback?) {
         mPlayerViewCallback = callback
     }
 
     /**
      * 设置投屏
      */
-    fun setTVControl(controller: TVControl?) {
+    open fun setTVControl(controller: TVControl?) {
         mFullScreenPlayer?.hideTV(controller != null)
         mWindowPlayer?.hideTV(controller != null)
         this.mTvController = controller
@@ -597,7 +605,7 @@ class SuperPlayerView : RelativeLayout {
         return true
     }
 
-    fun release() {
+    open fun release() {
         if (mWindowPlayer != null) {
             mWindowPlayer!!.release()
         }
@@ -618,7 +626,7 @@ class SuperPlayerView : RelativeLayout {
         }
     }
 
-    fun switchPlayMode(playerMode: PlayerMode) {
+    open fun switchPlayMode(playerMode: PlayerMode) {
         if (playerMode == PlayerMode.WINDOW) {
             mControllerCallback?.onSwitchPlayMode(PlayerMode.WINDOW)
         } else if (playerMode == PlayerMode.FLOAT) {
@@ -633,7 +641,7 @@ class SuperPlayerView : RelativeLayout {
         get() = mSuperPlayer!!.playerMode
     val playerState: PlayerState
         get() = mSuperPlayer!!.playerState
-    private val mSuperPlayerObserver: SuperPlayerObserver = object : SuperPlayerObserver() {
+    val mSuperPlayerObserver: SuperPlayerObserver = object : SuperPlayerObserver() {
         override fun onPlayBegin(name: String?) {
             mWindowPlayer!!.updatePlayState(PlayerState.PLAYING)
             mFullScreenPlayer!!.updatePlayState(PlayerState.PLAYING)
@@ -766,12 +774,13 @@ class SuperPlayerView : RelativeLayout {
         }
     }
 
-    private fun showToast(message: String?) {
+    open fun showToast(message: String?) {
         Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show()
+        message?.let { mTipHelper!!.showMsg(it) }
     }
 
-    private fun showToast(resId: Int) {
-        Toast.makeText(mContext, resId, Toast.LENGTH_SHORT).show()
+    open fun showToast(resId: Int) {
+         mTipHelper!!.showMsg(context.getString(resId))
     }
 
     override fun onAttachedToWindow() {
@@ -779,12 +788,11 @@ class SuperPlayerView : RelativeLayout {
         mFullScreenPlayer?.onDestroyCallBack()
     }
 
-    fun setAutoPlay(auto: Boolean) {
+    open fun setAutoPlay(auto: Boolean) {
         mSuperPlayer?.autoPlay(auto)
-
     }
 
-    fun hideAll() {
+    open fun hideAll() {
         GlobalConfig.instance.isHideAll = true
         mFullScreenPlayer!!.hide()
         mWindowPlayer!!.hide()

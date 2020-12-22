@@ -64,7 +64,9 @@ interface SuperPlayer {
      */
     fun resumeLive()
 
-
+    /**
+     * 是否自定开始播放
+     */
     fun autoPlay(auto:Boolean)
 
     fun getWidth():Int
