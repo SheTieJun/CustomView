@@ -208,7 +208,7 @@
             android:gravity="center"
             android:background="@drawable/weike_bg_video_list"
             android:layout_marginEnd="15dp"
-            android:textColor="@color/white"
+            android:textColor="@color/superplayer_white"
             android:includeFontPadding="false"
             android:textSize="10sp"/>
 
@@ -227,7 +227,7 @@
             android:visibility="gone"
             android:background="@drawable/weike_bg_video_list"
             android:layout_marginEnd="30dp"
-            android:textColor="@color/white"
+            android:textColor="@color/superplayer_white"
             android:includeFontPadding="false"
             android:textSize="10sp"/>
 
