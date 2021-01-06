@@ -68,8 +68,17 @@ class WinSpeedHelper(private val windowPlayer: WindowPlayer) {
         }
     }
 
+    fun updateSpeed(){
+        speedAdapter.setCurSpeed(GlobalConfig.instance.speed)
+    }
+
     fun showSpeedImage() {
+        updateSpeed()
         showSpeedImage(mIvSpeed)
+    }
+
+    fun getSpeedView(): ImageView {
+        return mIvSpeed
     }
 
     companion object{

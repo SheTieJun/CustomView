@@ -59,4 +59,19 @@
         app:layout_constraintTop_toBottomOf="@id/btn_key"
         app:layout_constraintStart_toStartOf="parent"
         android:text="设置隐藏控制"/>
+
+    <Button
+        android:id="@+id/btn_scoll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/btn_hide"
+        app:layout_constraintStart_toStartOf="parent"
+        android:text="测试滚动的video"/>
+    <Button
+        android:id="@+id/btn_scoll2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/btn_scoll"
+        app:layout_constraintStart_toStartOf="parent"
+        android:text="测试滚动的video2"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,7 +3,9 @@ package com.tencent.liteav.superplayer.ui.view
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.*
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.tencent.liteav.superplayer.R
@@ -30,6 +32,7 @@ class VodQualityView : RelativeLayout {
     private var mAdapter // 画质列表适配器
             : QualityAdapter? = null
     private var mClickPos = -1 // 当前的画质下表
+    private var title:View ?= null
 
     constructor(context: Context) : super(context) {
         init(context)
@@ -51,6 +54,7 @@ class VodQualityView : RelativeLayout {
         mContext = context
         LayoutInflater.from(mContext).inflate(R.layout.superplayer_quality_popup_view, this)
         mListView = findViewById(R.id.superplayer_lv_quality)
+        title = findViewById(R.id.title)
         mAdapter = QualityAdapter(ArrayList()).apply {
             setOnItemClickListener { adapter, view, position ->
                 if (mCallback != null) {
@@ -72,7 +76,8 @@ class VodQualityView : RelativeLayout {
      *
      * @param callback
      */
-    fun setCallback(callback: Callback) {
+    fun setCallback(boolean: Boolean,callback: Callback) {
+        title?.isVisible = boolean
         mCallback = callback
     }
 

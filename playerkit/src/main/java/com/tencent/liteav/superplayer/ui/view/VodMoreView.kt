@@ -54,6 +54,11 @@ class VodMoreView : RelativeLayout, CompoundButton.OnCheckedChangeListener {
         mLayoutMirror = findViewById(R.id.superplayer_ll_mirror)
         mLayoutaccelerate?.isVisible = config.isShowAccelerate
         mLayoutMirror?.isVisible = config.isShowMirror
+        findViewById<View>(R.id.ll_time_style).isVisible = config.isShowTimeStyle
+        findViewById<View>(R.id.iRecyclerView_case_time).isVisible = config.isShowTimeStyle
+
+        findViewById<View>(R.id.tv_pla_style).isVisible = config.isShowPlayStyle
+        findViewById<View>(R.id.iRecyclerView_case_play_mode).isVisible = config.isShowPlayStyle
     }
 
 

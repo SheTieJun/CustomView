@@ -98,6 +98,7 @@ interface SuperPlayer {
     fun setRate(speedLevel: Float)
     fun setMirror(isMirror: Boolean)
     fun switchStream(quality: VideoQuality)
+    fun changeRenderMode(renderMode : Int)
     val playURL: String?
 
     /**

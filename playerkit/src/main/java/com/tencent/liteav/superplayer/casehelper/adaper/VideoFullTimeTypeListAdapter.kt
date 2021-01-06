@@ -34,7 +34,7 @@ class VideoFullTimeTypeListAdapter(data: ArrayList<TimeType>) : BaseQuickAdapter
 
     override fun convert(holder: BaseViewHolder, item: TimeType) {
         holder.setText(R.id.name, item.name)
-        holder.setTextColor(R.id.name, if (position == holder.adapterPosition - headerLayoutCount) getColor(context,R.color.orange) else getColor(context,R.color.superplayer_white))
+        holder.setTextColor(R.id.name, if (position == holder.adapterPosition - headerLayoutCount) getColor(context,R.color.superplayer_orange) else getColor(context,R.color.superplayer_white))
         holder.getView<TextView>(R.id.name).apply {
             typeface = if (position == holder.adapterPosition - headerLayoutCount) {
                 Typeface.defaultFromStyle(Typeface.BOLD);

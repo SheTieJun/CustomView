@@ -77,16 +77,6 @@ class TimerConfigure private constructor(){
             timeListenerList?.forEach {
                     it.onChangeModel(repeatMode)
             }
-            //toast 一次就好
-//            ToastUtil.success(context,when(repeatMode){
-//                 REPEAT_MODE_ONE ->{
-//                    "已切换到单课循环"
-//                }
-//                PlaybackStateCompat.REPEAT_MODE_ALL ->{
-//                    "已切换到顺序播放"
-//                }
-//                else -> "已切换到顺序播放"
-//            },Toast.LENGTH_SHORT)
         }
     }
 
@@ -153,6 +143,8 @@ class TimerConfigure private constructor(){
 //        dialogFragment.show((context as AppCompatActivity).supportFragmentManager!!, "TimePickerDialogFragment")
 //    }
 
+    fun getCurrentState() = currentState
+
     /**
      * 取消计时
      */
@@ -177,7 +169,6 @@ class TimerConfigure private constructor(){
 
     fun addCallBack(callback: CallBack){
         timeListenerList?.add(callback)
-        //设置默认情况
         callback.onChangeModel(repeatMode)
         callback.onStateChange(currentState)
     }

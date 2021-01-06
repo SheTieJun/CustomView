@@ -18,6 +18,7 @@ import com.tencent.liteav.superplayer.model.entity.VideoQuality
 import com.tencent.liteav.superplayer.model.utils.VideoGestureDetector
 import com.tencent.liteav.superplayer.model.utils.VideoGestureDetector.VideoGestureListener
 import com.tencent.liteav.superplayer.casehelper.WinSpeedHelper
+import com.tencent.liteav.superplayer.ui.config.WinConfigs
 import com.tencent.liteav.superplayer.ui.view.*
 import androidx.core.view.isVisible as isVisible
 
@@ -34,7 +35,9 @@ import androidx.core.view.isVisible as isVisible
  * [.onStartTrackingTouch]
  * [.onStopTrackingTouch]
  */
-class WindowPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,VodQualityView.Callback, PointSeekBar.OnSeekBarChangeListener {
+class WindowPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback, VodQualityView.Callback, PointSeekBar.OnSeekBarChangeListener {
+    private var mConfigs: WinConfigs = WinConfigs.ofDef() //配置
+
     // UI控件
     private var mLayoutTop // 顶部标题栏布局
             : View? = null
@@ -93,7 +96,7 @@ class WindowPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,VodQu
             = 0f
     private var mLastClickTime // 上次点击事件的时间
             : Long = 0
-    private var mSpeedHelper:WinSpeedHelper? =null
+    private var mSpeedHelper: WinSpeedHelper? = null
     private var mVodQualityView // 画质列表弹窗
             : VodQualityView? = null
 
@@ -102,12 +105,12 @@ class WindowPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,VodQu
     private var mVideoQualityList // 画质列表
             : ArrayList<VideoQuality>? = null
 
-    private var mTvQuality: TextView ? =null
+    private var mTvQuality: TextView? = null
 
     private var mFirstShowQuality // 是都是首次显示画质信息
             = false
 
-    private var mIvTV:View? = null
+    private var mIvTV: View? = null
 
     constructor(context: Context?) : super(context) {
         initialize(context)
@@ -118,9 +121,9 @@ class WindowPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,VodQu
     }
 
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(
-        context,
-        attrs,
-        defStyleAttr
+            context,
+            attrs,
+            defStyleAttr
     ) {
         initialize(context)
     }
@@ -132,6 +135,7 @@ class WindowPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,VodQu
         initView(context)
         mGestureDetector = GestureDetector(getContext(), object : SimpleOnGestureListener() {
             override fun onDoubleTap(e: MotionEvent): Boolean {
+                if (isLive()) return false  //直播双击不做处理
                 togglePlayState()
                 show()
                 if (mHideViewRunnable != null) {
@@ -142,26 +146,27 @@ class WindowPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,VodQu
             }
 
             override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
+                if (isLive()) return false
                 toggle()
                 return true
             }
 
             override fun onScroll(
-                downEvent: MotionEvent,
-                moveEvent: MotionEvent,
-                distanceX: Float,
-                distanceY: Float
+                    downEvent: MotionEvent,
+                    moveEvent: MotionEvent,
+                    distanceX: Float,
+                    distanceY: Float
             ): Boolean {
                 if (downEvent == null || moveEvent == null) {
                     return false
                 }
                 if (mVideoGestureDetector != null && mGestureVolumeBrightnessProgressLayout != null) {
                     mVideoGestureDetector!!.check(
-                        mGestureVolumeBrightnessProgressLayout!!.height,
-                        downEvent,
-                        moveEvent,
-                        distanceX,
-                        distanceY
+                            mGestureVolumeBrightnessProgressLayout!!.height,
+                            downEvent,
+                            moveEvent,
+                            distanceX,
+                            distanceY
                     )
                 }
                 return true
@@ -194,6 +199,7 @@ class WindowPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,VodQu
             }
 
             override fun onSeekGesture(progress: Int) {
+                if (isLive()) return
                 var progress = progress
                 mIsChangingSeekBarProgress = true
                 if (mGestureVideoProgressLayout != null) {
@@ -216,15 +222,24 @@ class WindowPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,VodQu
                         mGestureVideoProgressLayout!!.setTimeText(formattedTime(currentTime.toLong()))
                     } else {
                         mGestureVideoProgressLayout!!.setTimeText(
-                            formattedTime(currentTime.toLong()) + " / " + formattedTime(
-                                mDuration
-                            )
+                                formattedTime(currentTime.toLong()) + " / " + formattedTime(
+                                        mDuration
+                                )
                         )
+                        updateVideoProgress(currentTime.toLong(), mDuration)
                     }
                 }
                 if (mSeekBarProgress != null) mSeekBarProgress!!.progress = (progress)
             }
         })
+    }
+
+    fun isLive() = (mPlayType == PlayerType.LIVE || mPlayType == PlayerType.LIVE_SHIFT)
+
+    fun updateConfig(winConfigs: WinConfigs) {
+        this.mConfigs = winConfigs
+        mIvTV?.isVisible = mConfigs.showTV
+        mSpeedHelper?.getSpeedView()?.isVisible = mConfigs.showSpeed
     }
 
     /**
@@ -254,22 +269,23 @@ class WindowPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,VodQu
         mLayoutReplay!!.setOnClickListener(this)
         mSeekBarProgress!!.setOnSeekBarChangeListener(this)
         mGestureVolumeBrightnessProgressLayout =
-            findViewById<View>(R.id.superplayer_gesture_progress) as VolumeBrightnessProgressLayout
+                findViewById<View>(R.id.superplayer_gesture_progress) as VolumeBrightnessProgressLayout
         mGestureVideoProgressLayout =
-            findViewById<View>(R.id.superplayer_video_progress_layout) as VideoProgressLayout
+                findViewById<View>(R.id.superplayer_video_progress_layout) as VideoProgressLayout
         mBackground = findViewById<View>(R.id.superplayer_small_iv_background) as ImageView
         setBackground(mBackgroundBmp)
         mIvWatermark = findViewById<View>(R.id.superplayer_small_iv_water_mark) as ImageView
         mSpeedHelper = WinSpeedHelper(this)
         mVodQualityView = findViewById(R.id.superplayer_vod_quality)
-        mVodQualityView!!.setCallback(this)
+        mVodQualityView!!.setCallback(false, this)
         mTvQuality = findViewById(R.id.superplayer_tv_quality)
         if (mDefaultVideoQuality != null) {
             mTvQuality!!.text = mDefaultVideoQuality!!.title
         }
-        mIvTV =  findViewById(R.id.iv_tv)
+        mIvTV = findViewById(R.id.iv_tv)
         mIvTV!!.setOnClickListener(this)
         mTvQuality!!.setOnClickListener(this)
+        updateConfig(mConfigs)
     }
 
     /**
@@ -339,35 +355,50 @@ class WindowPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,VodQu
      */
     override fun show() {
         if (GlobalConfig.instance.isHideAll) return
+        isShowing = true
         isShowControl(true)
     }
 
-    private fun isShowControl(isShow:Boolean){
+    private fun isShowControl(isShow: Boolean) {
         if (mPlayType == PlayerType.LIVE_SHIFT) {
             mTvBackToLive!!.isVisible = isShow
         }
         if (isShow) {
             if (mLayoutTop!!.visibility != View.VISIBLE) {
-                mLayoutTop?.animation = AnimationUtils.loadAnimation(context, R.anim.push_top_in)
-                mLayoutBottom?.animation =
-                    AnimationUtils.loadAnimation(context, R.anim.push_bottom_in)
+                if (mConfigs.showTop) {
+                    mLayoutTop?.animation = AnimationUtils.loadAnimation(context, R.anim.push_top_in)
+                    mLayoutTop?.isVisible = isShow
+                }
+            }
+            if (mLayoutBottom!!.visibility != View.VISIBLE) {
+                if (mConfigs.showBottom) {
+                    mLayoutBottom?.animation =
+                            AnimationUtils.loadAnimation(context, R.anim.push_bottom_in)
+                    mLayoutBottom?.isVisible = isShow
+                }
             }
         } else {
             if (mLayoutTop!!.visibility == View.VISIBLE) {
-                mLayoutTop?.animation = AnimationUtils.loadAnimation(context, R.anim.push_top_out)
-                mLayoutBottom?.animation =
-                    AnimationUtils.loadAnimation(context, R.anim.push_bottom_out)
+                if (mConfigs.showTop) {
+                    mLayoutTop?.animation = AnimationUtils.loadAnimation(context, R.anim.push_top_out)
+                    mLayoutTop?.isVisible = isShow
+                }
+            }
+            if (mLayoutBottom!!.visibility == View.VISIBLE) {
+                if (mConfigs.showBottom) {
+                    mLayoutBottom?.animation =
+                            AnimationUtils.loadAnimation(context, R.anim.push_bottom_out)
+                    mLayoutBottom?.isVisible = isShow
+                }
             }
         }
-        mLayoutBottom!!.isVisible = isShow
-        mLayoutTop!!.isVisible = isShow
-        isShowing = isShow
     }
 
     /**
      * 隐藏控件
      */
     override fun hide() {
+        isShowing = false
         isShowControl(false)
         showQualityView(false)
     }
@@ -381,7 +412,9 @@ class WindowPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,VodQu
             }
             PlayerState.LOADING -> {
                 mIvPause!!.setImageResource(R.drawable.superplayer_ic_vod_pause_normal)
-                toggleView(mPbLiveLoading!!, true)
+                if (!isLive()) {
+                    toggleView(mPbLiveLoading!!, true)
+                }
                 toggleView(mLayoutReplay!!, false)
             }
             PlayerState.PAUSE -> {
@@ -392,7 +425,10 @@ class WindowPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,VodQu
             PlayerState.END -> {
                 mIvPause!!.setImageResource(R.drawable.superplayer_ic_vod_play_normal)
                 toggleView(mPbLiveLoading!!, false)
-                toggleView(mLayoutReplay!!, true)
+                if (!isLive()) {
+                    toggleView(mLayoutReplay!!, true)
+                }
+
             }
         }
         mCurrentPlayState = playState
@@ -426,7 +462,7 @@ class WindowPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,VodQu
             mLivePushDuration = if (mLivePushDuration > mProgress) mLivePushDuration else mProgress
             val leftTime = mDuration - mProgress
             mDuration =
-                if (mDuration > MAX_SHIFT_TIME) MAX_SHIFT_TIME.toLong() else mDuration
+                    if (mDuration > MAX_SHIFT_TIME) MAX_SHIFT_TIME.toLong() else mDuration
             percentage = 1 - leftTime.toFloat() / mDuration.toFloat()
         }
         if (percentage >= 0 && percentage <= 1) {
@@ -489,6 +525,10 @@ class WindowPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,VodQu
         }
     }
 
+    fun showFullAction(isShow: Boolean=false){
+        mIvFullScreen?.isVisible = isShow
+    }
+
     /**
      * 显示背景
      */
@@ -539,7 +579,7 @@ class WindowPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,VodQu
             if (progress < 0) {
                 progress = 0
             }
-            mSeekBarProgress!!.progress  = (progress)
+            mSeekBarProgress!!.progress = (progress)
             val seekTime: Int
             val percentage = progress * 1.0f / mSeekBarProgress!!.max
             seekTime = if (mPlayType == PlayerType.LIVE || mPlayType == PlayerType.LIVE_SHIFT) {
@@ -614,9 +654,9 @@ class WindowPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,VodQu
             if (mControllerCallback != null) {
                 mControllerCallback!!.onResumeLive()
             }
-        }else if (id == R.id.superplayer_tv_quality){
+        } else if (id == R.id.superplayer_tv_quality) {
             showQualityView()
-        } else if (id == R.id.iv_tv){
+        } else if (id == R.id.iv_tv) {
             showTvLink()
         }
     }
@@ -642,10 +682,11 @@ class WindowPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,VodQu
                 mGestureVideoProgressLayout!!.setTimeText(formattedTime(currentTime.toLong()))
             } else {
                 mGestureVideoProgressLayout!!.setTimeText(
-                    formattedTime(currentTime.toLong()) + " / " + formattedTime(
-                        mDuration
-                    )
+                        formattedTime(currentTime.toLong()) + " / " + formattedTime(
+                                mDuration
+                        )
                 )
+                updateVideoProgress(currentTime.toLong(), mDuration)
             }
             mGestureVideoProgressLayout!!.setProgress(progress)
         }
@@ -667,7 +708,7 @@ class WindowPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,VodQu
                 val position = (mDuration * percentage).toInt()
                 if (mControllerCallback != null) {
                     mControllerCallback!!.onSeekTo(position)
-                    mControllerCallback!!.onResume()
+//                    mControllerCallback!!.onResume()
                 }
             }
             PlayerType.LIVE, PlayerType.LIVE_SHIFT -> {
@@ -675,7 +716,7 @@ class WindowPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,VodQu
                 var seekTime = (mLivePushDuration * curProgress * 1.0f / maxProgress).toInt()
                 if (mLivePushDuration > MAX_SHIFT_TIME) {
                     seekTime =
-                        (mLivePushDuration - MAX_SHIFT_TIME * (maxProgress - curProgress) * 1.0f / maxProgress) as Int
+                            (mLivePushDuration - MAX_SHIFT_TIME * (maxProgress - curProgress) * 1.0f / maxProgress) as Int
                 }
                 if (mControllerCallback != null) {
                     mControllerCallback!!.onSeekTo(seekTime)
@@ -691,14 +732,16 @@ class WindowPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,VodQu
         }
         showQualityView(false)
     }
-    private fun showQualityView(isShow:Boolean){
+
+    private fun showQualityView(isShow: Boolean) {
         if (isShow) {
-            if( mVodQualityView?.visibility == View.GONE) {
+            isShowControl(false)
+            if (mVodQualityView?.visibility == View.GONE) {
                 mVodQualityView?.visibility = View.VISIBLE
                 mVodQualityView?.animation = AnimationUtils.loadAnimation(context, R.anim.slide_right_in)
             }
         } else {
-            if( mVodQualityView?.visibility == View.VISIBLE) {
+            if (mVodQualityView?.visibility == View.VISIBLE) {
                 mVodQualityView?.visibility = View.GONE
                 mVodQualityView?.animation = AnimationUtils.loadAnimation(context, R.anim.slide_right_exit)
             }
@@ -729,7 +772,7 @@ class WindowPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,VodQu
         if (mVideoQualityList != null && mVideoQualityList!!.isNotEmpty()) {
             for (i in mVideoQualityList!!.indices) {
                 val quality = mVideoQualityList!![i]
-                if (quality?.title != null && quality.title == mDefaultVideoQuality!!.title) {
+                if (quality.title != null && quality.title == mDefaultVideoQuality!!.title) {
                     mVodQualityView!!.setDefaultSelectedQuality(i)
                     break
                 }
@@ -763,8 +806,12 @@ class WindowPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,VodQu
     }
 
     fun hideTV(isShow: Boolean = false) {
-        TransitionManager.beginDelayedTransition(this)
-        mIvTV?.isVisible = isShow
+        if (mConfigs.showTV) {
+            TransitionManager.beginDelayedTransition(this)
+            mIvTV?.isVisible = isShow
+        } else {
+            mIvTV?.isVisible = false
+        }
     }
 
     fun hideQualities() {

@@ -8,6 +8,7 @@ import com.tencent.liteav.superplayer.SuperPlayerModel
 import com.tencent.liteav.superplayer.tv.TVControl
 import kotlinx.android.synthetic.main.activity_pre_videoe.view.*
 import me.shetj.base.ktx.showToast
+import me.shetj.base.ktx.start
 import me.shetj.base.mvvm.BaseBindingActivity
 import me.shetj.base.mvvm.BaseViewModel
 import me.shetj.base.tools.app.ArmsUtils
@@ -34,8 +35,8 @@ class TXPlayerActivity : BaseBindingActivity<BaseViewModel, ActivityTXPlayerBind
         val model = SuperPlayerModel()
 //        model.url =
 //            "https://vod2.lycheer.net/73e20c6evodtranscq1253442168/d238a8f65285890807609259635/v.f117442.mp4?t=5fdb67b0&us=ab85cd03d9&sign=2e34d0d67a2f4272d1edf3ad421bbf93"
-        model.url =
-            "http://200024424.vod.myqcloud.com/200024424_709ae516bdf811e6ad39991f76a4df69.f20.mp4"
+//        model.url =
+//            "http://200024424.vod.myqcloud.com/200024424_709ae516bdf811e6ad39991f76a4df69.f20.mp4"
         mViewBinding.superVodPlayerView.setPlayToSeek(10)
         mViewBinding.superVodPlayerView.playWithModel(model)
         mViewBinding.superVodPlayerView.setAutoPlay(true)
@@ -131,6 +132,8 @@ class TXPlayerActivity : BaseBindingActivity<BaseViewModel, ActivityTXPlayerBind
             }
             mViewBinding.btnHide.text = "隐藏控制：${GlobalConfig.instance.isHideAll}"
         }
+        mViewBinding.btnScoll.setOnClickListener { start<ScorllPlayerActivity>() }
+        mViewBinding.btnScoll2.setOnClickListener { start<ScorllPlayer2Activity>() }
     }
 
     override fun onResume() {

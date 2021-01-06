@@ -5,7 +5,6 @@ import android.app.AppOpsManager
 import android.content.*
 import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.graphics.PixelFormat
 import android.net.Uri
 import android.os.*
@@ -16,12 +15,11 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.*
 import android.widget.*
-import androidx.core.content.ContextCompat
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.tencent.liteav.basic.log.TXCLog
 import com.tencent.liteav.superplayer.SuperPlayerDef.*
 import com.tencent.liteav.superplayer.SuperPlayerModel.SuperPlayerURL
-import com.tencent.liteav.superplayer.casehelper.TipHelper
+import com.tencent.liteav.superplayer.casehelper.PlayKeyListHelper
 import com.tencent.liteav.superplayer.casehelper.onNext
 import com.tencent.liteav.superplayer.model.SuperPlayer
 import com.tencent.liteav.superplayer.model.SuperPlayerImpl
@@ -31,6 +29,7 @@ import com.tencent.liteav.superplayer.model.entity.PlayKeyFrameDescInfo
 import com.tencent.liteav.superplayer.model.entity.VideoQuality
 import com.tencent.liteav.superplayer.model.net.LogReport
 import com.tencent.liteav.superplayer.model.utils.NetWatcher
+import com.tencent.liteav.superplayer.timer.TimerConfigure
 import com.tencent.liteav.superplayer.tv.TVControl
 import com.tencent.liteav.superplayer.ui.player.*
 import com.tencent.liteav.superplayer.ui.view.DanmuView
@@ -39,6 +38,7 @@ import com.tencent.rtmp.ui.TXCloudVideoView
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+
 
 /**
  *
@@ -52,7 +52,7 @@ import java.io.IOException
  * 3、controller回调实现[.mControllerCallback]
  * 4、退出播放释放内存[.resetPlayer]
  */
-open class SuperPlayerView : RelativeLayout {
+open class SuperPlayerView : RelativeLayout,TimerConfigure.CallBack {
     private val OP_SYSTEM_ALERT_WINDOW = 24 // 支持TYPE_TOAST悬浮窗的最高API版本
     private var mContext: Context? = null
     private var mRootView // SuperPlayerView的根view
@@ -79,14 +79,17 @@ open class SuperPlayerView : RelativeLayout {
             : WindowManager? = null
     private var mWindowParams // 悬浮窗布局参数
             : WindowManager.LayoutParams? = null
-    private var mPlayerViewCallback // SuperPlayerView回调
+    protected var mPlayerViewCallback // SuperPlayerView回调
             : OnSuperPlayerViewCallback? = null
     private var mWatcher // 网络质量监视器
             : NetWatcher? = null
     private var mSuperPlayer: SuperPlayer? = null
 
-    private var mTipHelper: TipHelper? = null
     private var mTvController: TVControl? = null
+
+    var currentPosition :Long = 0L
+
+    var duration :Long = 0L
 
     constructor(context: Context) : super(context) {
         initialize(context)
@@ -97,15 +100,19 @@ open class SuperPlayerView : RelativeLayout {
     }
 
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(
-        context,
-        attrs,
-        defStyleAttr
+            context,
+            attrs,
+            defStyleAttr
     ) {
         initialize(context)
     }
 
     private fun initialize(context: Context) {
-        mContext = context
+        mContext = if (context !is Activity && context is ContextWrapper) {
+            context.baseContext
+        }else{
+            context
+        }
         initView()
         initPlayer()
     }
@@ -140,12 +147,13 @@ open class SuperPlayerView : RelativeLayout {
         mRootView!!.removeView(mFloatPlayer)
         addView(mTXCloudVideoView)
         addView(mDanmuView)
-        mTipHelper = TipHelper(mRootView!!)
+
         if (GlobalConfig.instance.isHideAll){
             mFullScreenPlayer!!.hide()
             mWindowPlayer!!.hide()
             mFloatPlayer!!.hide()
         }
+        TimerConfigure.instance.addCallBack(this)
     }
 
     open fun getPlayer(): SuperPlayer {
@@ -173,11 +181,11 @@ open class SuperPlayerView : RelativeLayout {
                 // 依据上层Parent的LayoutParam类型来实例化一个新的fullscreen模式下的LayoutParam
                 val parentLayoutParamClazz: Class<*> = layoutParams.javaClass
                 val constructor = parentLayoutParamClazz.getDeclaredConstructor(
-                    Int::class.javaPrimitiveType, Int::class.javaPrimitiveType
+                        Int::class.javaPrimitiveType, Int::class.javaPrimitiveType
                 )
                 mLayoutParamFullScreenMode = constructor.newInstance(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT
                 ) as ViewGroup.LayoutParams
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -199,6 +207,7 @@ open class SuperPlayerView : RelativeLayout {
         if (model.videoId != null) {
             mSuperPlayer!!.play(model.appId, model.videoId!!.fileId, model.videoId!!.pSign)
         } else if (model.videoIdV2 != null) {
+            mSuperPlayer!!.play(model.appId, model.videoIdV2!!.fileId, model.videoIdV2!!.sign)
         } else if (model.multiURLs != null && !model.multiURLs!!.isEmpty()) {
             mSuperPlayer!!.play(model.appId, model.multiURLs, model.playDefaultIndex)
         } else {
@@ -252,12 +261,17 @@ open class SuperPlayerView : RelativeLayout {
     }
 
     open  fun setKeyList(
-        name: String?,
-        adapter: BaseQuickAdapter<*, *>?,
-        position: Int = 0,
-        onNext: onNext? = null
+            name: String?,
+            adapter: BaseQuickAdapter<*, *>?,
+            position: Int = 0,
+            onNext: onNext? = null
     ) {
         mFullScreenPlayer?.getKeyListHelper()?.setKeyAndAdapter(name, adapter, position, onNext)
+    }
+
+
+    fun getKeyListHelper(): PlayKeyListHelper? {
+       return mFullScreenPlayer?.getKeyListHelper()
     }
 
     /**
@@ -290,6 +304,10 @@ open class SuperPlayerView : RelativeLayout {
         mSuperPlayer!!.pauseVod()
     }
 
+    open fun onRePlay() {
+        mSuperPlayer!!.reStart()
+    }
+
     /**
      * 重置播放器
      */
@@ -311,6 +329,13 @@ open class SuperPlayerView : RelativeLayout {
         }
     }
 
+    open fun getFullPlayer(): FullScreenPlayer? {
+        return mFullScreenPlayer
+    }
+
+    open  fun getWinPlayer(): WindowPlayer? {
+        return mWindowPlayer
+    }
     /**
      * 设置超级播放器的回掉
      *
@@ -344,13 +369,15 @@ open class SuperPlayerView : RelativeLayout {
                 }
                 removeView(mWindowPlayer)
                 addView(mFullScreenPlayer, mVodControllerFullScreenParams)
-                TransitionManager.beginDelayedTransition(parent as ViewGroup)
-                layoutParams = mLayoutParamFullScreenMode
-                if (mSuperPlayer!!.getWidth() > mSuperPlayer!!.getHeight()) {
-                    rotateScreenOrientation(Orientation.LANDSCAPE)
+                if (mSuperPlayer!!.getWidth() <= mSuperPlayer!!.getHeight()){
+                    TransitionManager.beginDelayedTransition(parent as ViewGroup)
                 }
+                layoutParams = mLayoutParamFullScreenMode
                 if (mPlayerViewCallback != null) {
                     mPlayerViewCallback!!.onStartFullScreenPlay()
+                }
+                if (mSuperPlayer!!.getWidth() > mSuperPlayer!!.getHeight()) {
+                    rotateScreenOrientation(Orientation.LANDSCAPE)
                 }
             } else if (playerMode == PlayerMode.WINDOW) { // 请求窗口模式
                 // 当前是悬浮窗
@@ -381,12 +408,14 @@ open class SuperPlayerView : RelativeLayout {
                     }
                     removeView(mFullScreenPlayer)
                     addView(mWindowPlayer, mVodControllerWindowParams)
-                    TransitionManager.beginDelayedTransition(parent as ViewGroup)
+                    if ((mContext as Activity?)!!.requestedOrientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+                        TransitionManager.beginDelayedTransition(parent as ViewGroup)
+                    }
                     layoutParams = mLayoutParamWindowMode
-                    rotateScreenOrientation(Orientation.PORTRAIT)
                     if (mPlayerViewCallback != null) {
                         mPlayerViewCallback!!.onStopFullScreenPlay()
                     }
+                    rotateScreenOrientation(Orientation.PORTRAIT)
                 }
             } else if (playerMode == PlayerMode.FLOAT) { //请求悬浮窗模式
                 TXCLog.i(TAG, "requestPlayMode Float :" + Build.MANUFACTURER)
@@ -445,7 +474,9 @@ open class SuperPlayerView : RelativeLayout {
 
         override fun onBackPressed(playMode: PlayerMode?) {
             when (playMode) {
-                PlayerMode.FULLSCREEN -> onSwitchPlayMode(PlayerMode.WINDOW)
+                PlayerMode.FULLSCREEN -> {
+                    onSwitchPlayMode(PlayerMode.WINDOW)
+                }
                 PlayerMode.WINDOW -> if (mPlayerViewCallback != null) {
                     mPlayerViewCallback!!.onClickSmallReturnBtn()
                 }
@@ -500,9 +531,10 @@ open class SuperPlayerView : RelativeLayout {
         }
 
         override fun onDanmuToggle(isOpen: Boolean) {
-            if (mDanmuView != null) {
-                mDanmuView!!.toggle(isOpen)
-            }
+//            if (mDanmuView != null) {
+//                mDanmuView!!.toggle(isOpen)
+//            }
+            onDanmuContralShow(isOpen)
         }
 
         override fun onSnapshot() {
@@ -519,12 +551,14 @@ open class SuperPlayerView : RelativeLayout {
             mFullScreenPlayer!!.updateVideoQuality(quality)
             mWindowPlayer!!.updateVideoQuality(quality)
             mSuperPlayer!!.switchStream(quality)
+            showMsg("已切换为${quality.title}播放","${quality.title}")
         }
 
         override fun onSpeedChange(speedLevel: Float) {
             mWindowPlayer!!.updateSpeedChange(speedLevel)
             mFullScreenPlayer!!.updateSpeedChange(speedLevel)
             mSuperPlayer!!.setRate(speedLevel)
+            showMsg("当前列表已切换为${speedLevel}倍速度播放","$speedLevel")
         }
 
         override fun onMirrorToggle(isMirror: Boolean) {
@@ -534,6 +568,19 @@ open class SuperPlayerView : RelativeLayout {
         override fun onHWAccelerationToggle(isAccelerate: Boolean) {
             mSuperPlayer!!.enableHardwareDecode(isAccelerate)
         }
+    }
+
+
+    open fun onDanmuContralShow(open: Boolean) {
+
+    }
+
+    open fun onSeekComplete(){
+
+    }
+
+    fun changeRenderMode(renderMode : Int){
+        mSuperPlayer?.changeRenderMode(renderMode)
     }
 
     /**
@@ -547,8 +594,8 @@ open class SuperPlayerView : RelativeLayout {
         popupWindow.height = ViewGroup.LayoutParams.WRAP_CONTENT
         val view =
                 LayoutInflater.from(mContext).inflate(
-                    R.layout.superplayer_layout_new_vod_snap,
-                    null
+                        R.layout.superplayer_layout_new_vod_snap,
+                        null
                 )
         val imageView = view.findViewById<View>(R.id.superplayer_iv_snap) as ImageView
         imageView.setImageBitmap(bmp)
@@ -567,9 +614,9 @@ open class SuperPlayerView : RelativeLayout {
     private fun rotateScreenOrientation(orientation: SuperPlayerDef.Orientation) {
         when (orientation) {
             Orientation.LANDSCAPE -> (mContext as Activity?)!!.requestedOrientation =
-                ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                    ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
             Orientation.PORTRAIT -> (mContext as Activity?)!!.requestedOrientation =
-                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                    ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         }
     }
 
@@ -587,16 +634,16 @@ open class SuperPlayerView : RelativeLayout {
             val manager = context!!.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
             try {
                 val method = AppOpsManager::class.java.getDeclaredMethod(
-                    "checkOp",
-                    Int::class.javaPrimitiveType,
-                    Int::class.javaPrimitiveType,
-                    String::class.java
+                        "checkOp",
+                        Int::class.javaPrimitiveType,
+                        Int::class.javaPrimitiveType,
+                        String::class.java
                 )
                 return AppOpsManager.MODE_ALLOWED == method.invoke(
-                    manager,
-                    op,
-                    Binder.getCallingUid(),
-                    context.packageName
+                        manager,
+                        op,
+                        Binder.getCallingUid(),
+                        context.packageName
                 ) as Int
             } catch (e: Exception) {
                 TXCLog.e(TAG, Log.getStackTraceString(e))
@@ -634,6 +681,8 @@ open class SuperPlayerView : RelativeLayout {
                 mPlayerViewCallback!!.onStartFloatWindowPlay()
             }
             mControllerCallback?.onSwitchPlayMode(PlayerMode.FLOAT)
+        }else{
+            mControllerCallback?.onSwitchPlayMode(PlayerMode.FULLSCREEN)
         }
     }
 
@@ -641,11 +690,15 @@ open class SuperPlayerView : RelativeLayout {
         get() = mSuperPlayer!!.playerMode
     val playerState: PlayerState
         get() = mSuperPlayer!!.playerState
-    val mSuperPlayerObserver: SuperPlayerObserver = object : SuperPlayerObserver() {
-        override fun onPlayBegin(name: String?) {
-            mWindowPlayer!!.updatePlayState(PlayerState.PLAYING)
-            mFullScreenPlayer!!.updatePlayState(PlayerState.PLAYING)
-            updateTitle(name)
+
+   fun setPlayerObserver( mSuperPlayerObserver: SuperPlayerObserver) {
+       this.mSuperPlayerObserver = mSuperPlayerObserver
+       mSuperPlayer?.setObserver(mSuperPlayerObserver)
+   }
+
+   private var mSuperPlayerObserver: SuperPlayerObserver = object : SuperPlayerObserver() {
+        override fun onPlayBegin() {
+            updatePlayState(PlayerState.PLAYING)
             mWindowPlayer!!.hideBackground()
             if (mDanmuView != null && mDanmuView!!.isPrepared && mDanmuView!!.isPaused) {
                 mDanmuView!!.resume()
@@ -655,14 +708,30 @@ open class SuperPlayerView : RelativeLayout {
             }
         }
 
+        override fun onPlayComplete() {
+            super.onPlayComplete()
+            if (userTimer()) {
+                if (TimerConfigure.instance.isCourseTime()) {
+                    TimerConfigure.instance.stateChange(TimerConfigure.STATE_COMPLETE)
+                    return
+                }
+                if (TimerConfigure.instance.isRepeatOne()) {
+                    mSuperPlayer?.reStart()
+                    return
+                }else{
+                    getKeyListHelper()?.nextOne()
+                }
+            }else{
+                mSuperPlayer?.reStart()
+            }
+        }
+
         override fun onPlayPause() {
-            mWindowPlayer!!.updatePlayState(PlayerState.PAUSE)
-            mFullScreenPlayer!!.updatePlayState(PlayerState.PAUSE)
+            updatePlayState(PlayerState.PAUSE)
         }
 
         override fun onPlayStop() {
-            mWindowPlayer!!.updatePlayState(PlayerState.END)
-            mFullScreenPlayer!!.updatePlayState(PlayerState.END)
+            updatePlayState(PlayerState.END)
             // 清空关键帧和视频打点信息
             if (mWatcher != null) {
                 mWatcher!!.stop()
@@ -672,8 +741,7 @@ open class SuperPlayerView : RelativeLayout {
         }
 
         override fun onPlayLoading() {
-            mWindowPlayer!!.updatePlayState(PlayerState.LOADING)
-            mFullScreenPlayer!!.updatePlayState(PlayerState.LOADING)
+            updatePlayState(PlayerState.LOADING)
             if (mWatcher != null) {
                 mWatcher!!.enterLoading()
             }
@@ -681,12 +749,16 @@ open class SuperPlayerView : RelativeLayout {
 
         override fun onVideoSize(width: Int, height: Int) {
             super.onVideoSize(width, height)
-
+            onVideoSizeChange(width, height)
+            mPlayerViewCallback?.onVideoSize(width , height )
         }
 
         override fun onPlayProgress(current: Long, duration: Long) {
             mWindowPlayer!!.updateVideoProgress(current, duration)
             mFullScreenPlayer!!.updateVideoProgress(current, duration)
+            mPlayerViewCallback?.onPlayProgress(current, duration)
+
+            onPlayProgressChange(current,duration)
         }
 
         override fun onSeek(position: Int) {
@@ -695,12 +767,13 @@ open class SuperPlayerView : RelativeLayout {
                     mWatcher!!.stop()
                 }
             }
+            onSeekComplete()
         }
 
         override fun onSwitchStreamStart(
-            success: Boolean,
-            playerType: PlayerType,
-            quality: VideoQuality
+                success: Boolean,
+                playerType: PlayerType,
+                quality: VideoQuality
         ) {
             if (playerType == PlayerType.LIVE) {
                 if (success) {
@@ -708,18 +781,18 @@ open class SuperPlayerView : RelativeLayout {
                             .show()
                 } else {
                     Toast.makeText(
-                        mContext,
-                        "切换" + quality.title + "清晰度失败，请稍候重试",
-                        Toast.LENGTH_SHORT
+                            mContext,
+                            "切换" + quality.title + "清晰度失败，请稍候重试",
+                            Toast.LENGTH_SHORT
                     ).show()
                 }
             }
         }
 
         override fun onSwitchStreamEnd(
-            success: Boolean,
-            playerType: PlayerType,
-            quality: VideoQuality?
+                success: Boolean,
+                playerType: PlayerType,
+                quality: VideoQuality?
         ) {
             if (playerType == PlayerType.LIVE) {
                 if (success) {
@@ -743,8 +816,8 @@ open class SuperPlayerView : RelativeLayout {
         }
 
         override fun onVideoQualityListChange(
-            videoQualities: ArrayList<VideoQuality>?,
-            defaultVideoQuality: VideoQuality?
+                videoQualities: ArrayList<VideoQuality>?,
+                defaultVideoQuality: VideoQuality?
         ) {
             if (videoQualities != null && videoQualities.isNotEmpty()) {
                 mFullScreenPlayer!!.setVideoQualityList(videoQualities)
@@ -762,8 +835,8 @@ open class SuperPlayerView : RelativeLayout {
         }
 
         override fun onVideoImageSpriteAndKeyFrameChanged(
-            info: PlayImageSpriteInfo?,
-            list: ArrayList<PlayKeyFrameDescInfo>?
+                info: PlayImageSpriteInfo?,
+                list: ArrayList<PlayKeyFrameDescInfo>?
         ) {
             mFullScreenPlayer!!.updateImageSpriteInfo(info)
             mFullScreenPlayer!!.updateKeyFrameDescInfo(list)
@@ -774,22 +847,48 @@ open class SuperPlayerView : RelativeLayout {
         }
     }
 
+    open fun onVideoSizeChange(width: Int, height: Int) {
+
+    }
+
+    open fun userTimer(): Boolean {
+        return true
+    }
+
+    open fun onPlayProgressChange(current: Long, duration: Long) {
+        this.currentPosition = current
+        this.duration = duration
+    }
+
+    open fun updatePlayState(playState: PlayerState?) {
+        mWindowPlayer!!.updatePlayState(playState)
+        mFullScreenPlayer!!.updatePlayState(playState)
+    }
+
     open fun showToast(message: String?) {
         Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show()
-        message?.let { mTipHelper!!.showMsg(it) }
     }
 
     open fun showToast(resId: Int) {
-         mTipHelper!!.showMsg(context.getString(resId))
+        Toast.makeText(mContext, resId, Toast.LENGTH_SHORT).show()
     }
 
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        mFullScreenPlayer?.onDestroyCallBack()
+    open fun showMsg(text:String, hideText: String) {
+
     }
 
     open fun setAutoPlay(auto: Boolean) {
         mSuperPlayer?.autoPlay(auto)
+    }
+
+    open fun onBackPressed():Boolean{
+        return if (mSuperPlayer!!.playerMode == PlayerMode.WINDOW
+                || mSuperPlayer!!.playerMode == PlayerMode.FLOAT){
+            true
+        }else{
+            switchPlayMode(PlayerMode.WINDOW)
+            false
+        }
     }
 
     open fun hideAll() {
@@ -797,6 +896,19 @@ open class SuperPlayerView : RelativeLayout {
         mFullScreenPlayer!!.hide()
         mWindowPlayer!!.hide()
         mFloatPlayer!!.hide()
+    }
+
+    open fun hide() {
+        mFullScreenPlayer!!.hide()
+        mWindowPlayer!!.hide()
+        mFloatPlayer!!.hide()
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        resetPlayer()
+        mFullScreenPlayer?.onDestroyCallBack()
+        TimerConfigure.instance.removeCallBack(this)
     }
 
     companion object {
@@ -860,6 +972,30 @@ open class SuperPlayerView : RelativeLayout {
             } catch (e: Exception) {
                 TXCLog.e(TAG, Log.getStackTraceString(e))
             }
+        }
+    }
+
+    override fun onTick(progress: Long) {
+
+    }
+
+    override fun onStateChange(state: Int) {
+        if (userTimer()) {
+            when (state) {
+                TimerConfigure.STATE_COMPLETE -> {
+                    if (playerState == PlayerState.PLAYING) {
+                        onPause()
+                    }
+                }
+            }
+        }
+    }
+
+    override fun onChangeModel(repeatMode: Int) {
+        if (repeatMode == TimerConfigure.REPEAT_MODE_ALL){
+            showMsg("已切换为顺序播放","顺序播放")
+        }else{
+            showMsg("已切换为单课循环","单课循环")
         }
     }
 }

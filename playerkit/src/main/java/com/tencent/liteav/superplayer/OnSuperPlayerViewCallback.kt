@@ -35,4 +35,13 @@ interface OnSuperPlayerViewCallback {
      */
     fun onClickShare()
 
+    /**
+     * 播放进度变化
+     */
+    fun onPlayProgress(current: Long, duration: Long)
+
+    /**
+     * 开始视频大小变化
+     */
+    fun onVideoSize(width: Int, height: Int)
 }

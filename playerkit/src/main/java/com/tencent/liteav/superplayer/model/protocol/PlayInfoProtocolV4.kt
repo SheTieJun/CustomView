@@ -22,8 +22,7 @@ class PlayInfoProtocolV4(  // 协议请求输入的参数
     private val mParams: PlayInfoParams
 ) : IPlayInfoProtocol {
     private val BASE_URLS_V4 = "https://playvideo.qcloud.com/getplayinfo/v4" // V4协议请求地址
-    private val mMainHandler // 用于切换线程
-            : Handler
+    private val mMainHandler : Handler// 用于切换线程
     private var mParser // 协议请求返回Json的解析对象
             : IPlayInfoParser? = null
     override var penetrateContext //透传字段

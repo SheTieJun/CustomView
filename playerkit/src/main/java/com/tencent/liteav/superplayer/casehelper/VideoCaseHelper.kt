@@ -22,6 +22,7 @@ import com.tencent.liteav.superplayer.casehelper.adaper.VideoFullPlayModeListAda
 import com.tencent.liteav.superplayer.casehelper.adaper.VideoFullSpeedListAdapter
 import com.tencent.liteav.superplayer.casehelper.adaper.VideoFullTimeTypeListAdapter
 import com.tencent.liteav.superplayer.ui.view.VodMoreView
+import java.sql.Time
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -41,8 +42,8 @@ class VideoCaseHelper(private val mVodMoreView: VodMoreView): TimerConfigure.Cal
     private var iRecyclerViewPlayMode :  RecyclerView? =null
     private var content:View ?= null
     private var timeShow :TextView ?= null
-    private var playMode = "单课循环"
-
+    private var playMode = if (!TimerConfigure.instance.isRepeatOne()) "顺序播放" else "单曲循环"
+    private var mAdapter = VideoFullPlayModeListAdapter(getPlayModeList())
     init {
         TimerConfigure.instance.addCallBack(this)
         initView(mVodMoreView)
@@ -64,7 +65,7 @@ class VideoCaseHelper(private val mVodMoreView: VodMoreView): TimerConfigure.Cal
         }
     }
 
-    fun showCase(isShow: Boolean) {
+    private fun showCase(isShow: Boolean) {
         if (isShow) {
             content?.visibility = View.VISIBLE
             content?.animation = AnimationUtils.loadAnimation(context, R.anim.slide_right_in)
@@ -81,7 +82,6 @@ class VideoCaseHelper(private val mVodMoreView: VodMoreView): TimerConfigure.Cal
 
 
     private fun initPlayMode() {
-        val mAdapter = VideoFullPlayModeListAdapter(getPlayModeList())
         mAdapter.setCurPlayMode(playMode)
         iRecyclerViewPlayMode?.layoutManager =  LinearLayoutManager(context,  LinearLayoutManager.HORIZONTAL, false)
         mAdapter.setOnItemClickListener { _: BaseQuickAdapter<*, *>?, _: View?, position: Int ->
@@ -110,7 +110,7 @@ class VideoCaseHelper(private val mVodMoreView: VodMoreView): TimerConfigure.Cal
     private fun initSpeed() {
         val speedList = arrayListOf(1.0f, 1.25f, 1.5f, 1.75f, 2.0f)
         adapter = VideoFullSpeedListAdapter(speedList)
-//        adapter?.setCurSpeed(videoView.speed)
+        adapter?.setCurSpeed(SuperPlayerGlobalConfig.instance.speed)
         iRecyclerViewSpeed?.layoutManager = GridLayoutManager(context, 5)
         adapter?.setOnItemClickListener { adapter1, _, position ->
             val speedRate = adapter1.getItem(position) as Float
@@ -161,6 +161,7 @@ class VideoCaseHelper(private val mVodMoreView: VodMoreView): TimerConfigure.Cal
             }
             else -> "顺序播放"
         }
+        mAdapter.setCurPlayMode(playMode)
     }
     //endregion定时关闭
 

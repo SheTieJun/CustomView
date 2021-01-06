@@ -37,7 +37,7 @@
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
         android:gravity="center"
-        android:textColor="@color/white"
+        android:textColor="@color/superplayer_white"
         android:text="播放将消耗36M流量，建议连接Wi-Fi观看"
         android:layout_centerInParent="true"
         android:visibility="gone"

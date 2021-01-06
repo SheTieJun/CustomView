@@ -20,31 +20,31 @@ class LogReport private constructor() {
     }
 
     fun uploadLogs(action: String?, usedtime: Long, fileid: Int) {
-        val reqUrl = "https://ilivelog.qcloud.com"
-        var body = ""
-        try {
-            val jsonObject = JSONObject()
-            jsonObject.put("action", action)
-            jsonObject.put("fileid", fileid)
-            jsonObject.put("type", "log")
-            jsonObject.put("bussiness", "superplayer")
-            jsonObject.put("usedtime", usedtime)
-            jsonObject.put("platform", "android")
-            if (mAppName != null) {
-                jsonObject.put("appname", mAppName)
-            }
-            if (mPackageName != null) {
-                jsonObject.put("appidentifier", mPackageName)
-            }
-            body = jsonObject.toString()
-            TXCLog.d(TAG, body)
-        } catch (e: JSONException) {
-            e.printStackTrace()
-        }
-        HttpURLClient.instance.postJson(reqUrl, body, object : OnHttpCallback {
-            override fun onSuccess(result: String) {}
-            override fun onError() {}
-        })
+//        val reqUrl = "https://ilivelog.qcloud.com"
+//        var body = ""
+//        try {
+//            val jsonObject = JSONObject()
+//            jsonObject.put("action", action)
+//            jsonObject.put("fileid", fileid)
+//            jsonObject.put("type", "log")
+//            jsonObject.put("bussiness", "superplayer")
+//            jsonObject.put("usedtime", usedtime)
+//            jsonObject.put("platform", "android")
+//            if (mAppName != null) {
+//                jsonObject.put("appname", mAppName)
+//            }
+//            if (mPackageName != null) {
+//                jsonObject.put("appidentifier", mPackageName)
+//            }
+//            body = jsonObject.toString()
+//            TXCLog.d(TAG, body)
+//        } catch (e: JSONException) {
+//            e.printStackTrace()
+//        }
+//        HttpURLClient.instance.postJson(reqUrl, body, object : OnHttpCallback {
+//            override fun onSuccess(result: String) {}
+//            override fun onError() {}
+//        })
     }
 
     fun setAppName(context: Context?) {

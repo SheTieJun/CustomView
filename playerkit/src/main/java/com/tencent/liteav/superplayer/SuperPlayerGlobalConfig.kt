@@ -25,6 +25,8 @@ class SuperPlayerGlobalConfig {
      */
     var renderMode = TXLiveConstants.RENDER_MODE_ADJUST_RESOLUTION
 
+    var liveRenderMode = TXLiveConstants.RENDER_MODE_FULL_FILL_SCREEN
+
     /**
      * 播放器最大缓存个数 （ 默认缓存 5 ）
      */
@@ -40,11 +42,15 @@ class SuperPlayerGlobalConfig {
      */
     var enableHWAcceleration = true
 
-    var isShowMirror = true
+    var isShowMirror = false //展示镜像功能
 
     var isHideAll = false
 
-    var isShowAccelerate = true
+    var isShowAccelerate = true //展示已经加速功能
+
+    var isShowPlayStyle = true //展示播放模式
+
+    var isShowTimeStyle = true //展示定时
 
     var speed: Float = 1.0f
 

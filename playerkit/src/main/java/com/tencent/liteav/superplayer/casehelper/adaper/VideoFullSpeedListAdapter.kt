@@ -26,7 +26,7 @@ class VideoFullSpeedListAdapter(data: ArrayList<Float>) : BaseQuickAdapter<Float
     override fun convert(holder: BaseViewHolder, item: Float) {
         item.let {
             holder.setText(R.id.content,  item.toString())
-            holder.setTextColor(R.id.content, if (curSpeed == item) getColor(context,R.color.orange) else getColor(context,R.color.superplayer_white))
+            holder.setTextColor(R.id.content, if (curSpeed == item) getColor(context,R.color.superplayer_orange) else getColor(context,R.color.superplayer_white))
             holder.getView<TextView>(R.id.content)?.apply {
                 typeface = if (curSpeed == item) {
                     Typeface.defaultFromStyle(Typeface.BOLD);

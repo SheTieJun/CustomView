@@ -11,7 +11,7 @@ abstract class SuperPlayerObserver {
      * 开始播放
      * @param name 当前视频名称
      */
-    open fun onPlayBegin(name: String?) {}
+    open fun onPlayBegin() {}
 
     /**
      * 播放暂停
@@ -55,5 +55,10 @@ abstract class SuperPlayerObserver {
         info: PlayImageSpriteInfo?,
         list: ArrayList<PlayKeyFrameDescInfo>?
     ) {
+    }
+
+    open fun onPlayComplete() {
+
+
     }
 }

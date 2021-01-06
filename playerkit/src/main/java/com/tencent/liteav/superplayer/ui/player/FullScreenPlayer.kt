@@ -26,6 +26,7 @@ import com.tencent.liteav.superplayer.model.utils.VideoGestureDetector.VideoGest
 import com.tencent.liteav.superplayer.casehelper.PlayKeyListHelper
 import com.tencent.liteav.superplayer.casehelper.VideoCaseHelper
 import com.tencent.liteav.superplayer.casehelper.WinSpeedHelper
+import com.tencent.liteav.superplayer.ui.config.FullConfigs
 import com.tencent.liteav.superplayer.ui.view.*
 import com.tencent.liteav.superplayer.ui.view.PointSeekBar.OnSeekBarPointClickListener
 import com.tencent.liteav.superplayer.ui.view.PointSeekBar.PointParams
@@ -61,6 +62,8 @@ import kotlin.math.roundToInt
  */
 class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
         VodQualityView.Callback, PointSeekBar.OnSeekBarChangeListener, OnSeekBarPointClickListener {
+    private var mConfigs: FullConfigs = FullConfigs.ofDef()
+
     // UI控件
     private var mLayoutTop // 顶部标题栏布局
             : View? = null
@@ -94,8 +97,9 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
             : ImageView? = null
     private var mIvDanmu // 弹幕按钮
             : ImageView? = null
-    private var mIvSnapshot // 截屏按钮
-            : ImageView? = null
+
+    //    private var mIvSnapshot // 截屏按钮
+//            : ImageView? = null
     private var mIvLock // 锁屏按钮
             : ImageView? = null
     private var mIvMore // 更多设置弹窗按钮
@@ -151,7 +155,7 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
     private var mIvSpeed: ImageView? = null
     private var keyListHelper: PlayKeyListHelper? = null
     private var mTopShare: View? = null
-    private var mIvTV:View? = null
+    private var mIvTV: View? = null
 
     constructor(context: Context?) : super(context) {
         initialize(context)
@@ -169,6 +173,18 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
         initialize(context)
     }
 
+    fun updateConfig(configs: FullConfigs) {
+        this.mConfigs = configs
+        mIvTV?.isVisible = mConfigs.showTV
+        mIvDanmu?.isVisible = mConfigs.showDanmu
+        mIvSpeed?.isVisible = mConfigs.showSpeed
+        mTopShare?.isVisible = mConfigs.showShare
+        mIvMore?.isVisible = mConfigs.showMore
+        mIvLock?.isVisible = mConfigs.showLock
+        mLayoutTop?.isVisible = mConfigs.keepTop
+        mLayoutBottom?.isVisible = mConfigs.showBottom
+    }
+
     /**
      * 初始化控件、手势检测监听器、亮度/音量/播放进度的回调
      */
@@ -176,7 +192,7 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
         initView(context)
         mGestureDetector = GestureDetector(getContext(), object : SimpleOnGestureListener() {
             override fun onDoubleTap(e: MotionEvent): Boolean {
-                if (mLockScreen) return false
+                if (mLockScreen || isLive()) return false
                 togglePlayState()
                 show()
                 if (mHideViewRunnable != null) {
@@ -197,7 +213,7 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
                     distanceX: Float,
                     distanceY: Float
             ): Boolean {
-                if (mLockScreen) return false
+                if (mLockScreen || isLive()) return false
                 if (downEvent == null || moveEvent == null) {
                     return false
                 }
@@ -214,7 +230,7 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
             }
 
             override fun onDown(e: MotionEvent): Boolean {
-                if (mLockScreen) return true
+                if (mLockScreen || isLive()) return true
                 if (mVideoGestureDetector != null) {
                     mVideoGestureDetector!!.reset(width, mSeekBarProgress!!.progress)
                 }
@@ -241,6 +257,7 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
             }
 
             override fun onSeekGesture(progress: Int) {
+                if (isLive()) return
                 var progress = progress
                 mIsChangingSeekBarProgress = true
                 if (mGestureVideoProgressLayout != null) {
@@ -267,6 +284,7 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
                                         mDuration
                                 )
                         )
+                        updateVideoProgress(currentTime.toLong(), mDuration)
                     }
                     setThumbnail(progress)
                 }
@@ -274,6 +292,8 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
             }
         })
     }
+
+    fun isLive() = (mPlayType == PlayerType.LIVE || mPlayType == PlayerType.LIVE_SHIFT)
 
     /**
      * 初始化view
@@ -292,7 +312,6 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
         mIvPause = findViewById<View>(R.id.superplayer_iv_pause) as ImageView
         mIvDanmu = findViewById<View>(R.id.superplayer_iv_danmuku) as ImageView
         mIvMore = findViewById<View>(R.id.superplayer_iv_more) as ImageView
-        mIvSnapshot = findViewById<View>(R.id.superplayer_iv_snapshot) as ImageView
         mTvCurrent = findViewById<View>(R.id.superplayer_tv_current) as TextView
         mTvDuration = findViewById<View>(R.id.superplayer_tv_duration) as TextView
         mSeekBarProgress = findViewById<View>(R.id.superplayer_seekbar_progress) as PointSeekBar
@@ -303,7 +322,7 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
         mTvBackToLive = findViewById(R.id.superplayer_tv_back_to_live)
         mPbLiveLoading = findViewById(R.id.superplayer_pb_live)
         mVodQualityView = findViewById(R.id.superplayer_vod_quality)
-        mVodQualityView!!.setCallback(this)
+        mVodQualityView!!.setCallback(true,this)
         mVodMoreView = findViewById(R.id.superplayer_vod_more)
         mVodMoreView!!.setCallback(this)
         mTvBackToLive!!.setOnClickListener(this)
@@ -312,7 +331,6 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
         mIvBack!!.setOnClickListener(this)
         mIvPause!!.setOnClickListener(this)
         mIvDanmu!!.setOnClickListener(this)
-        mIvSnapshot!!.setOnClickListener(this)
         mIvMore!!.setOnClickListener(this)
         mTvQuality!!.setOnClickListener(this)
         mTvVttText = findViewById<View>(R.id.superplayer_large_tv_vtt_text) as TextView
@@ -329,10 +347,11 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
         mIvSpeed!!.setOnClickListener(this)
         mTopShare = findViewById(R.id.top_share)
         mTopShare!!.setOnClickListener(this)
-        mIvTV =  findViewById(R.id.iv_tv)
+        mIvTV = findViewById(R.id.iv_tv)
         mIvTV!!.setOnClickListener(this)
         keyListHelper = PlayKeyListHelper(this)
         WinSpeedHelper.showSpeedImage(mIvSpeed!!)
+        updateConfig(mConfigs)
     }
 
     fun getKeyListHelper(): PlayKeyListHelper? {
@@ -433,13 +452,16 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
      * 显示控件
      */
     override fun show() {
+        //直播也不显示进度
         if (GlobalConfig.instance.isHideAll) return
         isShowing = true
         isShowControl(true)
         if (mHideLockViewRunnable != null) {
             removeCallbacks(mHideLockViewRunnable)
         }
-        mIvLock!!.visibility = VISIBLE
+        if (mConfigs.showLock) {
+            mIvLock!!.visibility = VISIBLE
+        }
         if (mPlayType == PlayerType.LIVE_SHIFT) {
             if (mLayoutBottom!!.visibility == VISIBLE) mTvBackToLive!!.visibility = VISIBLE
         }
@@ -471,20 +493,34 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
         }
         if (isShow) {
             if (mLayoutTop!!.visibility != View.VISIBLE) {
-                mLayoutTop?.animation = AnimationUtils.loadAnimation(context, R.anim.push_top_in)
-                mLayoutBottom?.animation =
-                    AnimationUtils.loadAnimation(context, R.anim.push_bottom_in)
+                if (mConfigs.showTop) {
+                    mLayoutTop?.animation = AnimationUtils.loadAnimation(context, R.anim.push_top_in)
+                    mLayoutTop!!.isVisible = isShow
+                }
+            }
+            if (mLayoutBottom!!.visibility != View.VISIBLE) {
+                if (mConfigs.showBottom) {
+                    mLayoutBottom?.animation =
+                            AnimationUtils.loadAnimation(context, R.anim.push_bottom_in)
+                    mLayoutBottom!!.isVisible = isShow
+                }
             }
         } else {
             if (mLayoutTop!!.visibility == View.VISIBLE) {
-                mLayoutTop?.animation = AnimationUtils.loadAnimation(context, R.anim.push_top_out)
-                mLayoutBottom?.animation =
-                    AnimationUtils.loadAnimation(context, R.anim.push_bottom_out)
+                if (mConfigs.showTop && !mConfigs.keepTop) {
+                    mLayoutTop?.animation = AnimationUtils.loadAnimation(context, R.anim.push_top_out)
+                    mLayoutTop!!.isVisible = isShow
+                }
+
+            }
+            if (mConfigs.showBottom) {
+                if (mLayoutBottom!!.visibility == View.VISIBLE) {
+                    mLayoutBottom?.animation =
+                            AnimationUtils.loadAnimation(context, R.anim.push_bottom_out)
+                    mLayoutBottom!!.isVisible = isShow
+                }
             }
         }
-        mLayoutBottom!!.isVisible = isShow
-        mLayoutTop!!.isVisible = isShow
-        isShowing = isShow
     }
 
 
@@ -504,16 +540,23 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
             }
             PlayerState.LOADING -> {
                 mIvPause!!.setImageResource(R.drawable.superplayer_ic_vod_pause_normal)
-                toggleView(mPbLiveLoading!!, true)
+                if (!isLive()) {
+                    toggleView(mPbLiveLoading!!, true)
+                }
                 toggleView(mLayoutReplay!!, false)
             }
             PlayerState.PAUSE -> {
                 mIvPause!!.setImageResource(R.drawable.superplayer_ic_vod_play_normal)
+                toggleView(mPbLiveLoading!!, false)
                 toggleView(mLayoutReplay!!, false)
             }
             PlayerState.END -> {
                 mIvPause!!.setImageResource(R.drawable.superplayer_ic_vod_play_normal)
-                toggleView(mLayoutReplay!!, true)
+                toggleView(mPbLiveLoading!!, false)
+                if (!isLive()) {
+                    toggleView(mLayoutReplay!!, true)
+                }
+
             }
         }
         mCurrentPlayState = playState
@@ -710,10 +753,6 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
             togglePlayState()
         } else if (i == R.id.superplayer_iv_danmuku) {          //弹幕按钮
             toggleBarrage()
-        } else if (i == R.id.superplayer_iv_snapshot) {         //截屏按钮
-            if (mControllerCallback != null) {
-                mControllerCallback!!.onSnapshot()
-            }
         } else if (i == R.id.superplayer_iv_more) {             //更多设置按钮
             showMoreView()
         } else if (i == R.id.superplayer_tv_quality) {          //画质按钮
@@ -730,9 +769,9 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
             seekToKeyFramePos()
         } else if (i == R.id.iv_speed) {
             showMoreView()
-        } else if (i == R.id.top_share){
+        } else if (i == R.id.top_share) {
             showShare()
-        } else if (i == R.id.iv_tv){
+        } else if (i == R.id.iv_tv) {
             showTVLink()
         }
     }
@@ -751,11 +790,6 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
      */
     private fun toggleBarrage() {
         mBarrageOn = !mBarrageOn
-        if (mBarrageOn) {
-            mIvDanmu!!.setImageResource(R.drawable.superplayer_ic_danmuku_on)
-        } else {
-            mIvDanmu!!.setImageResource(R.drawable.superplayer_ic_danmuku_off)
-        }
         if (mControllerCallback != null) {
             mControllerCallback!!.onDanmuToggle(mBarrageOn)
         }
@@ -802,7 +836,6 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
      */
     private fun toggleLockState() {
         mLockScreen = !mLockScreen
-        mIvLock!!.visibility = VISIBLE
         if (mHideLockViewRunnable != null) {
             removeCallbacks(mHideLockViewRunnable)
             postDelayed(mHideLockViewRunnable, 7000)
@@ -859,6 +892,7 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
                                 mDuration
                         )
                 )
+                updateVideoProgress(currentTime.toLong(), mDuration)
             }
             mGestureVideoProgressLayout!!.setProgress(progress)
         }
@@ -883,7 +917,7 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
                 val position = (mDuration * percentage).toInt()
                 if (mControllerCallback != null) {
                     mControllerCallback!!.onSeekTo(position)
-                    mControllerCallback!!.onResume()
+//                    mControllerCallback!!.onResume()
                 }
             }
             PlayerType.LIVE, PlayerType.LIVE_SHIFT -> {

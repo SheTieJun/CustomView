@@ -11,7 +11,7 @@ class VideoSmallSpeedListAdapter(data: ArrayList<Float>) : BaseQuickAdapter<Floa
     private var curSpeed = 0f
       override fun convert(holder: BaseViewHolder, item: Float) {
           holder.setText(R.id.content,  item.toString()+"倍")
-          holder.setTextColor(R.id.content, if (curSpeed == item) ContextCompat.getColor(context, R.color.orange) else ContextCompat.getColor(context, R.color.superplayer_white))
+          holder.setTextColor(R.id.content, if (curSpeed == item) ContextCompat.getColor(context, R.color.superplayer_orange) else ContextCompat.getColor(context, R.color.superplayer_white))
           holder.getView<TextView>(R.id.content).apply {
               typeface = if (curSpeed == item) {
                   Typeface.defaultFromStyle(Typeface.BOLD);

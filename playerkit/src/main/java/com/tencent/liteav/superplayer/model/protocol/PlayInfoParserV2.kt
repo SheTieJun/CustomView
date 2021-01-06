@@ -292,14 +292,18 @@ class PlayInfoParserV2(  // 协议请求返回的Json数据
             ?: return mTranscodePlayList
         for (i in transcodeList.indices) {
             val stream = transcodeList[i]
+            stream.id = "YH"
+            stream.name = "原画"
             // 匹配清晰度
             if (mVideoClassificationList != null) {
                 for (j in mVideoClassificationList!!.indices) {
                     val classification = mVideoClassificationList!![j]
                     val definitionList = classification.definitionList
-                    if (definitionList!!.contains(stream.definition)) {
-                        stream.id = classification.id
-                        stream.name = classification.name
+                    definitionList?.forEach {
+                        if (stream.definition.toString().contains(it.toString())) {
+                            stream.id = classification.id
+                            stream.name = classification.name
+                        }
                     }
                 }
             }
@@ -315,7 +319,7 @@ class PlayInfoParserV2(  // 协议请求返回的Json数据
                 if (copy?.url?.endsWith("mp4") == true) {  // 列表中url是mp4，则进行下一步
                     continue
                 }
-                if (stream?.url?.endsWith("mp4") == true) { // 新判断的url是mp4，则替换列表中
+                if (stream.url?.endsWith("mp4") == true) { // 新判断的url是mp4，则替换列表中
                     idList.remove(copy!!.id)
                     idList[stream.id!!] = stream
                 }
@@ -374,7 +378,7 @@ class PlayInfoParserV2(  // 协议请求返回的Json数据
                 videoURL = stream.url
             } else {
                 for (stream1 in mTranscodePlayList!!.values) {
-                    if (stream1?.url != null) {
+                    if (stream1.url != null) {
                         stream = stream1
                         videoURL = stream1.url
                         break

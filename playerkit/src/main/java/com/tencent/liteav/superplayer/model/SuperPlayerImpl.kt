@@ -4,6 +4,7 @@ import android.content.*
 import android.os.Bundle
 import android.os.Environment.DIRECTORY_MOVIES
 import android.text.TextUtils
+import android.util.Log
 import com.tencent.liteav.basic.log.TXCLog
 import com.tencent.liteav.superplayer.SuperPlayerCode
 import com.tencent.liteav.superplayer.SuperPlayerDef.*
@@ -18,14 +19,17 @@ import com.tencent.liteav.superplayer.model.net.LogReport
 import com.tencent.liteav.superplayer.model.protocol.*
 import com.tencent.liteav.superplayer.model.utils.VideoQualityUtils
 import com.tencent.rtmp.*
+import com.tencent.rtmp.TXLiveConstants.NET_STATUS_VIDEO_HEIGHT
+import com.tencent.rtmp.TXLiveConstants.NET_STATUS_VIDEO_WIDTH
 import com.tencent.rtmp.ui.TXCloudVideoView
 import java.util.*
 import kotlin.collections.ArrayList
 
 open class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : SuperPlayer,
-    ITXVodPlayListener, ITXLivePlayListener {
+        ITXVodPlayListener, ITXLivePlayListener {
+    private var isAutoPlay: Boolean = true
     private var mWidth: Int = -1
-    private var mHeight :Int = -1
+    private var mHeight: Int = -1
     private var mContext: Context? = null
     private var mVideoView // 腾讯云视频播放view
             : TXCloudVideoView? = null
@@ -74,12 +78,12 @@ open class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : Su
     override fun onPlayEvent(event: Int, param: Bundle) {
         if (event != TXLiveConstants.PLAY_EVT_PLAY_PROGRESS) {
             val playEventLog =
-                "TXLivePlayer onPlayEvent event: " + event + ", " + param.getString(TXLiveConstants.EVT_DESCRIPTION)
+                    "TXLivePlayer onPlayEvent event: " + event + ", " + param.getString(TXLiveConstants.EVT_DESCRIPTION)
             TXCLog.d(TAG, playEventLog)
         }
         when (event) {
             TXLiveConstants.PLAY_EVT_VOD_PLAY_PREPARED, TXLiveConstants.PLAY_EVT_PLAY_BEGIN -> updatePlayerState(
-                PlayerState.PLAYING
+                    PlayerState.PLAYING
             )
             TXLiveConstants.PLAY_ERR_NET_DISCONNECT, TXLiveConstants.PLAY_EVT_PLAY_END -> if (playerType == PlayerType.LIVE_SHIFT) {  // 直播时移失败，返回直播
                 mLivePlayer!!.resumeLive()
@@ -90,11 +94,11 @@ open class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : Su
                 stop()
                 updatePlayerState(PlayerState.END)
                 if (event == TXLiveConstants.PLAY_ERR_NET_DISCONNECT) {
-                    onError(SuperPlayerCode.NET_ERROR, "网络不给力,点击重试")
+//                    onError(SuperPlayerCode.NET_ERROR, "网络不给力,点击重试")
                 } else {
                     onError(
-                        SuperPlayerCode.LIVE_PLAY_END,
-                        param.getString(TXLiveConstants.EVT_DESCRIPTION)
+                            SuperPlayerCode.LIVE_PLAY_END,
+                            param.getString(TXLiveConstants.EVT_DESCRIPTION)
                     )
                 }
             }
@@ -103,19 +107,19 @@ open class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : Su
             TXLiveConstants.PLAY_EVT_RCV_FIRST_I_FRAME -> {
             }
             TXLiveConstants.PLAY_EVT_STREAM_SWITCH_SUCC -> updateStreamEndStatus(
-                true,
-                PlayerType.LIVE,
-                mVideoQuality
+                    true,
+                    PlayerType.LIVE,
+                    mVideoQuality
             )
             TXLiveConstants.PLAY_ERR_STREAM_SWITCH_FAIL -> updateStreamEndStatus(
-                false,
-                PlayerType.LIVE,
-                mVideoQuality
+                    false,
+                    PlayerType.LIVE,
+                    mVideoQuality
             )
             TXLiveConstants.PLAY_EVT_PLAY_PROGRESS -> {
                 val progress = param.getInt(TXLiveConstants.EVT_PLAY_PROGRESS_MS)
                 mMaxLiveProgressTime =
-                    if (progress > mMaxLiveProgressTime) progress.toLong() else mMaxLiveProgressTime
+                        if (progress > mMaxLiveProgressTime) progress.toLong() else mMaxLiveProgressTime
                 updatePlayProgress((progress / 1000).toLong(), mMaxLiveProgressTime / 1000)
             }
             else -> {
@@ -129,8 +133,11 @@ open class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : Su
      * @param bundle
      */
     override fun onNetStatus(bundle: Bundle) {
-
-            TXCLog.d(TAG, bundle.toString())
+        if (playerState == PlayerState.PLAYING) {
+            mWidth = bundle.get(NET_STATUS_VIDEO_WIDTH) as Int
+            mHeight = bundle.get(NET_STATUS_VIDEO_HEIGHT) as Int
+            mObserver?.onVideoSize(mWidth, mHeight)
+        }
     }
 
 
@@ -144,12 +151,14 @@ open class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : Su
     override fun onPlayEvent(player: TXVodPlayer, event: Int, param: Bundle) {
         if (event != TXLiveConstants.PLAY_EVT_PLAY_PROGRESS) {
             val playEventLog =
-                "TXVodPlayer onPlayEvent event: " + event + ", " + param.getString(TXLiveConstants.EVT_DESCRIPTION)
+                    "TXVodPlayer onPlayEvent event: " + event + ", " + param.getString(TXLiveConstants.EVT_DESCRIPTION)
             TXCLog.d(TAG, playEventLog)
         }
         when (event) {
             TXLiveConstants.PLAY_EVT_VOD_PLAY_PREPARED -> {
-                updatePlayerState(PlayerState.PAUSE)
+                if (isAutoPlay) {
+                    updatePlayerState(PlayerState.LOADING)
+                }
                 if (mIsMultiBitrateStream) {
                     val bitrateItems: List<TXBitrateItem>? = mVodPlayer!!.supportedBitrates
                     if (bitrateItems == null || bitrateItems.isEmpty()) {
@@ -159,15 +168,15 @@ open class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : Su
                     val videoQualities: ArrayList<VideoQuality> = ArrayList()
                     val size = bitrateItems.size
                     val resolutionNames =
-                        if (mCurrentProtocol != null) mCurrentProtocol!!.resolutionNameList else null
+                            if (mCurrentProtocol != null) mCurrentProtocol!!.resolutionNameList else null
                     var i = 0
                     while (i < size) {
                         val bitrateItem = bitrateItems[i]
                         var quality: VideoQuality?
                         quality = if (resolutionNames != null) {
                             VideoQualityUtils.convertToVideoQuality(
-                                bitrateItem,
-                                mCurrentProtocol!!.resolutionNameList
+                                    bitrateItem,
+                                    mCurrentProtocol!!.resolutionNameList
                             )
                         } else {
                             VideoQualityUtils.convertToVideoQuality(bitrateItem, i)
@@ -177,23 +186,27 @@ open class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : Su
                     }
                     if (!mDefaultQualitySet) {
                         mVodPlayer!!.bitrateIndex =
-                            bitrateItems[bitrateItems.size - 1].index //默认播放码率最高的
+                                bitrateItems[bitrateItems.size - 1].index //默认播放码率最高的
                         mDefaultQualitySet = true
                     }
                     updateVideoQualityList(videoQualities, null)
                 }
             }
-            TXLiveConstants.PLAY_EVT_CHANGE_RESOLUTION ->{
-                 mWidth = player.width
+            TXLiveConstants.PLAY_EVT_CHANGE_RESOLUTION -> {
+                Log.i(TAG, "mWidth  :$mWidth,mHeight :$mHeight")
+                mWidth = player.width
                 mHeight = player.height
-                mObserver?.onVideoSize(mWidth,mHeight)
+                mObserver?.onVideoSize(mWidth, mHeight)
             }
             TXLiveConstants.PLAY_EVT_RCV_FIRST_I_FRAME -> if (mChangeHWAcceleration) { //切换软硬解码器后，重新seek位置
                 TXCLog.i(TAG, "seek pos:$mSeekPos")
                 seek(mSeekPos)
                 mChangeHWAcceleration = false
             }
-            TXLiveConstants.PLAY_EVT_PLAY_END -> updatePlayerState(PlayerState.END)
+            TXLiveConstants.PLAY_EVT_PLAY_END -> {
+                mObserver?.onPlayComplete()
+                updatePlayerState(PlayerState.END)
+            }
             TXLiveConstants.PLAY_EVT_PLAY_PROGRESS -> {
                 val progress = param.getInt(TXLiveConstants.EVT_PLAY_PROGRESS_MS)
                 val duration = param.getInt(TXLiveConstants.EVT_PLAY_DURATION_MS)
@@ -262,10 +275,15 @@ open class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : Su
         val config: SuperPlayerGlobalConfig = SuperPlayerGlobalConfig.instance
         mLivePlayConfig = TXLivePlayConfig()
         mLivePlayer!!.setConfig(mLivePlayConfig)
-        mLivePlayer!!.setRenderMode(config.renderMode)
+        mLivePlayer!!.setRenderMode(config.liveRenderMode)
         mLivePlayer!!.setRenderRotation(TXLiveConstants.RENDER_ROTATION_PORTRAIT)
         mLivePlayer!!.setPlayListener(this)
         mLivePlayer!!.enableHardwareDecode(config.enableHWAcceleration)
+    }
+
+    override fun changeRenderMode(renderMode : Int){
+        mLivePlayer?.setRenderMode(renderMode)
+        mVodPlayer?.setRenderMode(renderMode)
     }
 
     /**
@@ -275,7 +293,9 @@ open class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : Su
      */
     fun playWithModel(model: SuperPlayerModel?) {
         mCurrentModel = model
-        stop()
+        if (PlayerState.END != playerState ) {
+            stop()
+        }
         val params = PlayInfoParams()
         params.appId = model!!.appId
         if (model.videoId != null) {
@@ -296,19 +316,20 @@ open class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : Su
                     mReportVodStartTime = System.currentTimeMillis()
                     mVodPlayer!!.setPlayerView(mVideoView)
                     playModeVideo(mCurrentProtocol!!)
+                    autoPlay(isAutoPlay)
                     updatePlayerType(PlayerType.VOD)
                     updatePlayProgress(0, 0)
                     updateVideoImageSpriteAndKeyFrame(
-                        mCurrentProtocol!!.imageSpriteInfo,
-                        mCurrentProtocol!!.keyFrameDescInfo
+                            mCurrentProtocol!!.imageSpriteInfo,
+                            mCurrentProtocol!!.keyFrameDescInfo
                     )
                 }
 
                 override fun onError(errCode: Int, message: String) {
                     TXCLog.i(TAG, "onFail: errorCode = $errCode message = $message")
                     this@SuperPlayerImpl.onError(
-                        SuperPlayerCode.VOD_REQUEST_FILE_ID_FAIL,
-                        "播放视频文件失败 code = $errCode msg = $message"
+                            SuperPlayerCode.VOD_REQUEST_FILE_ID_FAIL,
+                            "播放视频文件失败 code = $errCode msg = $message"
                     )
                 }
             })
@@ -323,11 +344,11 @@ open class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : Su
                         videoURL = superPlayerURL!!.url
                     }
                     videoQualities.add(
-                        VideoQuality(
-                            i++,
-                            superPlayerURL!!.qualityName,
-                            superPlayerURL.url
-                        )
+                            VideoQuality(
+                                    i++,
+                                    superPlayerURL!!.qualityName,
+                                    superPlayerURL.url
+                            )
                     )
                 }
                 defaultVideoQuality = videoQualities[model.playDefaultIndex]
@@ -399,13 +420,13 @@ open class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : Su
         if (mLivePlayer != null) {
             mLivePlayer!!.setPlayListener(this)
             val result = mLivePlayer!!.startPlay(
-                url,
-                playType
+                    url,
+                    playType
             ) // result返回值：0 success;  -1 empty url; -2 invalid url; -3 invalid playType;
             if (result != 0) {
                 TXCLog.e(TAG, "playLiveURL videoURL:$url,result:$result")
             } else {
-                updatePlayerState(PlayerState.PLAYING)
+                updatePlayerState(PlayerState.LOADING)
             }
         }
     }
@@ -425,7 +446,7 @@ open class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : Su
             mDefaultQualitySet = false
             mVodPlayer!!.setStartTime(mPlaySeekPos.toFloat())
             mPlaySeekPos = 0
-            mVodPlayer!!.setAutoPlay(false)
+            mVodPlayer!!.setAutoPlay(isAutoPlay)
             mVodPlayer!!.setVodListener(this)
             if (mCurrentProtocol != null) {
                 TXCLog.d(TAG, "TOKEN: " + mCurrentProtocol!!.token)
@@ -434,6 +455,9 @@ open class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : Su
                 mVodPlayer!!.setToken(null)
             }
             val ret = mVodPlayer!!.startPlay(url)
+            if (!isAutoPlay){
+                updatePlayerState(PlayerState.PAUSE)
+            }
         }
         mIsPlayWithFileId = false
     }
@@ -480,16 +504,16 @@ open class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : Su
             val reportEndTime = System.currentTimeMillis()
             val diff = (reportEndTime - mReportLiveStartTime) / 1000
             LogReport.instance
-                .uploadLogs(LogReport.ELK_ACTION_LIVE_TIME, diff, 0)
+                    .uploadLogs(LogReport.ELK_ACTION_LIVE_TIME, diff, 0)
             mReportLiveStartTime = -1
         }
         if (mReportVodStartTime != -1L) {
             val reportEndTime = System.currentTimeMillis()
             val diff = (reportEndTime - mReportVodStartTime) / 1000
             LogReport.instance.uploadLogs(
-                LogReport.ELK_ACTION_VOD_TIME,
-                diff,
-                if (mIsPlayWithFileId) 1 else 0
+                    LogReport.ELK_ACTION_VOD_TIME,
+                    diff,
+                    if (mIsPlayWithFileId) 1 else 0
             )
             mReportVodStartTime = -1
         }
@@ -532,7 +556,7 @@ open class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : Su
             return
         }
         when (playState) {
-            PlayerState.PLAYING -> mObserver!!.onPlayBegin(playName)
+            PlayerState.PLAYING -> mObserver!!.onPlayBegin()
             PlayerState.PAUSE -> mObserver!!.onPlayPause()
             PlayerState.LOADING -> mObserver!!.onPlayLoading()
             PlayerState.END -> mObserver!!.onPlayStop()
@@ -540,9 +564,9 @@ open class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : Su
     }
 
     private fun updateStreamStartStatus(
-        success: Boolean,
-        playerType: PlayerType,
-        quality: VideoQuality
+            success: Boolean,
+            playerType: PlayerType,
+            quality: VideoQuality
     ) {
         if (mObserver != null) {
             mObserver!!.onSwitchStreamStart(success, playerType, quality)
@@ -550,9 +574,9 @@ open class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : Su
     }
 
     private fun updateStreamEndStatus(
-        success: Boolean,
-        playerType: PlayerType,
-        quality: VideoQuality?
+            success: Boolean,
+            playerType: PlayerType,
+            quality: VideoQuality?
     ) {
         if (mObserver != null) {
             mObserver!!.onSwitchStreamEnd(success, playerType, quality)
@@ -560,8 +584,8 @@ open class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : Su
     }
 
     private fun updateVideoQualityList(
-        videoQualities: ArrayList<VideoQuality>?,
-        defaultVideoQuality: VideoQuality?
+            videoQualities: ArrayList<VideoQuality>?,
+            defaultVideoQuality: VideoQuality?
     ) {
         if (mObserver != null) {
             mObserver!!.onVideoQualityListChange(videoQualities, defaultVideoQuality)
@@ -569,8 +593,8 @@ open class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : Su
     }
 
     private fun updateVideoImageSpriteAndKeyFrame(
-        info: PlayImageSpriteInfo?,
-        list: ArrayList<PlayKeyFrameDescInfo>?
+            info: PlayImageSpriteInfo?,
+            list: ArrayList<PlayKeyFrameDescInfo>?
     ) {
         if (mObserver != null) {
             mObserver!!.onVideoImageSpriteAndKeyFrameChanged(info, list)
@@ -696,13 +720,14 @@ open class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : Su
     }
 
     override fun autoPlay(auto: Boolean) {
+        this.isAutoPlay = auto
         if (playerType == PlayerType.VOD) {
             mVodPlayer?.setAutoPlay(auto)
         }
     }
 
     override fun getWidth(): Int {
-         return  mWidth
+        return mWidth
     }
 
     override fun getHeight(): Int {
@@ -722,7 +747,9 @@ open class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : Su
         reportPlayTime()
     }
 
-    override fun destroy() {}
+    override fun destroy() {
+        mCurrentModel = null
+    }
     override fun switchPlayMode(playerMode: PlayerMode) {
         if (this.playerMode == playerMode) {
             return
@@ -750,10 +777,10 @@ open class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : Su
         // 硬件加速上报
         if (enable) {
             LogReport.instance
-                .uploadLogs(LogReport.ELK_ACTION_HW_DECODE, 0, 0)
+                    .uploadLogs(LogReport.ELK_ACTION_HW_DECODE, 0, 0)
         } else {
             LogReport.instance
-                .uploadLogs(LogReport.ELK_ACTION_SOFT_DECODE, 0, 0)
+                    .uploadLogs(LogReport.ELK_ACTION_SOFT_DECODE, 0, 0)
         }
     }
 
@@ -768,9 +795,11 @@ open class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : Su
     /**
      * 只有播放前设置有效
      */
-    override fun setPlayToSeek(position: Int){
+    override fun setPlayToSeek(position: Int) {
         if (playerState == PlayerState.END) {
             mPlaySeekPos = position
+        }else{
+            seek(position)
         }
     }
 
@@ -779,14 +808,15 @@ open class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : Su
             if (mVodPlayer != null) {
                 mVodPlayer!!.seek(position)
             }
-        } else {
-            updatePlayerType(PlayerType.LIVE_SHIFT)
-            LogReport.instance
-                .uploadLogs(LogReport.ELK_ACTION_TIMESHIFT, 0, 0)
-            if (mLivePlayer != null) {
-                mLivePlayer!!.seek(position)
-            }
         }
+//        else {
+//            updatePlayerType(PlayerType.LIVE_SHIFT)
+//            LogReport.instance
+//                .uploadLogs(LogReport.ELK_ACTION_TIMESHIFT, 0, 0)
+//            if (mLivePlayer != null) {
+//                mLivePlayer!!.seek(position)
+//            }
+//        }
         if (mObserver != null) {
             mObserver!!.onSeek(position)
         }
@@ -808,7 +838,7 @@ open class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : Su
         }
         //速度改变上报
         LogReport.instance
-            .uploadLogs(LogReport.ELK_ACTION_CHANGE_SPEED, 0, 0)
+                .uploadLogs(LogReport.ELK_ACTION_CHANGE_SPEED, 0, 0)
     }
 
     override fun setMirror(isMirror: Boolean) {
@@ -817,7 +847,7 @@ open class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : Su
         }
         if (isMirror) {
             LogReport.instance
-                .uploadLogs(LogReport.ELK_ACTION_MIRROR, 0, 0)
+                    .uploadLogs(LogReport.ELK_ACTION_MIRROR, 0, 0)
         }
     }
 
@@ -827,11 +857,13 @@ open class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : Su
             if (mVodPlayer != null) {
                 if (quality.url != null) { // br!=0;index=-1;url!=null   //br=0;index!=-1;url!=null
                     // 说明是非多bitrate的m3u8子流，需要手动seek
+                    val isPlay = playerState == PlayerState.PLAYING
                     val currentTime = mVodPlayer!!.currentPlaybackTime
                     mVodPlayer!!.stopPlay(true)
                     TXCLog.i(TAG, "onQualitySelect quality.url:" + quality.url)
                     mVodPlayer!!.setStartTime(currentTime)
                     mVodPlayer!!.startPlay(quality.url)
+                    mVodPlayer!!.setAutoPlay(isPlay)
                 } else { //br!=0;index!=-1;url=null
                     TXCLog.i(TAG, "setBitrateIndex quality.index:" + quality.index)
                     // 说明是多bitrate的m3u8子流，会自动无缝seek
@@ -849,7 +881,7 @@ open class SuperPlayerImpl(context: Context?, videoView: TXCloudVideoView?) : Su
         }
         //清晰度上报
         LogReport.instance
-            .uploadLogs(LogReport.ELK_ACTION_CHANGE_RESOLUTION, 0, 0)
+                .uploadLogs(LogReport.ELK_ACTION_CHANGE_RESOLUTION, 0, 0)
     }
 
     override fun setObserver(observer: SuperPlayerObserver?) {

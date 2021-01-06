@@ -20,5 +20,7 @@ open class SimPlayerCallBack:OnSuperPlayerViewCallback {
     override fun onClickShare() {
     }
 
+    override fun onPlayProgress(current: Long, duration: Long) {}
 
+    override fun onVideoSize(width: Int, height: Int) {}
 }

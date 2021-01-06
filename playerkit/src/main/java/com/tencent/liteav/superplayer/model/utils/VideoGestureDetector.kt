@@ -75,7 +75,7 @@ class VideoGestureDetector(context: Context) {
         mVideoWidth = videoWidth
         mScrollMode = NONE
         mOldVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
-        mBrightness = mLayoutParams!!.screenBrightness
+        mBrightness = mLayoutParams?.screenBrightness?:1.0f
         if (mBrightness == -1f) {
             //一开始是默认亮度的时候，获取系统亮度，计算比例值
             mBrightness = brightness / 255.0f
@@ -210,8 +210,8 @@ class VideoGestureDetector(context: Context) {
     init {
         mAudioManager = context.getSystemService(Service.AUDIO_SERVICE) as AudioManager
         mMaxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
-        if (context is Activity) {
-            mWindow = context.window
+        (context as? Activity)?.apply {
+            mWindow = window
             mLayoutParams = mWindow!!.attributes
             mBrightness = mLayoutParams!!.screenBrightness
         }
