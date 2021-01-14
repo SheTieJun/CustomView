@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:text="Jun"
-        android:textColor="@color/orange"
+        android:textColor="@color/superplayer_orange"
         android:textSize="20sp"
         app:isShowWaterMark="true"
         app:textAlpha="1"

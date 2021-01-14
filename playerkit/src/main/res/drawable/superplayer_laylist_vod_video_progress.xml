@@ -14,8 +14,8 @@
             <shape>
                 <corners android:radius="3dp"/>
                 <gradient
-                    android:endColor="@color/orange"
-                    android:startColor="@color/orange" />
+                    android:endColor="@color/superplayer_orange"
+                    android:startColor="@color/superplayer_orange" />
             </shape>
         </clip>
     </item>

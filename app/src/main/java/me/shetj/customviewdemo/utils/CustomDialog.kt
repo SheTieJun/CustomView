@@ -7,7 +7,6 @@ import me.shetj.base.tools.json.GsonKit
 import me.shetj.base.tools.json.HighStringFormatUtil
 import me.shetj.custom.CircleProgressView
 import me.shetj.custom.HaloView
-import me.shetj.custom.IngView
 import me.shetj.custom.LineWaveView
 import me.shetj.customviewdemo.R
 import me.shetj.customviewdemo.anim.StrokeView
@@ -43,7 +42,7 @@ fun Context.showCircleProgressDialog() {
             view.findViewById<TextView>(R.id.tv_level_info).text =
                 HighStringFormatUtil.buildHighlightString(
                     this, "距下一等级还需坚持学习${needData}天",
-                    "$needData", R.color.orange
+                    "$needData", R.color.superplayer_orange
                 )
             view.findViewById<TextView>(R.id.tv_level_name)?.apply {
                 text = String.format("LV %s", it.level)

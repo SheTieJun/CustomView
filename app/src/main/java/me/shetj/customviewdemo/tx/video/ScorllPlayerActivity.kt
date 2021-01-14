@@ -13,24 +13,30 @@ import me.shetj.base.tools.app.ArmsUtils.Companion.statuInScreen
 import me.shetj.customviewdemo.R
 import me.shetj.customviewdemo.databinding.ActivityScorllPlayerBinding
 
-class ScorllPlayerActivity : BaseBindingActivity<BaseViewModel,ActivityScorllPlayerBinding>() {
+class ScorllPlayerActivity : BaseBindingActivity<BaseViewModel, ActivityScorllPlayerBinding>() {
+
+    var isScroll = true
 
     override fun initViewBinding(): ActivityScorllPlayerBinding {
-       return ActivityScorllPlayerBinding.inflate(layoutInflater)
+        return ActivityScorllPlayerBinding.inflate(layoutInflater)
     }
 
     override fun onActivityCreate() {
         super.onActivityCreate()
-        ArmsUtils.statuInScreen2(this)
+        ArmsUtils.statuInScreen2(this, isBlack = true)
         mViewBinding.playView.setPlayerViewCallback(object : SimPlayerCallBack() {
             override fun onStartFullScreenPlay() {
                 super.onStartFullScreenPlay()
                 fullScreencall(this@ScorllPlayerActivity)
+                mViewBinding.videoContent.removeView(mViewBinding.playView)
+                mViewBinding.root.addView(mViewBinding.playView)
             }
 
             override fun onStopFullScreenPlay() {
                 super.onStopFullScreenPlay()
                 statuInScreen(true)
+                mViewBinding.root.removeView(mViewBinding.playView)
+                mViewBinding.videoContent.addView(mViewBinding.playView)
             }
 
             override fun onClickShare() {
@@ -49,10 +55,20 @@ class ScorllPlayerActivity : BaseBindingActivity<BaseViewModel,ActivityScorllPla
         mViewBinding.playView.playWithModel(model)
         mViewBinding.playView.setAutoPlay(true)
         initViewPage2()
+        mViewBinding.btnChange.setOnClickListener {
+            if (isScroll) {
+                isScroll = false
+                mViewBinding.barLayout.enableAppBar(isScroll)
+            } else {
+                isScroll = true
+                mViewBinding.barLayout.enableAppBar(isScroll)
+            }
+
+        }
     }
 
 
-    fun initViewPage2(){
+    fun initViewPage2() {
         val fragments = arrayListOf<Fragment>(EmptyFragment(), EmptyFragment())
         mViewBinding.tabLayout.apply {
             tabPadding = 15f

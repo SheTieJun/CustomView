@@ -33,7 +33,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="LOGIN"
-                android:textColor="@color/orange"
+                android:textColor="@color/superplayer_orange"
                 app:layout_constraintTop_toTopOf="@id/v1"
                 app:layout_constraintBottom_toBottomOf="@id/v1"
                 app:layout_constraintStart_toStartOf="@id/input_userName"

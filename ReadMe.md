@@ -14,3 +14,4 @@
 | recycleView Page|[pageLayoutManager](https://github.com/SheTieJun/CustomView/tree/master/app/src/main/java/me/shetj/customviewdemo/page)||
 | LoadingDialog with Rx or coroutines |[LoadingDialog](https://github.com/SheTieJun/CustomView/tree/master/app/src/main/java/me/shetj/customviewdemo/utils/LoadingDialog.kt)
 |腾讯播放器封装|[TxPlayer](/playerkit))|
+|WebView视频播放|WebView|https://github.com/SheTieJun/CustomView/tree/master/app/src/main/java/me/shetj/customviewdemo/webview|

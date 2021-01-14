@@ -8,11 +8,11 @@
     <color name="superplayer_biz_audio_progress_first">#ffffff</color>
     <color name="superplayer_biz_audio_progress_second">#6b6666</color>
 
-    <color name="superplayer_super_vod_vtt_bg">#7E000000</color>
+    <color name="superplayer_super_vod_vtt_bg">#B3000000</color>
 
 
     <color name="superplayer_default_bg">#aa000000</color>
-    <color name="orange">#FFA200</color>
+    <color name="superplayer_orange">#FFA200</color>
     <!-- 裁剪范围颜色 -->
     <color name="superplayer_color_tint_red">#FF4C58</color>
 

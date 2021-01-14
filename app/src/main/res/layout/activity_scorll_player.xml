@@ -6,25 +6,29 @@
     android:layout_height="match_parent"
     tools:context=".tx.video.ScorllPlayerActivity">
 
-
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+ >
 
         <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/bar_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            >
 
             <com.google.android.material.appbar.CollapsingToolbarLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@color/white"
                 app:contentScrim="@color/white"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed"
                 app:scrimAnimationDuration="300"
-                app:statusBarScrim="@android:color/transparent"
+                android:minHeight="84dp"
                 app:titleEnabled="false">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/videoContent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
@@ -39,16 +43,16 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
-
                 <androidx.appcompat.widget.Toolbar
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
-                    android:layout_gravity="top"
-                    android:background="@color/white"
+                    android:minHeight="?attr/actionBarSize"
                     app:layout_collapseMode="pin"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:titleTextAppearance="@style/Widget.AppCompat.Toolbar.Button.Navigation"></androidx.appcompat.widget.Toolbar>
+                    android:fitsSystemWindows="true"
+                    android:background="@color/white"
+                  >
+                </androidx.appcompat.widget.Toolbar>
             </com.google.android.material.appbar.CollapsingToolbarLayout>
 
             <com.flyco.tablayout.SlidingTabLayoutV2
@@ -56,8 +60,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:background="@color/white"
-                app:layout_collapseMode="pin"
-                app:layout_constraintTop_toBottomOf="@id/playView"
                 app:tl_indicator_color="@color/deepGray"
                 app:tl_indicator_corner_radius="3dp"
                 app:tl_indicator_height="3dp"
@@ -77,15 +79,22 @@
             android:id="@+id/scrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-         >
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/viewPager"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent" />
 
         </androidx.core.widget.NestedScrollView>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 
+    <Button
+        android:id="@+id/btn_change"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="不可以滑动"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

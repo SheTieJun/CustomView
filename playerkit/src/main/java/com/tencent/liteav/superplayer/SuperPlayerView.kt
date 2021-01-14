@@ -153,7 +153,6 @@ open class SuperPlayerView : RelativeLayout,TimerConfigure.CallBack {
             mWindowPlayer!!.hide()
             mFloatPlayer!!.hide()
         }
-        TimerConfigure.instance.addCallBack(this)
     }
 
     open fun getPlayer(): SuperPlayer {
@@ -904,12 +903,7 @@ open class SuperPlayerView : RelativeLayout,TimerConfigure.CallBack {
         mFloatPlayer!!.hide()
     }
 
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        resetPlayer()
-        mFullScreenPlayer?.onDestroyCallBack()
-        TimerConfigure.instance.removeCallBack(this)
-    }
+
 
     companion object {
         private const val TAG = "SuperPlayerView"
@@ -997,5 +991,15 @@ open class SuperPlayerView : RelativeLayout,TimerConfigure.CallBack {
         }else{
             showMsg("已切换为单课循环","单课循环")
         }
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        TimerConfigure.instance.addCallBack(this)
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        TimerConfigure.instance.removeCallBack(this)
     }
 }
