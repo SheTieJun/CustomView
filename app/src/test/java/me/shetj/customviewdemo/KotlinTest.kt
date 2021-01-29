@@ -1,11 +1,8 @@
 package me.shetj.customviewdemo
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.produce
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import me.shetj.base.ktx.toJson
@@ -44,6 +41,7 @@ class KotlinTest {
 
 
     }
+
 
     @Test
     fun test() {

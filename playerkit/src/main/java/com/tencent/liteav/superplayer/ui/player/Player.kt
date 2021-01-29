@@ -227,5 +227,6 @@ interface Player {
          * @param isAccelerate 开启：true 关闭：false
          */
         fun onHWAccelerationToggle(isAccelerate: Boolean)
+        fun toggle(showing: Boolean)
     }
 }

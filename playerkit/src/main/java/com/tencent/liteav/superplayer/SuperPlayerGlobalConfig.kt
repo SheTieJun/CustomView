@@ -5,9 +5,9 @@ import com.tencent.rtmp.TXLiveConstants
 typealias GlobalConfig = SuperPlayerGlobalConfig
 
 /**
- * Created by yuejiaoli on 2018/7/4.
  *
  * 超级播放器全局配置类
+ * 必须在view 初始化之前设置
  */
 class SuperPlayerGlobalConfig {
     companion object Singleton {

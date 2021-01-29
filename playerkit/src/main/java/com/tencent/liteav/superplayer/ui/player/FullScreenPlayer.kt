@@ -83,8 +83,6 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
             : TextView? = null
     private var mSeekBarProgress // 播放进度条
             : PointSeekBar? = null
-    private var mLayoutReplay // 重播按钮所在布局
-            : LinearLayout? = null
     private var mPbLiveLoading // 加载圈
             : ProgressBar? = null
     private var mGestureVolumeBrightnessProgressLayout // 音量亮度调节布局
@@ -181,7 +179,7 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
         mTopShare?.isVisible = mConfigs.showShare
         mIvMore?.isVisible = mConfigs.showMore
         mIvLock?.isVisible = mConfigs.showLock
-        mLayoutTop?.isVisible = mConfigs.keepTop
+        mLayoutTop?.isVisible = mConfigs.showTop||mConfigs.keepTop
         mLayoutBottom?.isVisible = mConfigs.showBottom
     }
 
@@ -191,7 +189,7 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
     private fun initialize(context: Context?) {
         initView(context)
         mGestureDetector = GestureDetector(getContext(), object : SimpleOnGestureListener() {
-            override fun onDoubleTap(e: MotionEvent): Boolean {
+            override fun onDoubleTap(e: MotionEvent?): Boolean {
                 if (mLockScreen || isLive()) return false
                 togglePlayState()
                 show()
@@ -202,14 +200,14 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
                 return true
             }
 
-            override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
+            override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
                 toggle()
                 return true
             }
 
             override fun onScroll(
-                    downEvent: MotionEvent,
-                    moveEvent: MotionEvent,
+                    downEvent: MotionEvent?,
+                    moveEvent: MotionEvent?,
                     distanceX: Float,
                     distanceY: Float
             ): Boolean {
@@ -229,7 +227,7 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
                 return true
             }
 
-            override fun onDown(e: MotionEvent): Boolean {
+            override fun onDown(e: MotionEvent?): Boolean {
                 if (mLockScreen || isLive()) return true
                 if (mVideoGestureDetector != null) {
                     mVideoGestureDetector!!.reset(width, mSeekBarProgress!!.progress)
@@ -305,7 +303,6 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
         mLayoutTop!!.setOnClickListener(this)
         mLayoutBottom = findViewById(R.id.superplayer_ll_bottom)
         mLayoutBottom!!.setOnClickListener(this)
-        mLayoutReplay = findViewById<View>(R.id.superplayer_ll_replay) as LinearLayout
         mIvBack = findViewById<View>(R.id.superplayer_iv_back) as ImageView
         mIvLock = findViewById<View>(R.id.superplayer_iv_lock) as ImageView
         mTvTitle = findViewById<View>(R.id.superplayer_tv_title) as TextView
@@ -322,11 +319,10 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
         mTvBackToLive = findViewById(R.id.superplayer_tv_back_to_live)
         mPbLiveLoading = findViewById(R.id.superplayer_pb_live)
         mVodQualityView = findViewById(R.id.superplayer_vod_quality)
-        mVodQualityView!!.setCallback(true,this)
+        mVodQualityView!!.setCallback(true, this)
         mVodMoreView = findViewById(R.id.superplayer_vod_more)
         mVodMoreView!!.setCallback(this)
         mTvBackToLive!!.setOnClickListener(this)
-        mLayoutReplay!!.setOnClickListener(this)
         mIvLock!!.setOnClickListener(this)
         mIvBack!!.setOnClickListener(this)
         mIvPause!!.setOnClickListener(this)
@@ -376,7 +372,6 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
                 if (mControllerCallback != null) {
                     mControllerCallback!!.onPause()
                 }
-                mLayoutReplay!!.visibility = GONE
             }
         }
         show()
@@ -396,6 +391,7 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
                     postDelayed(mHideViewRunnable, 7000)
                 }
             }
+            mControllerCallback?.toggle(isShowing)
         } else {
             mIvLock!!.visibility = VISIBLE
             if (mHideLockViewRunnable != null) {
@@ -467,7 +463,7 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
         }
         val pointParams: MutableList<PointParams> = ArrayList()
         if (mTXPlayKeyFrameDescInfoList != null) for (info in mTXPlayKeyFrameDescInfoList!!) {
-            val progress = (info!!.time / mDuration * mSeekBarProgress!!.max) as Int
+            val progress = (info.time / mDuration * mSeekBarProgress!!.max) as Int
             pointParams.add(PointParams(progress, Color.WHITE))
         }
         mSeekBarProgress!!.setPointList(pointParams)
@@ -480,6 +476,7 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
         isShowing = false
         isShowControl(false)
         showQualityView(false)
+        moreView(false)
         mTvVttText!!.visibility = GONE
         mIvLock!!.visibility = GONE
         if (mPlayType == PlayerType.LIVE_SHIFT) {
@@ -535,28 +532,15 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
         when (playState) {
             PlayerState.PLAYING -> {
                 mIvPause!!.setImageResource(R.drawable.superplayer_ic_vod_pause_normal)
-                toggleView(mPbLiveLoading!!, false)
-                toggleView(mLayoutReplay!!, false)
             }
             PlayerState.LOADING -> {
                 mIvPause!!.setImageResource(R.drawable.superplayer_ic_vod_pause_normal)
-                if (!isLive()) {
-                    toggleView(mPbLiveLoading!!, true)
-                }
-                toggleView(mLayoutReplay!!, false)
             }
             PlayerState.PAUSE -> {
                 mIvPause!!.setImageResource(R.drawable.superplayer_ic_vod_play_normal)
-                toggleView(mPbLiveLoading!!, false)
-                toggleView(mLayoutReplay!!, false)
             }
             PlayerState.END -> {
                 mIvPause!!.setImageResource(R.drawable.superplayer_ic_vod_play_normal)
-                toggleView(mPbLiveLoading!!, false)
-                if (!isLive()) {
-                    toggleView(mLayoutReplay!!, true)
-                }
-
             }
         }
         mCurrentPlayState = playState
@@ -697,10 +681,10 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
         mTXPlayKeyFrameDescInfoList = list
     }
 
-    override fun onTouchEvent(event: MotionEvent): Boolean {
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
         if (mGestureDetector != null) mGestureDetector!!.onTouchEvent(event)
         if (!mLockScreen) {
-            if (event.action == MotionEvent.ACTION_UP && mVideoGestureDetector != null && mVideoGestureDetector!!.isVideoProgressModel) {
+            if (event?.action == MotionEvent.ACTION_UP && mVideoGestureDetector != null && mVideoGestureDetector!!.isVideoProgressModel) {
                 var progress = mVideoGestureDetector!!.videoProgress
                 if (progress > mSeekBarProgress!!.max) {
                     progress = mSeekBarProgress!!.max
@@ -726,9 +710,9 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
                 mIsChangingSeekBarProgress = false
             }
         }
-        if (event.action == MotionEvent.ACTION_DOWN) {
+        if (event?.action == MotionEvent.ACTION_DOWN) {
             removeCallbacks(mHideViewRunnable)
-        } else if (event.action == MotionEvent.ACTION_UP) {
+        } else if (event?.action == MotionEvent.ACTION_UP) {
             postDelayed(mHideViewRunnable, 7000)
         }
         return true
@@ -759,9 +743,11 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
             showQualityView()
         } else if (i == R.id.superplayer_iv_lock) {             //锁屏按钮
             toggleLockState()
-        } else if (i == R.id.superplayer_ll_replay) {           //重播按钮
-            replay()
-        } else if (i == R.id.superplayer_tv_back_to_live) {     //返回直播按钮
+        }
+//        else if (i == R.id.superplayer_ll_replay) {           //重播按钮
+//            replay()
+//        }
+        else if (i == R.id.superplayer_tv_back_to_live) {     //返回直播按钮
             if (mControllerCallback != null) {
                 mControllerCallback!!.onResumeLive()
             }
@@ -831,6 +817,14 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
         mVodQualityView!!.setVideoQualityList(mVideoQualityList)
     }
 
+    fun showLoading() {
+        mPbLiveLoading?.let { toggleView(it, true) }
+    }
+
+    fun hideLoading() {
+        mPbLiveLoading?.let { toggleView(it, false) }
+    }
+
     /**
      * 切换锁屏状态
      */
@@ -854,7 +848,6 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
      * 重播
      */
     private fun replay() {
-        toggleView(mLayoutReplay!!, false)
         if (mControllerCallback != null) {
             mControllerCallback!!.onResume()
         }
@@ -871,7 +864,6 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
             mControllerCallback!!.onResume()
         }
         mTvVttText!!.visibility = GONE
-        toggleView(mLayoutReplay!!, false)
     }
 
     override fun onProgressChanged(seekBar: PointSeekBar, progress: Int, isFromUser: Boolean) {
@@ -912,7 +904,6 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
         when (mPlayType) {
             PlayerType.VOD -> if (curProgress in 0..maxProgress) {
                 // 关闭重播按钮
-                toggleView(mLayoutReplay!!, false)
                 val percentage = curProgress.toFloat() / maxProgress
                 val position = (mDuration * percentage).toInt()
                 if (mControllerCallback != null) {
@@ -921,7 +912,6 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
                 }
             }
             PlayerType.LIVE, PlayerType.LIVE_SHIFT -> {
-                toggleView(mPbLiveLoading!!, true)
                 var seekTime = (mLivePushDuration * curProgress * 1.0f / maxProgress).toInt()
                 if (mLivePushDuration > Companion.MAX_SHIFT_TIME) {
                     seekTime =
@@ -1028,9 +1018,7 @@ class FullScreenPlayer : AbsPlayer, View.OnClickListener, VodMoreView.Callback,
     private class HideLockViewRunnable(controller: FullScreenPlayer?) : Runnable {
         private val mWefControllerFullScreen: WeakReference<FullScreenPlayer?>?
         override fun run() {
-            if (mWefControllerFullScreen != null && mWefControllerFullScreen.get() != null) {
-                mWefControllerFullScreen.get()!!.mIvLock!!.visibility = GONE
-            }
+            mWefControllerFullScreen?.get()?.mIvLock?.isVisible = false
         }
 
         init {
