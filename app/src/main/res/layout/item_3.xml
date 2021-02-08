@@ -5,34 +5,5 @@
     tools:showIn="@layout/activity_main">
 
 
-    <Button
-        android:id="@+id/btn_medal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="Medal"
-        android:textAllCaps="false"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn_halo" />
-
-    <Button
-        android:id="@+id/btn_sticker"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="sticker"
-        android:textAllCaps="false"
-        app:layout_constraintBottom_toBottomOf="@id/btn_medal"
-        app:layout_constraintStart_toEndOf="@id/btn_medal" />
-
-    <Button
-        android:id="@+id/btn_popup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="strokeView"
-        android:textAllCaps="false"
-        app:layout_constraintBottom_toBottomOf="@id/btn_medal"
-        app:layout_constraintStart_toEndOf="@id/btn_sticker" />
 
 </merge>

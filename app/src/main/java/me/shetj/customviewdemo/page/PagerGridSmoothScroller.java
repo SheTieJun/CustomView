@@ -24,8 +24,8 @@ public class PagerGridSmoothScroller extends LinearSmoothScroller {
     protected void onTargetFound(View targetView, RecyclerView.State state, Action action) {
         RecyclerView.LayoutManager manager = mRecyclerView.getLayoutManager();
         if (null == manager) return;
-        if (manager instanceof MeetingPageLayoutManager) {
-            MeetingPageLayoutManager layoutManager = (MeetingPageLayoutManager) manager;
+        if (manager instanceof PageLayoutManager) {
+            PageLayoutManager layoutManager = (PageLayoutManager) manager;
             int                      pos           = mRecyclerView.getChildAdapterPosition(targetView);
             int[]                    snapDistances = layoutManager.getSnapOffset(pos);
             final int                dx            = snapDistances[0];

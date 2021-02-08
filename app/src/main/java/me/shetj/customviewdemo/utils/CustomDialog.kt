@@ -40,7 +40,7 @@ fun Context.showCircleProgressDialog() {
             val nextLevelData = getNextLevelData(levelInfo.level) //获取当前level的下一等级需要多少天
             val needData = nextLevelData - it.consecutiveDays
             view.findViewById<TextView>(R.id.tv_level_info).text =
-                HighStringFormatUtil.buildHighlightString(
+                HighStringFormatUtil.buildLightString(
                     this, "距下一等级还需坚持学习${needData}天",
                     "$needData", R.color.superplayer_orange
                 )

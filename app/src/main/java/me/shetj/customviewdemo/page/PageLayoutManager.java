@@ -17,10 +17,10 @@ import timber.log.Timber;
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.widget.AbsListView.OnScrollListener.SCROLL_STATE_IDLE;
 
-public class MeetingPageLayoutManager extends RecyclerView.LayoutManager implements RecyclerView.SmoothScroller.ScrollVectorProvider {
+public class PageLayoutManager extends RecyclerView.LayoutManager implements RecyclerView.SmoothScroller.ScrollVectorProvider {
     public static final  int    VERTICAL   = 0;           // 垂直滚动
     public static final  int    HORIZONTAL = 1;         // 水平滚动
-    private static final String TAG        = MeetingPageLayoutManager.class.getName();
+    private static final String TAG        = PageLayoutManager.class.getName();
 
     @IntDef({VERTICAL, HORIZONTAL})
     public @interface OrientationType {
@@ -59,9 +59,9 @@ public class MeetingPageLayoutManager extends RecyclerView.LayoutManager impleme
      * @param columns     列数
      * @param orientation 方向
      */
-    public MeetingPageLayoutManager(@IntRange(from = 1, to = 100) int rows,
-                                    @IntRange(from = 1, to = 100) int columns,
-                                    @OrientationType int orientation) {
+    public PageLayoutManager(@IntRange(from = 1, to = 100) int rows,
+                             @IntRange(from = 1, to = 100) int columns,
+                             @OrientationType int orientation) {
         mItemFrames = new SparseArray<>();
         mOrientation = orientation;
         mRows = rows;

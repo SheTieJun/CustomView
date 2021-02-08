@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 30
@@ -52,12 +51,17 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation project(path: ':lib')
-    implementation "com.github.SheTieJun.Base:base:$base_version"
     implementation 'com.airbnb.android:lottie:3.4.1'
     implementation 'com.shuyu:GSYVideoPlayer:7.1.5'
     implementation 'com.github.SheTieJun.Mp3Recorder:recorder-mix:1.2.2'
     implementation 'com.github.SheTieJun.Mp3Recorder:recorder-core:1.2.2'
-    implementation "me.shetj.sdk:orange-dialog:$orange_dialog"
     implementation 'com.github.SheTieJun:FlycoTabLayout:9239e39003'
     implementation 'com.oushangfeng:PinnedSectionItemDecoration:1.3.2-androidx'
+
+    implementation "me.shetj.sdk:orange-dialog:$orange_dialog"
+    implementation 'me.shetj.sdk:base:1.0.6'
+
+    implementation 'androidx.dynamicanimation:dynamicanimation:1.1.0-alpha03'
+    implementation 'androidx.dynamicanimation:dynamicanimation-ktx:1.0.0-alpha03'
+
 }

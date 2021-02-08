@@ -41,8 +41,8 @@ public class PagerSnapHelper extends SnapHelper {
         int pos = layoutManager.getPosition(targetView);
         Timber.i( "findTargetSnapPosition, pos = " + pos);
         int[] offset = new int[2];
-        if (layoutManager instanceof MeetingPageLayoutManager) {
-            MeetingPageLayoutManager manager = (MeetingPageLayoutManager) layoutManager;
+        if (layoutManager instanceof PageLayoutManager) {
+            PageLayoutManager manager = (PageLayoutManager) layoutManager;
             offset = manager.getSnapOffset(pos);
         }
         return offset;
@@ -57,8 +57,8 @@ public class PagerSnapHelper extends SnapHelper {
     @Nullable
     @Override
     public View findSnapView(RecyclerView.LayoutManager layoutManager) {
-        if (layoutManager instanceof MeetingPageLayoutManager) {
-            MeetingPageLayoutManager manager = (MeetingPageLayoutManager) layoutManager;
+        if (layoutManager instanceof PageLayoutManager) {
+            PageLayoutManager manager = (PageLayoutManager) layoutManager;
             return manager.findSnapView();
         }
         return null;
@@ -78,8 +78,8 @@ public class PagerSnapHelper extends SnapHelper {
                                       int velocityX, int velocityY) {
         int target = RecyclerView.NO_POSITION;
         Timber.i( "findTargetSnapPosition, velocityX = " + velocityX + ", velocityY" + velocityY);
-        if (null != layoutManager && layoutManager instanceof MeetingPageLayoutManager) {
-            MeetingPageLayoutManager manager = (MeetingPageLayoutManager) layoutManager;
+        if (null != layoutManager && layoutManager instanceof PageLayoutManager) {
+            PageLayoutManager manager = (PageLayoutManager) layoutManager;
             if (manager.canScrollHorizontally()) {
                 if (velocityX > PagerConfig.getFlingThreshold()) {
                     target = manager.findNextPageFirstPos();

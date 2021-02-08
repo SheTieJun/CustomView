@@ -3,19 +3,17 @@ package me.shetj.customviewdemo
 import android.content.Intent
 import android.content.res.AssetManager
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.item_1.*
-import kotlinx.android.synthetic.main.item_2.*
-import kotlinx.android.synthetic.main.item_3.*
-import kotlinx.android.synthetic.main.item_4.*
-import kotlinx.android.synthetic.main.item_5.*
 import me.shetj.base.ktx.*
+import me.shetj.base.mvvm.BaseBindingActivity
+import me.shetj.base.mvvm.BaseViewModel
 import me.shetj.base.tools.app.FragmentUtils
-import me.shetj.base.view.TipPopupWindow
+import me.shetj.customviewdemo.anim.DynamicAnim
 import me.shetj.customviewdemo.anim.PathAnim
+import me.shetj.customviewdemo.anim.SpringAnim
+import me.shetj.customviewdemo.behavior.BeHaviorActivity
 import me.shetj.customviewdemo.country.AreaCodeModel
 import me.shetj.customviewdemo.country.CountryBottomDialog
+import me.shetj.customviewdemo.databinding.ActivityMainBinding
 import me.shetj.customviewdemo.floatvideo.destroyFloat
 import me.shetj.customviewdemo.floatvideo.showDialogFloat
 import me.shetj.customviewdemo.lihuaindex.LHIndexActivity
@@ -37,14 +35,14 @@ import java.io.IOException
 import java.io.InputStreamReader
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseBindingActivity<BaseViewModel, ActivityMainBinding>() {
 
 
     private var jsonList: MutableList<AreaCodeModel>? = null
     private val phoneDialog: CountryBottomDialog by lazy {
         CountryBottomDialog(
-            this,
-            jsonList ?: ArrayList()
+                this,
+                jsonList ?: ArrayList()
         )
     }
     private val recorderPopup: RecorderPopup by lazy {
@@ -54,39 +52,43 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        btn_cir.setOnClickListener { showCircleProgressDialog() }
-        btn_halo.setOnClickListener { showHaloDialog() }
-        btn_medal.setOnClickListener { showDialog(this, true, R.layout.layout_medal_view) }
-        btn_fish.setOnClickListener { createDialog(this, R.layout.layout_yinyang_fish) }
-        btn_LineWaveVoice.setOnClickListener { showWaveVoice() }
-        btn_AngleSeekBar.setOnClickListener { createDialog(this, R.layout.layout_angle_seekbar) }
-        btn_Path.setOnClickListener { PathAnim.showPathAnim(this) }
-        btn_floatView.setOnClickListener { showDialogFloat(this) }
-        btn_recycle.setOnClickListener { showDialogRecycle(this) }
-        btn_PictureInPicture.setOnClickListener { start<PictureInPictureActivity>() }
-        btn_transition.setOnClickListener { showDialogLogin(this) }
-        btn_StickyFinallyView.setOnClickListener { showStickyViewDialog(this) }
-        btn_water_mark.setOnClickListener { selectImage(this) }
-        btn_sticker.setOnClickListener { start<StickerActivity>() }
-        btn_popup.setOnClickListener { showQMUIPopup() }
-        btn_fragment.setOnClickListener {
-            PathAnim.showFragmentAnim(
-                this,
-                fragmentManager = supportFragmentManager
-            )
+    override fun onActivityCreate() {
+        super.onActivityCreate()
+        mViewBinding.apply {
+            btnCir.setOnClickListener { showCircleProgressDialog() }
+            btnWaterMark.setOnClickListener { selectImage(this@MainActivity) }
+            btnRecycle.setOnClickListener { showDialogRecycle(this@MainActivity) }
+            btnHalo.setOnClickListener { showHaloDialog() }
+            btnTransition.setOnClickListener { showDialogLogin(this@MainActivity) }
+            btnStickyFinallyView.setOnClickListener { showStickyViewDialog(this@MainActivity) }
+            btnMedal.setOnClickListener { showDialog(this@MainActivity, true, R.layout.layout_medal_view) }
+            btnSticker.setOnClickListener { start<StickerActivity>() }
+            btnPopup.setOnClickListener { showQMUIPopup() }
+            btnFish.setOnClickListener { createDialog(this@MainActivity, R.layout.layout_yinyang_fish) }
+            btnChangeText.setOnClickListener { showChangeText() }
+            btnTextFont.setOnClickListener { createShowTextDialog(this@MainActivity) }
+            btnFragment.setOnClickListener {
+                PathAnim.showFragmentAnim(
+                        this@MainActivity,
+                        fragmentManager = supportFragmentManager
+                )
+            }
+            btnLineWaveVoice.setOnClickListener { showWaveVoice() }
+            btnLoading.setOnClickListener { createLoading(this@MainActivity) }
+            btnVideoPre.setOnClickListener { start<PreVideoActivity>() }
+            btnAngleSeekBar.setOnClickListener { createDialog(this@MainActivity, R.layout.layout_angle_seekbar) }
+            btnPath.setOnClickListener { PathAnim.showPathAnim(this@MainActivity) }
+            btnFloatView.setOnClickListener { showDialogFloat(this@MainActivity) }
+            btnPictureInPicture.setOnClickListener { start<PictureInPictureActivity>() }
+            country.setOnClickListener { showCountry() }
+            index.setOnClickListener { start<LHIndexActivity>() }
+            btnTxPlayer.setOnClickListener { start<TXPlayerActivity>() }
+            btnRecycleSpine.setOnClickListener { start<PinnedRecycleActivity>() }
+            btnRecord.setOnClickListener { recorderPopup.showPop() }
+            btnBehavior.setOnClickListener { start<BeHaviorActivity>() }
+            btnDyAnim.setOnClickListener { DynamicAnim.showDyAnim(this@MainActivity) }
+            btnSpringAnim.setOnClickListener { SpringAnim.showSpringAnim(this@MainActivity) }
         }
-        btn_change_text.setOnClickListener { showChangeText() }
-        btn_text_font.setOnClickListener { createShowTextDialog(this) }
-        btn_loading.setOnClickListener { createLoading(this) }
-        btn_videoPre.setOnClickListener { start<PreVideoActivity>() }
-        country.setOnClickListener { showCountry() }
-        index.setOnClickListener { start<LHIndexActivity>() }
-        btn_tx_player.setOnClickListener { start<TXPlayerActivity>() }
-        btn_recycle_spine.setOnClickListener { start<PinnedRecycleActivity>() }
-        btn_record.setOnClickListener { recorderPopup.showPop() }
     }
 
     private fun showCountry() {
@@ -134,9 +136,9 @@ class MainActivity : AppCompatActivity() {
         try {
             val assetManager: AssetManager = assets
             val bf = BufferedReader(
-                InputStreamReader(
-                    assetManager.open(fileName)
-                )
+                    InputStreamReader(
+                            assetManager.open(fileName)
+                    )
             )
             var line: String?
             while (bf.readLine().also { line = it } != null) {

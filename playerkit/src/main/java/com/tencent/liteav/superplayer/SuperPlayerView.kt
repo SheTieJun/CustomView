@@ -567,6 +567,10 @@ open class SuperPlayerView : RelativeLayout,TimerConfigure.CallBack {
         override fun onHWAccelerationToggle(isAccelerate: Boolean) {
             mSuperPlayer!!.enableHardwareDecode(isAccelerate)
         }
+
+        override fun toggle(showing: Boolean) {
+
+        }
     }
 
 

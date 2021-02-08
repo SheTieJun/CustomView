@@ -10,22 +10,23 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
-import kotlinx.android.synthetic.main.activity_pre_videoe.*
 import me.shetj.base.ktx.logi
 import me.shetj.base.ktx.toJson
+import me.shetj.base.mvvm.BaseBindingActivity
+import me.shetj.base.mvvm.BaseViewModel
 import me.shetj.base.tools.file.FileQUtils.searchTypeFile
 import me.shetj.customviewdemo.R
+import me.shetj.customviewdemo.databinding.ActivityPreVideoeBinding
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 
-class PreVideoActivity : AppCompatActivity() {
+class PreVideoActivity : BaseBindingActivity<BaseViewModel,ActivityPreVideoeBinding>() {
 
     val publishSubject = PublishSubject.create<Int>()
     val videoCode: VideoCode by lazy { VideoCode() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_pre_videoe)
         registerForActivityResult(ActivityResultContracts.RequestPermission()) {
 
         }.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -35,12 +36,12 @@ class PreVideoActivity : AppCompatActivity() {
                 .doOnNext {
                     "seekTo:$it".logi()
                 }
-        player.setOnPreparedListener {
-            seekBar.max = player.duration
+        mViewBinding.player.setOnPreparedListener {
+            mViewBinding.seekBar.max =    mViewBinding.player.duration
         }
-        surface.holder.addCallback(object :SurfaceHolder.Callback{
+        mViewBinding.surface.holder.addCallback(object :SurfaceHolder.Callback{
             override fun surfaceCreated(holder: SurfaceHolder) {
-                videoCode.setSurface( surface.holder?.surface)
+                videoCode.setSurface(    mViewBinding.surface.holder?.surface)
             }
 
             override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
@@ -51,20 +52,20 @@ class PreVideoActivity : AppCompatActivity() {
 
         })
 
-        btn_select.setOnClickListener {
+        mViewBinding.btnSelect.setOnClickListener {
             searchTypeFile(type = "video/*",
                     ActivityResultCallback<Uri?> { result ->
                         result.toJson().logi()
-                        player.setVideoURI(result)
+                        mViewBinding.player.setVideoURI(result)
                         videoCode.setVideoPath(this, result)
                         videoCode.startExtractor()
                     })
         }
-        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+        mViewBinding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 progress.toString().logi()
-                if (abs(player.currentPosition - progress) > 500) {
-                    player.seekTo(progress)
+                if (abs(   mViewBinding.player.currentPosition - progress) > 500) {
+                    mViewBinding.player.seekTo(progress)
                 }
             }
 
@@ -73,7 +74,7 @@ class PreVideoActivity : AppCompatActivity() {
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                player.pause()
+                mViewBinding.player.pause()
             }
         })
     }

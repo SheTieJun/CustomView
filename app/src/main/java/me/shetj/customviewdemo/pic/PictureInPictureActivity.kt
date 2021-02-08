@@ -11,18 +11,18 @@ import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
 import com.shuyu.gsyvideoplayer.GSYVideoManager
 import com.shuyu.gsyvideoplayer.utils.OrientationUtils
-import kotlinx.android.synthetic.main.activity_picture_in_picture.*
-import me.shetj.base.mvp.BaseActivity
+import me.shetj.base.mvp.BaseBindingActivity
 import me.shetj.base.mvp.BasePresenter
 import me.shetj.base.tools.app.ArmsUtils
 import me.shetj.customviewdemo.R
+import me.shetj.customviewdemo.databinding.ActivityPictureInPictureBinding
 
 /**
  * 1. 设置xml
  *      android:resizeableActivity="true"
 android:supportsPictureInPicture="true"
  */
-class PictureInPictureActivity : BaseActivity<BasePresenter<*>>(),
+class PictureInPictureActivity : BaseBindingActivity<BasePresenter<*>,ActivityPictureInPictureBinding>(),
     PicBroadcastReceiver.PicCtrlListener {
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -33,13 +33,12 @@ class PictureInPictureActivity : BaseActivity<BasePresenter<*>>(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         ArmsUtils.statuInScreen2(this, false)
-        setContentView(R.layout.activity_picture_in_picture)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && iWantToBeInPipModeNow()) {
-            enter.setOnClickListener {
+           mViewBinding.enter.setOnClickListener {
                 enterPic()
             }
         } else {
-            enter.visibility = View.GONE
+            mViewBinding.enter .visibility = View.GONE
         }
     }
 
@@ -56,13 +55,13 @@ class PictureInPictureActivity : BaseActivity<BasePresenter<*>>(),
     }
 
     private fun initVideo() {
-        orientationUtils = OrientationUtils(this, videoView)
+        orientationUtils = OrientationUtils(this, mViewBinding.videoView)
         //初始化不打开外部的旋转
         orientationUtils?.isEnable = false
         val source1 =
             "http://9890.vod.myqcloud.com/9890_4e292f9a3dd011e6b4078980237cc3d3.f20.mp4"
-        videoView?.setUp(source1, true, "测试视频")
-        videoView.startPlayLogic()
+        mViewBinding.videoView.setUp(source1, true, "测试视频")
+        mViewBinding.videoView.startPlayLogic()
     }
 
     override fun onBackPressed() {
@@ -97,7 +96,7 @@ class PictureInPictureActivity : BaseActivity<BasePresenter<*>>(),
         isInPictureInPictureMode: Boolean,
         newConfig: Configuration
     ) {
-        enter.isVisible = !isInPictureInPictureMode
+        mViewBinding.enter.isVisible = !isInPictureInPictureMode
         if (isInPictureInPictureMode) {
             mReceiver.registerReceiver(this)
         } else {

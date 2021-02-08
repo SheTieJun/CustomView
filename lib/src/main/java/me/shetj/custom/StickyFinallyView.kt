@@ -79,18 +79,18 @@ class StickyFinallyView @JvmOverloads constructor(
             if (dx != 0f) {
                 val k1 = dy / dx
                 val k2 = - 1 / k1
-                mFlexibleTangent = getTangentPoints(mFlexibleCircle!!, mRadius,  k2);
-                mFixTangent = getTangentPoints(mFixCircle!!, mRadius,   k2);
+                mFlexibleTangent = getTangentPoints(mFlexibleCircle!!, mRadius,  k2)
+                mFixTangent = getTangentPoints(mFixCircle!!, mRadius,   k2)
             } else {
-                mFlexibleTangent = getTangentPoints(mFlexibleCircle!!, mRadius,  0f);
-                mFixTangent = getTangentPoints(mFixCircle!!, mRadius, 0f);
+                mFlexibleTangent = getTangentPoints(mFlexibleCircle!!, mRadius,  0f)
+                mFixTangent = getTangentPoints(mFixCircle!!, mRadius, 0f)
             }
-            mPath.reset();
-            mPath.moveTo(mFixTangent!![0]!!.x, mFixTangent!![0]!!.y);
-            mPath.quadTo(mControl.x, mControl.y, mFlexibleTangent!![0]!!.x, mFlexibleTangent!![0]!!.y);
-            mPath.lineTo(mFlexibleTangent!![1]!!.x, mFlexibleTangent!![1]!!.y);
-            mPath.quadTo(mControl.x, mControl.y, mFixTangent!![1]!!.x, mFixTangent!![1]!!.y);
-            mPath.close();
+            mPath.reset()
+            mPath.moveTo(mFixTangent!![0]!!.x, mFixTangent!![0]!!.y)
+            mPath.quadTo(mControl.x, mControl.y, mFlexibleTangent!![0]!!.x, mFlexibleTangent!![0]!!.y)
+            mPath.lineTo(mFlexibleTangent!![1]!!.x, mFlexibleTangent!![1]!!.y)
+            mPath.quadTo(mControl.x, mControl.y, mFixTangent!![1]!!.x, mFixTangent!![1]!!.y)
+            mPath.close()
             canvas?.drawPath(mPath, mPaint);
         }
 

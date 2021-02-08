@@ -13,8 +13,8 @@ import me.shetj.base.ktx.dp2px
 import me.shetj.custom.layoutManager.BaseItemTouchCallback
 import me.shetj.custom.layoutManager.ItemTouchListener
 import me.shetj.customviewdemo.R
-import me.shetj.customviewdemo.page.MeetingPageLayoutManager
-import me.shetj.customviewdemo.page.MeetingPageLayoutManager.HORIZONTAL
+import me.shetj.customviewdemo.page.PageLayoutManager
+import me.shetj.customviewdemo.page.PageLayoutManager.HORIZONTAL
 import me.shetj.customviewdemo.page.PagerSnapHelper
 import me.shetj.customviewdemo.utils.createDialog
 import java.util.*
@@ -171,7 +171,7 @@ fun showDialogRecycle(context: Context) {
                     super.onDrawOver(c, parent, state)
                 }
             })
-            layoutManager = MeetingPageLayoutManager(2, 2, HORIZONTAL)
+            layoutManager = PageLayoutManager(2, 2, HORIZONTAL)
             PagerSnapHelper().attachToRecyclerView(this)
         }
     }

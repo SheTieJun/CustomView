@@ -6,7 +6,6 @@ import com.tencent.liteav.superplayer.SimPlayerCallBack
 import com.tencent.liteav.superplayer.SuperPlayerDef
 import com.tencent.liteav.superplayer.SuperPlayerModel
 import com.tencent.liteav.superplayer.tv.TVControl
-import kotlinx.android.synthetic.main.activity_pre_videoe.view.*
 import me.shetj.base.ktx.showToast
 import me.shetj.base.ktx.start
 import me.shetj.base.mvvm.BaseBindingActivity

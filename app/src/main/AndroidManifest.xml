@@ -19,10 +19,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
         tools:replace="android:allowBackup">
-        <activity android:name=".tx.video.ScorllPlayerActivity"
-            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"/>
-        <activity android:name=".tx.video.ScorllPlayer2Activity"
-            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"/>
+        <activity android:name=".behavior.BeHaviorActivity"></activity>
+        <activity
+            android:name=".tx.video.ScorllPlayerActivity"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation" />
+        <activity
+            android:name=".tx.video.ScorllPlayer2Activity"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation" />
         <activity android:name=".recycle.PinnedRecycleActivity" />
         <activity
             android:name=".tx.video.TXPlayerActivity"
