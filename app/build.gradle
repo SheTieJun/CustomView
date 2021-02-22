@@ -61,6 +61,7 @@ dependencies {
     implementation "me.shetj.sdk:orange-dialog:$orange_dialog"
     implementation 'me.shetj.sdk:base:1.0.6'
 
+    //弹性动画库
     implementation 'androidx.dynamicanimation:dynamicanimation:1.1.0-alpha03'
     implementation 'androidx.dynamicanimation:dynamicanimation-ktx:1.0.0-alpha03'
 

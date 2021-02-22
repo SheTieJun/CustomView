@@ -1,3 +1,4 @@
+include ':colorPicker'
 include ':download'
 include ':lebo'
 rootProject.name='CustomView'

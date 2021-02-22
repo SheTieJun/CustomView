@@ -3,6 +3,7 @@ package me.shetj.customviewdemo.utils
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
+import android.view.Window
 import android.widget.LinearLayout
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AlertDialog
@@ -44,6 +45,22 @@ fun <VB:ViewBinding> createDialog(
         }
 }
 
+
+inline fun <reified VB : ViewBinding> Context.createSimDialog(
+    crossinline viewListener: ((mVB: VB) -> Unit) = { },
+    crossinline setWindowSizeChange: ((win: Window?) -> Unit) = {
+        it?.setLayout(ArmsUtils.dp2px(300f), LinearLayout.LayoutParams.WRAP_CONTENT)
+    }
+): AlertDialog? {
+    val mVB = VB::class.java.getMethod("inflate", LayoutInflater::class.java)
+        .invoke(null, LayoutInflater.from(this)) as VB
+    viewListener.invoke(mVB)
+    return AlertDialog.Builder(this)
+        .setView(mVB.root)
+        .show()?.apply {
+            setWindowSizeChange.invoke(window)
+        }
+}
 
 fun showStickyViewDialog(context: Context) {
     createDialog(context, R.layout.layou_sticky_view) {
