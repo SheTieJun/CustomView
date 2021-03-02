@@ -4,16 +4,36 @@ import io.reactivex.rxjava3.core.Observer
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.subjects.ReplaySubject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.sendBlocking
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.rx3.rxFlowable
 import kotlinx.coroutines.rx3.rxObservable
 import me.shetj.base.tools.json.GsonKit
 import me.shetj.customviewdemo.utils.DateUtils2
 import org.junit.Test
 import java.lang.Thread.sleep
+import java.lang.reflect.*
+import java.lang.reflect.Array
+import java.util.*
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 
 class RxSubjectTest {
+
+
+
+
+    @Test
+    fun testIProxy() {
+        runBlocking {
+            ProxyFactory.getProxy<KotlinTest.InterVideo>(null).onHideCustomView("这是测试代码2")
+        }
+    }
+
     class SubjectObserver : Observer<String> {
         override fun onSubscribe(d: Disposable?) {
 
@@ -63,5 +83,23 @@ class RxSubjectTest {
         replaySubject.subscribe(SubjectObserver())
         sleep(500)
         replaySubject.subscribe(SubjectObserver())
+    }
+
+
+    @Test
+    fun httpTest() {
+        GlobalScope.launch {
+
+            //原始写法
+            suspendCoroutine<String> { continuation ->
+                continuation.resume("test")
+                continuation.resumeWithException(NullPointerException())
+            }
+
+
+
+
+
+        }
     }
 }
