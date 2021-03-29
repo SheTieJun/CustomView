@@ -13,8 +13,6 @@ import org.junit.Test
 import java.lang.reflect.*
 import java.util.*
 
-typealias test1 = () -> Boolean
-
 class KotlinTest {
 
     interface InterVideo {
@@ -138,9 +136,22 @@ class TestProxy<T> : InvocationHandler {
 
         }
         target?.let {
+             method!!.invoke(target, *(args ?: arrayOfNulls<Any>(0)))
+        }?: println("没有代理对象")
 
-        method!!.invoke(target, *(args ?: arrayOfNulls<Any>(0)))
-        }
+        /**
+        测试："onHideCustomView"
+        genericReturnType:class java.lang.Object
+        parameterAnnotations：2
+        annotations：0
+        parameterTypes：2
+        genericParameterTypes:2
+
+        String
+        Continuation
+        String
+        Continuation
+         */
         return null
     }
 

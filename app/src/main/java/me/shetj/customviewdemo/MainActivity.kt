@@ -27,6 +27,7 @@ import me.shetj.customviewdemo.tansition.showDialogLogin
 import me.shetj.customviewdemo.text.createShowTextDialog
 import me.shetj.customviewdemo.tx.video.TXPlayerActivity
 import me.shetj.customviewdemo.utils.*
+import me.shetj.customviewdemo.utils.CalendarKit.addCalendar
 import me.shetj.customviewdemo.utils.MedalDialog.showDialog
 import me.shetj.customviewdemo.water_mark.onImageActivityResult
 import me.shetj.customviewdemo.water_mark.selectImage
@@ -88,6 +89,7 @@ class MainActivity : BaseBindingActivity<BaseViewModel, ActivityMainBinding>() {
             btnBehavior.setOnClickListener { start<BeHaviorActivity>() }
             btnDyAnim.setOnClickListener { DynamicAnim.showDyAnim(this@MainActivity) }
             btnSpringAnim.setOnClickListener { SpringAnim.showSpringAnim(this@MainActivity) }
+            btnAddCalendar.setOnClickListener { addCalendar() }
         }
     }
 

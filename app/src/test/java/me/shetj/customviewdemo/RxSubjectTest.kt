@@ -14,9 +14,6 @@ import me.shetj.base.tools.json.GsonKit
 import me.shetj.customviewdemo.utils.DateUtils2
 import org.junit.Test
 import java.lang.Thread.sleep
-import java.lang.reflect.*
-import java.lang.reflect.Array
-import java.util.*
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -27,10 +24,17 @@ class RxSubjectTest {
 
 
 
-    @Test
+    @Test //动态代理
     fun testIProxy() {
         runBlocking {
-            ProxyFactory.getProxy<KotlinTest.InterVideo>(null).onHideCustomView("这是测试代码2")
+//            ProxyFactory.getProxy<KotlinTest.InterVideo>(null).onHideCustomView("这是测试代码2")
+
+            ProxyFactory.getProxy<KotlinTest.InterVideo>(object :KotlinTest.InterVideo{
+                override suspend fun onHideCustomView(info: String) {
+                     println("这是真的执行对象")
+                }
+
+            }).onHideCustomView("这是测试代码2")
         }
     }
 

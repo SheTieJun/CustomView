@@ -42,7 +42,7 @@ fun showWaterMarkDialog(context: AppCompatActivity, url:Uri  = Uri.fromFile(File
 
 
 fun selectImage(context: AppCompatActivity){
-    context.searchFile(callback = ActivityResultCallback<Uri?> { result -> result?.let { showWaterMarkDialog(context, it) } })
+    context.searchFile("image/*",callback = ActivityResultCallback<Uri?> { result -> result?.let { showWaterMarkDialog(context, it) } })
 }
 
 
