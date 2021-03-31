@@ -8,7 +8,7 @@ import me.shetj.choice.model.Group
 import me.shetj.choice.model.Student
 
 
-class StudentAdapter(private val group: Group,private val isEdit: Boolean = false) :
+class StudentAdapter(private val group: Group,private val isEdit: Boolean = true) :
     BaseSAdapter<Student, BaseViewHolder>(R.layout.item_student_view) {
 
     init {

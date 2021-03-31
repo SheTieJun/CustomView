@@ -1,6 +1,7 @@
 package me.shetj.choice
 
 import androidx.recyclerview.widget.LinearLayoutManager
+import me.shetj.base.ktx.start
 import me.shetj.base.mvvm.BaseBindingActivity
 import me.shetj.base.mvvm.BaseViewModel
 import me.shetj.choice.adapter.SemesterAdapter
@@ -33,6 +34,10 @@ class MainActivity : BaseBindingActivity<BaseViewModel,ActivityMainBinding>() {
             mAdapter.setNewInstance(it)
         }
 
+
+        mViewBinding.node.setOnClickListener {
+            start<NodeActivity>()
+        }
         provider.init()
     }
 
