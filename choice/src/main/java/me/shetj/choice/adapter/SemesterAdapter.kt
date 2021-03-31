@@ -1,35 +1,53 @@
 package me.shetj.choice.adapter
 
+import android.util.Log
 import android.widget.CheckBox
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import me.shetj.base.base.BaseSAdapter
+import me.shetj.base.ktx.logi
 import me.shetj.choice.R
 import me.shetj.choice.model.Semester
 
 
-class SemesterAdapter():BaseSAdapter<Semester,BaseViewHolder>(R.layout.item_semester_view) {
+class SemesterAdapter() : BaseSAdapter<Semester, BaseViewHolder>(R.layout.item_semester_view) {
 
 
     override fun convert(holder: BaseViewHolder, item: Semester) {
         holder.setText(R.id.tv_name, item.title)
-
-        val mAdapter = GroupAdapter(item)
         holder.getView<RecyclerView>(R.id.recycleViewGroup).apply {
-            isVisible = item.isExpand
-            adapter = mAdapter.apply {
-                setOnItemClickListener { adapter, view, position ->
-                    mAdapter.changeShowItem(position)
+            val mAdapter: GroupAdapter = if (adapter == null) {
+                GroupAdapter().apply {
+                    setOnItemClickListener { _, _, position ->
+                        this.changeShowItem(position)
+                    }
+                }.also { mAdapter ->
+                    mAdapter.groupLiveDate.observeForever {
+                        if (it != null) {
+                            mAdapter.semester?.isSelect = it
+                            notifyItemChanged(this@SemesterAdapter.data.indexOf(mAdapter.semester), false)
+                        }
+                    }
+                    adapter = mAdapter
                 }
+            } else {
+                (adapter as GroupAdapter)
             }
+            mAdapter.setData(item)
+            isVisible = item.isExpand
             layoutManager = LinearLayoutManager(context)
-        }
-        holder.getView<CheckBox>(R.id.check_box).apply {
-            isChecked = item.isSelect
-            setOnCheckedChangeListener { buttonView, isChecked ->
-                mAdapter.selectAll(isChecked)
+            holder.getView<CheckBox>(R.id.check_box_semester).apply {
+                isChecked = item.isSelect
+                setOnCheckedChangeListener { buttonView, isChecked ->
+                    if(!buttonView.isPressed) {
+                        //如果不是通过按钮，就不触发真正的监听
+                        return@setOnCheckedChangeListener
+                    }
+                    item.isSelect = isChecked
+                    mAdapter.selectAll(isChecked)
+                }
             }
         }
     }
@@ -37,7 +55,7 @@ class SemesterAdapter():BaseSAdapter<Semester,BaseViewHolder>(R.layout.item_seme
 
     override fun convert(holder: BaseViewHolder, item: Semester, payloads: List<Any>) {
         super.convert(holder, item, payloads)
-        holder.getView<CheckBox>(R.id.check_box).apply {
+        holder.getView<CheckBox>(R.id.check_box_semester).apply {
             isChecked = item.isSelect
         }
         holder.getView<RecyclerView>(R.id.recycleViewGroup).apply {
@@ -51,8 +69,8 @@ class SemesterAdapter():BaseSAdapter<Semester,BaseViewHolder>(R.layout.item_seme
      */
     fun changeShowItem(position: Int) {
         getItem(position).apply {
-            isExpand =!isExpand
-            notifyItemChanged(position,isExpand)
+            isExpand = !isExpand
+            notifyItemChanged(position, isExpand)
         }
     }
 }

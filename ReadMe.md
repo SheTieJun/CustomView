@@ -16,3 +16,4 @@
 |腾讯播放器封装|[TxPlayer](/playerkit))||
 |WebView视频播放|[WebView](https://github.com/SheTieJun/CustomView/tree/master/app/src/main/java/me/shetj/customviewdemo/webview)||
 |DynamicAnimation| [DynamicAnimation](app/src/main/java/me/shetj/customviewdemo/anim/DynamicAnim.kt) | |
+|多级别多选|[Choice](/choice) | |
