@@ -16,7 +16,7 @@ data class Semester(val list: MutableList<Group>, val title: String) {
 
             return mutableListOf<Semester>().apply {
                 repeat(10){
-                    add(Semester(Group.mock(),"$it:学期"))
+                    add(Semester(Group.mock(it),"$it:学期"))
                 }
             }
         }

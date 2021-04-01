@@ -29,7 +29,6 @@ class SemesterProvider {
 
     val semesterList: MutableLiveData<MutableList<BaseNode>> = MutableLiveData()
 
-    val semesterChange: MutableLiveData<Semester> = MutableLiveData()
 
     /**
      * 初始化
@@ -42,6 +41,7 @@ class SemesterProvider {
     fun isSelectGroup(): Boolean {
         return selectType == SelectType.GROUP
     }
+
 
 
 

@@ -1,13 +1,11 @@
 package me.shetj.choice.adapter
 
-import android.util.Log
 import android.widget.CheckBox
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import me.shetj.base.base.BaseSAdapter
-import me.shetj.base.ktx.logi
 import me.shetj.choice.R
 import me.shetj.choice.model.Semester
 
@@ -45,7 +43,6 @@ class SemesterAdapter() : BaseSAdapter<Semester, BaseViewHolder>(R.layout.item_s
                         //如果不是通过按钮，就不触发真正的监听
                         return@setOnCheckedChangeListener
                     }
-                    item.isSelect = isChecked
                     mAdapter.selectAll(isChecked)
                 }
             }

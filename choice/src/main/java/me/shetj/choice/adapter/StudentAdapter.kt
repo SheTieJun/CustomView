@@ -43,7 +43,6 @@ class StudentAdapter(private val isEdit: Boolean = true) :
                     //如果不是通过按钮，就不触发真正的监听
                     return@setOnCheckedChangeListener
                 }
-                Log.i("student", holder.adapterPosition.toString())
                 item.isSelect = isChecked
                 checkGroupSelect(isChecked)
             }
@@ -51,7 +50,6 @@ class StudentAdapter(private val isEdit: Boolean = true) :
     }
 
     private fun checkGroupSelect(checked: Boolean) {
-        Log.i("student", checked.toString())
         if (!group!!.isSelect && checked){
             studentLiveDate.value = (true)
             return
@@ -65,7 +63,6 @@ class StudentAdapter(private val isEdit: Boolean = true) :
 
     override fun convert(holder: BaseViewHolder, item: Student, payloads: List<Any>) {
         super.convert(holder, item, payloads)
-        Log.i("student0", holder.adapterPosition.toString())
         holder.getView<CheckBox>(R.id.check_box_student).apply {
             isChecked = item.isSelect
         }

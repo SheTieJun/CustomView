@@ -55,7 +55,6 @@ class GroupAdapter() : BaseSAdapter<Group, BaseViewHolder>(R.layout.item_group_v
                         //如果不是通过按钮，就不触发真正的监听
                         return@setOnCheckedChangeListener
                     }
-                    item.isSelect = isChecked
                     mAdapter.selectAll(isChecked)
                     checkSemesterSelect(isChecked)
                 }
@@ -92,6 +91,9 @@ class GroupAdapter() : BaseSAdapter<Group, BaseViewHolder>(R.layout.item_group_v
         semester!!.isSelect = isChecked
         semester!!.list.forEachIndexed { index, group ->
             group.isSelect = isChecked
+            group.list.forEach {
+                it.isSelect = isChecked
+            }
             notifyItemChanged(index, true)
         }
     }

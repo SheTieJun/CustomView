@@ -2,13 +2,20 @@ package me.shetj.choice.model
 
 
 data class Student(val title: String,
-                   var isSelect:Boolean = false) {
+                   ) {
+
+    var isSelect:Boolean = false
+        set(value) {
+            field = value
+            SemesterProvider.studentChange.value = (value to this)
+        }
+
     companion object{
-        fun mock():MutableList<Student> {
+        fun mock(i: Int, i1: Int):MutableList<Student> {
 
             return mutableListOf<Student>().apply {
                 repeat(7){
-                    add(Student("学生:$it"))
+                    add(Student("${i}期${i1}班.学生:$it"))
                 }
             }
         }

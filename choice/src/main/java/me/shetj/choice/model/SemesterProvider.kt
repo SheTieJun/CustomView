@@ -11,15 +11,6 @@ import kotlinx.coroutines.withContext
  * 选择内容提供者
  */
 class SemesterProvider {
-
-    companion object{
-
-        fun getInstance(){
-
-        }
-    }
-
-
     enum class SelectType {
         GROUP, STUDENT, NONE
     }
@@ -28,7 +19,44 @@ class SemesterProvider {
 
     val semesterList: MutableLiveData<MutableList<Semester>> = MutableLiveData()
 
-    val semesterChange: MutableLiveData<Semester> = MutableLiveData()
+
+    val groupSelect: MutableList<Group> = ArrayList()
+    val studentSelect: MutableList<Student> = ArrayList()
+
+    companion object {
+        val groupChange: MutableLiveData<Pair<Boolean, Group>> = MutableLiveData()
+
+        val studentChange: MutableLiveData<Pair<Boolean, Student>> = MutableLiveData()
+
+        val dataChange:MutableLiveData<Pair<MutableList<Group>, MutableList<Student>>> = MutableLiveData()
+    }
+
+
+    init {
+        groupChange.observeForever {
+            if (it.first){
+                if (!groupSelect.contains(it.second)) {
+                    groupSelect.add(it.second)
+                }
+            }else{
+                groupSelect.remove(it.second)
+            }
+            dataChange.postValue(groupSelect to studentSelect)
+        }
+        studentChange.observeForever {
+            if (it.first){
+                if (!studentSelect.contains(it.second)) {
+                    studentSelect.add(it.second)
+                }
+            }else{
+                studentSelect.remove(it.second)
+            }
+            dataChange.postValue(groupSelect to studentSelect)
+        }
+    }
+
+
+
 
     /**
      * 初始化
@@ -36,6 +64,8 @@ class SemesterProvider {
     fun init(selectType: SelectType = SelectType.NONE) {
         this.selectType = selectType
         semesterList.postValue(Semester.mock())
+        studentSelect.clear()
+        groupSelect.clear()
     }
 
     fun isSelectGroup(): Boolean {

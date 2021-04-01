@@ -4,7 +4,7 @@ import com.chad.library.adapter.base.entity.node.BaseExpandNode
 import com.chad.library.adapter.base.entity.node.BaseNode
 
 
-data class Student(val title: String, var isSelect:Boolean = false,
+data class Student(val title: String,
                    override val childNode: MutableList<BaseNode>? = null
 ): BaseExpandNode() {
     init {
