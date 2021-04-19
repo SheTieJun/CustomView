@@ -29,4 +29,6 @@ class TestInfo {
             System.out.println(tvs[i] + "  " + tvs[i].getName() + "  " + Arrays.toString(tvs[i].getBounds()));//T  T  [class com.bqt.Person] 和 U  U  [class java.lang.Object]
         }
     }
+
+
 }

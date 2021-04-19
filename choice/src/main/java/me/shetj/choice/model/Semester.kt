@@ -4,8 +4,6 @@ package me.shetj.choice.model
 
 data class Semester(val list: MutableList<Group>, val title: String) {
 
-    var isExpand = false
-
     //是否选择全部
     var isSelect :Boolean = false
 

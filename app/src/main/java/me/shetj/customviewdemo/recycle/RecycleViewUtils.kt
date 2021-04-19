@@ -121,7 +121,7 @@ fun showDialogRecycle(context: Context) {
         it.findViewById<RecyclerView>(R.id.recycle_grid).apply {
             adapter = testAdapter
             addItemDecoration(object : RecyclerView.ItemDecoration() {
-                private val mHeight = 5f.dp2px() //分割线高度
+                private val mHeight = 5f.dp2px //分割线高度
 
                 /*
                  * etItemOffsets：通过Rect为每个Item设置偏移，用于绘制Decoration。

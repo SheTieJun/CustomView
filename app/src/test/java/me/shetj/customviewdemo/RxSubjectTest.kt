@@ -38,6 +38,8 @@ class RxSubjectTest {
         }
     }
 
+
+
     class SubjectObserver : Observer<String> {
         override fun onSubscribe(d: Disposable?) {
 
@@ -55,7 +57,6 @@ class RxSubjectTest {
 
         }
     }
-
 
     @Test
     fun testWeek() {

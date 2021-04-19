@@ -2,10 +2,14 @@ package me.shetj.customviewdemo
 
 import android.content.Intent
 import android.content.res.AssetManager
+import android.net.Uri
 import android.os.Bundle
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import me.shetj.base.ktx.*
 import me.shetj.base.mvvm.BaseBindingActivity
 import me.shetj.base.mvvm.BaseViewModel
+import me.shetj.base.tools.app.ArmsUtils
 import me.shetj.base.tools.app.FragmentUtils
 import me.shetj.customviewdemo.anim.DynamicAnim
 import me.shetj.customviewdemo.anim.PathAnim
@@ -31,6 +35,7 @@ import me.shetj.customviewdemo.utils.CalendarKit.addCalendar
 import me.shetj.customviewdemo.utils.MedalDialog.showDialog
 import me.shetj.customviewdemo.water_mark.onImageActivityResult
 import me.shetj.customviewdemo.water_mark.selectImage
+import me.shetj.customviewdemo.water_mark.showWaterMarkDialog
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -52,12 +57,18 @@ class MainActivity : BaseBindingActivity<BaseViewModel, ActivityMainBinding>() {
             it.showToast()
         }
     }
+    private val search = registerForActivityResult(ActivityResultContracts.OpenDocument()) { result ->
+        result?.let {
+            showWaterMarkDialog(this, it)
+        }
+    }
 
     override fun onActivityCreate() {
         super.onActivityCreate()
+        ArmsUtils.statuInScreen2(this, true)
         mViewBinding.apply {
             btnCir.setOnClickListener { showCircleProgressDialog() }
-            btnWaterMark.setOnClickListener { selectImage(this@MainActivity) }
+            btnWaterMark.setOnClickListener { search.launch(arrayOf("image/*")) }
             btnRecycle.setOnClickListener { showDialogRecycle(this@MainActivity) }
             btnHalo.setOnClickListener { showHaloDialog() }
             btnTransition.setOnClickListener { showDialogLogin(this@MainActivity) }

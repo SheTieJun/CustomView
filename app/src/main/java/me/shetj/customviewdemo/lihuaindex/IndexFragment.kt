@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import me.shetj.base.ktx.logi
 import me.shetj.base.mvvm.BaseBindingFragment
 import me.shetj.base.mvvm.BaseViewModel
 import me.shetj.customviewdemo.R
@@ -65,7 +66,8 @@ class IndexFragment : BaseBindingFragment<BaseViewModel, FragmentIndexBinding>()
             }
     }
 
-    override fun initEventAndData() {
+    override fun viewBindData() {
+     "initEventAndData".logi()
     }
 
     override fun initViewBinding(

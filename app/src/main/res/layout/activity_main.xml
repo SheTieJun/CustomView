@@ -6,299 +6,255 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/whiteDivider"
+    android:fitsSystemWindows="true"
     tools:context=".MainActivity">
 
-
-    <Button
-        android:id="@+id/btn_cir"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="CircleProgressView"
-        android:textAllCaps="false"
-        android:layout_marginStart="8dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/btn_recycle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAllCaps="false"
-        android:layout_marginStart="8dp"
-        app:layout_constraintStart_toEndOf="@id/btn_cir"
-        app:layout_constraintTop_toTopOf="@id/btn_cir"
-        android:text="recycleView" />
-
-    <Button
-        android:id="@+id/btn_water_mark"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAllCaps="false"
-        android:layout_marginStart="8dp"
-        app:layout_constraintStart_toEndOf="@id/btn_recycle"
-        app:layout_constraintTop_toTopOf="@id/btn_cir"
-        android:text="水印" />
+    <com.google.android.material.chip.ChipGroup
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
 
-    <Button
-        android:id="@+id/btn_halo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="HaloView"
-        android:layout_marginStart="8dp"
-        app:layout_constraintTop_toBottomOf="@id/btn_cir"
-        app:layout_constraintStart_toStartOf="parent"
-        android:textAllCaps="false" />
+        <com.google.android.material.chip.Chip
+            android:id="@+id/btn_cir"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="CircleProgressView"
+            android:textAllCaps="false" />
 
-    <Button
-        android:id="@+id/btn_transition"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAllCaps="false"
-        android:layout_marginStart="8dp"
-        app:layout_constraintStart_toEndOf="@id/btn_halo"
-        app:layout_constraintTop_toTopOf="@id/btn_halo"
-        android:text="transition" />
+        <com.google.android.material.chip.Chip
+            android:id="@+id/btn_recycle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="recycleView"
+            android:textAllCaps="false" />
 
-
-    <Button
-        android:id="@+id/btn_StickyFinallyView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAllCaps="false"
-        android:layout_marginStart="8dp"
-        app:layout_constraintStart_toEndOf="@id/btn_transition"
-        app:layout_constraintTop_toTopOf="@id/btn_halo"
-        android:text="StickyFinallyView" />
+        <com.google.android.material.chip.Chip
+            android:id="@+id/btn_water_mark"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="水印"
+            android:textAllCaps="false" />
 
 
-    <Button
-        android:id="@+id/btn_medal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="Medal"
-        android:textAllCaps="false"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn_halo" />
+        <com.google.android.material.chip.Chip
+            android:id="@+id/btn_halo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="HaloView"
+            android:textAllCaps="false" />
 
-    <Button
-        android:id="@+id/btn_sticker"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="sticker"
-        android:textAllCaps="false"
-        app:layout_constraintBottom_toBottomOf="@id/btn_medal"
-        app:layout_constraintStart_toEndOf="@id/btn_medal" />
-
-    <Button
-        android:id="@+id/btn_popup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="strokeView"
-        android:textAllCaps="false"
-        app:layout_constraintBottom_toBottomOf="@id/btn_medal"
-        app:layout_constraintStart_toEndOf="@id/btn_sticker" />
-
-    <Button
-        android:id="@+id/btn_fish"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="阴阳鱼"
-        android:textAllCaps="false"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn_medal" />
-
-    <Button
-        android:id="@+id/btn_fragment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="Fragment"
-        android:textAllCaps="false"
-        app:layout_constraintBottom_toBottomOf="@id/btn_fish"
-        app:layout_constraintStart_toEndOf="@id/btn_fish" />
-
-    <Button
-        android:id="@+id/btn_change_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="ChangeText"
-        android:textAllCaps="false"
-        app:layout_constraintBottom_toBottomOf="@id/btn_fish"
-        app:layout_constraintStart_toEndOf="@id/btn_fragment" />
-
-    <Button
-        android:id="@+id/btn_text_font"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="TextFont"
-        android:textAllCaps="false"
-        app:layout_constraintBottom_toBottomOf="@id/btn_fish"
-        app:layout_constraintStart_toEndOf="@id/btn_change_text" />
+        <com.google.android.material.chip.Chip
+            android:id="@+id/btn_transition"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="transition"
+            android:textAllCaps="false" />
 
 
-    <Button
-        android:id="@+id/btn_LineWaveVoice"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="LineWaveVoice"
-        android:layout_marginStart="8dp"
-        app:layout_constraintTop_toBottomOf="@id/btn_fish"
-        app:layout_constraintStart_toStartOf="parent"
-        android:textAllCaps="false" />
-
-    <Button
-        android:id="@+id/btn_loading"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="LoadingDialog"
-        android:layout_marginStart="8dp"
-        app:layout_constraintTop_toTopOf="@id/btn_LineWaveVoice"
-        app:layout_constraintStart_toEndOf="@id/btn_LineWaveVoice"
-        android:textAllCaps="false" />
-
-    <Button
-        android:id="@+id/btn_videoPre"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="videoPre"
-        android:layout_marginStart="8dp"
-        app:layout_constraintTop_toTopOf="@id/btn_LineWaveVoice"
-        app:layout_constraintStart_toEndOf="@id/btn_loading"
-        android:textAllCaps="false" />
-
-    <Button
-        android:id="@+id/btn_AngleSeekBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="AngleSeekBar"
-        app:layout_constraintTop_toBottomOf="@id/btn_LineWaveVoice"
-        app:layout_constraintStart_toStartOf="parent"
-        android:textAllCaps="false"
-        tools:ignore="NotSibling" />
-
-    <Button
-        android:id="@+id/country"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="@id/btn_AngleSeekBar"
-        app:layout_constraintStart_toEndOf="@id/btn_AngleSeekBar"
-        android:layout_marginStart="8dp"
-        android:text="国家"/>
-
-    <Button
-        android:id="@+id/index"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="@id/btn_AngleSeekBar"
-        app:layout_constraintStart_toEndOf="@id/country"
-        android:layout_marginStart="8dp"
-        android:textAllCaps="false"
-        android:text="ViewPager2嵌套"/>
-
-    <Button
-        android:id="@+id/btn_Path"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="PathAnimator"
-        app:layout_constraintTop_toBottomOf="@id/btn_AngleSeekBar"
-        app:layout_constraintStart_toStartOf="parent"
-        android:textAllCaps="false"/>
+        <com.google.android.material.chip.Chip
+            android:id="@+id/btn_StickyFinallyView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="StickyFinallyView"
+            android:textAllCaps="false" />
 
 
-    <Button
-        android:id="@+id/btn_tx_player"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TxPlayer"
-        android:layout_marginStart="8dp"
-        app:layout_constraintTop_toTopOf="@id/btn_Path"
-        app:layout_constraintStart_toEndOf="@id/btn_Path"
-        android:textAllCaps="false"/>
+        <com.google.android.material.chip.Chip
+            android:id="@+id/btn_medal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="Medal"
+            android:textAllCaps="false" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/btn_sticker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="sticker"
+            android:textAllCaps="false" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/btn_popup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="strokeView"
+            android:textAllCaps="false" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/btn_fish"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="阴阳鱼"
+            android:textAllCaps="false" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/btn_fragment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="Fragment"
+            android:textAllCaps="false" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/btn_change_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="ChangeText"
+            android:textAllCaps="false" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/btn_text_font"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="TextFont"
+            android:textAllCaps="false" />
 
 
-    <Button
-        android:id="@+id/btn_recycle_spine"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Pinned"
-        android:layout_marginStart="8dp"
-        app:layout_constraintTop_toTopOf="@id/btn_Path"
-        app:layout_constraintStart_toEndOf="@id/btn_tx_player"
-        android:textAllCaps="false"/>
+        <com.google.android.material.chip.Chip
+            android:id="@+id/btn_LineWaveVoice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="LineWaveVoice"
+            android:textAllCaps="false" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/btn_loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="LoadingDialog"
+            android:textAllCaps="false"
+       />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/btn_videoPre"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="videoPre"
+            android:textAllCaps="false"
+        />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/btn_AngleSeekBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="AngleSeekBar"
+            android:layout_marginStart="8dp"
+            android:textAllCaps="false"
+            tools:ignore="NotSibling" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/country"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="国家"
+          />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/index"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="ViewPager2嵌套"
+            android:textAllCaps="false"  />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/btn_Path"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="PathAnimator"
+            android:textAllCaps="false" />
 
 
-    <Button
-        android:id="@+id/btn_floatView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="FloatView"
-        app:layout_constraintTop_toBottomOf="@id/btn_Path"
-        app:layout_constraintStart_toStartOf="parent"
-        android:textAllCaps="false"/>
+        <com.google.android.material.chip.Chip
+            android:id="@+id/btn_tx_player"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="TxPlayer"
+            android:textAllCaps="false"  />
 
-    <Button
-        android:id="@+id/btn_record"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="mp3录音"
-        android:layout_marginStart="8dp"
-        app:layout_constraintTop_toTopOf="@id/btn_floatView"
-        app:layout_constraintStart_toEndOf="@id/btn_floatView"
-        android:textAllCaps="false"/>
 
-    <Button
-        android:id="@+id/btn_PictureInPicture"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="PictureInPicture"
-        app:layout_constraintTop_toBottomOf="@id/btn_floatView"
-        app:layout_constraintStart_toStartOf="parent"
-        android:textAllCaps="false"/>
+        <com.google.android.material.chip.Chip
+            android:id="@+id/btn_recycle_spine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="Pinned"
+            android:textAllCaps="false" />
 
-    <Button
-        android:id="@+id/btnBehavior"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Behavior"
-        android:layout_marginStart="8dp"
-        app:layout_constraintTop_toBottomOf="@id/btn_floatView"
-        app:layout_constraintStart_toEndOf="@+id/btn_PictureInPicture"
-        android:textAllCaps="false"/>
-    <Button
-        android:id="@+id/btn_add_Calendar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="添加日历"
-        android:layout_marginStart="8dp"
-        app:layout_constraintTop_toTopOf="@id/btnBehavior"
-        app:layout_constraintStart_toEndOf="@id/btnBehavior"
-        android:textAllCaps="false"/>
-    <Button
-        android:id="@+id/btn_dy_anim"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="投掷动画"
-        android:layout_marginStart="8dp"
-        app:layout_constraintTop_toTopOf="@id/btn_floatView"
-        app:layout_constraintStart_toEndOf="@id/btn_record"
-        android:textAllCaps="false"/>
 
-    <Button
-        android:id="@+id/btn_spring_anim"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="弹簧动画"
-        android:layout_marginStart="8dp"
-        app:layout_constraintTop_toTopOf="@id/btn_floatView"
-        app:layout_constraintStart_toEndOf="@id/btn_dy_anim"
-        android:textAllCaps="false"/>
+        <com.google.android.material.chip.Chip
+            android:id="@+id/btn_floatView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="FloatView"
+            android:textAllCaps="false" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/btn_record"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="mp3录音"
+            android:textAllCaps="false"  />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/btn_PictureInPicture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PictureInPicture"
+            android:textAllCaps="false" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/btnBehavior"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="Behavior"
+            android:textAllCaps="false" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/btn_add_Calendar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="添加日历"
+            android:textAllCaps="false"  />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/btn_dy_anim"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="投掷动画"
+            android:textAllCaps="false" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/btn_spring_anim"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="弹簧动画"
+            android:textAllCaps="false" />
+
+    </com.google.android.material.chip.ChipGroup>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
