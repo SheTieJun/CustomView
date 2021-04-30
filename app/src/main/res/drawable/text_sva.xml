@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="500"
+    android:viewportHeight="500">
+
+    <group>
+        <!--        正方形-->
+        <path
+            android:pathData="M0,0 L 0,500 500,500,500,0 z"
+            android:strokeWidth="5"
+            android:strokeColor="@color/white" />
+    </group>
+
+    <group>
+        <path
+            android:pathData="M 10,100 A 50 50 0 1 1 110,100,M 10,100 A 50 50 0 1 0 110,100"
+            android:strokeWidth="3"
+            android:strokeColor="@color/orange" />
+    </group>
+
+
+    <group>
+        <path
+            android:name="triangle"
+            android:fillColor="@color/app_color_theme_1"
+            android:pathData="M130,150 L160,20 L190,150 z" />
+    </group>
+
+
+    <group>
+        <path
+            android:name="triangle"
+            android:fillColor="@color/app_color_theme_1"
+            android:pathData="M130,150 L160,20 L190,150 z" />
+    </group>
+
+
+
+</vector>

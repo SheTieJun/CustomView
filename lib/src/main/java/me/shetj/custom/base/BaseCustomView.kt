@@ -7,6 +7,7 @@ import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
+import androidx.core.graphics.withClip
 
 /**
  * onMeasure()会在初始化之后,调用一到多次来测量控件或其中的子控件的宽高；
@@ -110,5 +111,12 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) :
      */
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
+    }
+
+    /**
+     * 重写这个方法，可以剪切整个视图
+     */
+    override fun draw(canvas: Canvas?) {
+        super.draw(canvas)
     }
 }

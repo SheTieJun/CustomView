@@ -16,6 +16,10 @@ import android.view.ViewGroup
  *
  * [measureChildren] 会触发子布局绘制
  * [measureChild]是对单个view进行测量
+ *
+ * 可以重新[draw] 进行对view的 剪切
+ *
+ * [onMeasure] ->[onLayout] ->[onDraw]
  */
 open class BaseCustomViewGroup
 @JvmOverloads
@@ -144,5 +148,13 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) :
      */
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
+    }
+
+
+    /**
+     * 重写这个方法，可以剪切整个视图
+     */
+    override fun draw(canvas: Canvas?) {
+        super.draw(canvas)
     }
 }

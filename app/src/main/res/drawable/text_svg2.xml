@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="100dp"
+    android:height="100dp"
+    android:viewportWidth="220"
+    android:viewportHeight="220">
+
+    <group>
+        <!--        正方形-->
+<!--        <path-->
+<!--            android:pathData="M0,0 L 0,220 220,220,220,0 z"-->
+<!--            android:fillColor="@color/white"-->
+<!--            android:strokeColor="@color/white" />-->
+
+        <path
+            android:pathData="M30,0
+            L220,0
+            L220,220
+            L30,220
+            L30,120z
+            M30,25 Q 10,30 0,20
+            Q 0,50 30,50z"
+            android:fillColor="@color/app_color_theme_2"
+            />
+    </group>
+
+
+</vector>

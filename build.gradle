@@ -1,7 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     ext.kotlin_version = '1.4.21'
-    ext.base_version = "3844ae003b"
+    ext.base_version = "9ef0f0291"
     ext.orange_dialog = "0.0.1"
 
     ext.compileSdkVersion       = 30
