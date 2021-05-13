@@ -4,10 +4,11 @@ import com.chad.library.adapter.base.BaseMultiItemQuickAdapter
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import me.shetj.base.base.BaseSAdapter
 import me.shetj.customviewdemo.R
+import me.shetj.customviewdemo.recycle.edge.EdgeViewHolder
 
 
 class TestAdapter(dates: MutableList<MultiItem>) :
-    BaseMultiItemQuickAdapter<MultiItem, BaseViewHolder>( dates) {
+    BaseMultiItemQuickAdapter<MultiItem, EdgeViewHolder>( dates) {
     
     init {
         
@@ -15,7 +16,7 @@ class TestAdapter(dates: MutableList<MultiItem>) :
         addItemType(1,R.layout.item_swipe_card)
     }
     
-    override fun convert(holder: BaseViewHolder, item: MultiItem) {
+    override fun convert(holder: EdgeViewHolder, item: MultiItem) {
          
     }
 

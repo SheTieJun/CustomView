@@ -1,10 +1,12 @@
 package me.shetj.customviewdemo.recycle
 
+import android.widget.EdgeEffect
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.oushangfeng.pinnedsectionitemdecoration.PinnedHeaderItemDecoration
+import androidx.recyclerview.widget.RecyclerView
 import me.shetj.base.mvvm.BaseBindingActivity
 import me.shetj.base.mvvm.BaseViewModel
 import me.shetj.customviewdemo.databinding.ActivityPinnedRecycleBinding
+import me.shetj.customviewdemo.recycle.edge.SpringEdgeEffect
 
 
 class PinnedRecycleActivity : BaseBindingActivity<BaseViewModel, ActivityPinnedRecycleBinding>() {
@@ -17,18 +19,15 @@ class PinnedRecycleActivity : BaseBindingActivity<BaseViewModel, ActivityPinnedR
         mViewBinding.iRecyclerView.apply {
             adapter = TestAdapter(ArrayList<MultiItem>().apply {
                 repeat(21) {
-                    if (it == 0) {
-                        add(MultiItem(1))
-                    } else {
-                        add(MultiItem(2))
-                    }
+                    add(MultiItem(2))
                 }
             })
             layoutManager = LinearLayoutManager(this@PinnedRecycleActivity)
-            addItemDecoration(
-                PinnedHeaderItemDecoration.Builder(1)
-                    .create()
-            )
+            edgeEffectFactory = object :RecyclerView.EdgeEffectFactory(){
+                override fun createEdgeEffect(view: RecyclerView, direction: Int): EdgeEffect {
+                    return SpringEdgeEffect(view,direction)
+                }
+            }
         }
     }
 

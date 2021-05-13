@@ -17,3 +17,4 @@
 |WebView视频播放|[WebView](https://github.com/SheTieJun/CustomView/tree/master/app/src/main/java/me/shetj/customviewdemo/webview)||
 |DynamicAnimation| [DynamicAnimation](app/src/main/java/me/shetj/customviewdemo/anim/DynamicAnim.kt) | |
 |多级别多选|[Choice](/choice) | |
+|RecycleView弹性|[SpringEdgeEffect](https://github.com/SheTieJun/CustomView/tree/master/app/src/main/java/me/shetj/customviewdemo/recycle/edge)||
